@@ -6,6 +6,7 @@ addOptional(p, 'patchImages', {'ref', ...
   'e1', 'e2', 'e3', 'e4', 'e5', ...
   'h1', 'h2', 'h3', 'h4', 'h5'});
 parse(p, varargin{:}); opts = p.Results;
+% TODO allow to read to memory
 
 assert(exist(opts.rootDir, 'dir') == 7, 'Dataset dir does not exist.');
 sequences = sort(utls.listdirs(opts.rootDir));
@@ -72,7 +73,7 @@ function [sequence, imagename, patches] = decode_signature(signature)
 C = strsplit(signature, '.');
 if numel(C) < 2 || numel(C) > 3, error('Invalid signature.'); end;
 [sequence, imagename] = deal(C{:});
-patches = ':';
+patches = nan;
 % Signatures are zero based
 if numel(C) > 2, patches = str2double(C{3}) + 1; end
 end
@@ -92,14 +93,14 @@ end
 
 function data = getpatches(imdb, sequence, imagename, patches)
 assert(nargin > 0);
+if nargin < 3, imagename = nan; end; 
+if nargin < 4, patches = nan; end; 
 if nargin == 2 && strfind(sequence, '.')
-  [sequence, imagename, patches] = decode_signature();
+  [sequence, imagename, patches] = decode_signature(sequence);
 end
 seqidx = imdb.meta.seq2idx(sequence);
-if nargin == 2
-  data = imdb.data{seqidx}.data;
-  return;
-end
+% Return patches for the whole sequence
+if isnan(imagename), data = imdb.data{seqidx}.data; return; end
 if ischar(imagename) || iscell(imagename)
   if ~iscell(imagename), imagename = {imagename}; end;
   imidx = cellfun(@(imn) imdb.meta.im2idx(imn), imagename);
@@ -107,8 +108,8 @@ else
   imidx = imagename;
   assert(all(imidx > 0), all(imidx <= numel(imdb.meta.patchimages)));
 end
-if nargin < 3
-  patches = 1:size(imdb.data{seqidx}, 3);
+if nargin < 3 || (numel(patches) == 1 && isnan(patches))
+  patches = 1:imdb.data{seqidx}.datasize(1, 4);
 end
 data = imdb.data{seqidx}.data(:,:,:,patches,imidx);
 end
