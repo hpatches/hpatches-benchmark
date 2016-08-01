@@ -95,12 +95,9 @@ assert(nargin > 0);
 if nargin == 2 && strfind(sequence, '.')
   [sequence, imagename, patches] = decode_signature();
 end
-if strcmp(imagename, ':') && ~strcmp(patches, ':')
-  error('Invalid indexing.');
-end
 seqidx = imdb.meta.seq2idx(sequence);
-if nargin == 2 || strcmp(imagename, ':')
-  data = imdb.data{seqidx};
+if nargin == 2
+  data = imdb.data{seqidx}.data;
   return;
 end
 if ischar(imagename) || iscell(imagename)
