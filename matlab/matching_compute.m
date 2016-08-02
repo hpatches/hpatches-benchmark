@@ -1,4 +1,7 @@
-function matching_compute( imdb, benchpath, descfun, outpath )
+function matching_compute( imdb, benchpath, descfun, outpath, varargin )
+opts.cacheName = '';
+opts = vl_argparse(opts, varargin);
+
 assert(exist(benchpath, 'file') == 2, ...
   'Benchmark file %s does not exist.', benchpath);
 
@@ -11,16 +14,10 @@ fo = fopen(outpath, 'w');
 for ti = 1:numel(tasks);
   fprintf(fo, '%s\n', tasks{ti});
   singatures = strsplit(tasks{ti}, ',');
-  patchesA = imdb.getPatches(singatures{1});
-  patchesA = reshape(patchesA, size(patchesA, 1), size(patchesA, 2), []);
-  patchesB = imdb.getPatches(singatures{2});
-  patchesB = reshape(patchesB, size(patchesB, 1), size(patchesB, 2), []);
   
   % Compute the descriptors
-  descA = descfun(patchesA);
-  assert(size(descA, 2) == size(patchesA, 3));
-  descB = descfun(patchesB);
-  assert(size(descB, 2) == size(patchesB, 3));
+  descA = get_descriptors(imdb, singatures{1}, descfun, opts);
+  descB = get_descriptors(imdb, singatures{2}, descfun, opts);
   
   % Do the matching
   tr = vl_kdtreebuild(descB);

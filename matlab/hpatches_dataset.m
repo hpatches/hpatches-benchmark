@@ -1,14 +1,10 @@
 function imdb = hpatches_dataset(varargin)
-
-p = inputParser();
-addOptional(p, 'rootDir', fullfile('..','data','hpatches'), @(x) exist(x, 'dir'));
-addOptional(p, 'matDir', fullfile('data', 'hpatches_mat'), @(x) exist(x, 'dir'));
-addOptional(p, 'patchImages', {'ref', ...
-  'e1', 'e2', 'e3', 'e4', 'e5', ...
-  'h1', 'h2', 'h3', 'h4', 'h5'});
-addOptional(p, 'inMem', false, @islogical);
-parse(p, varargin{:}); opts = p.Results;
-% TODO allow to read to memory insted of mat files
+opts.rootDir = fullfile('..','data','hpatches');
+opts.matDir = fullfile('data', 'hpatches_mat');
+opts.patchImages = {'ref', 'e1', 'e2', 'e3', 'e4', 'e5', ...
+  'h1', 'h2', 'h3', 'h4', 'h5'};
+opts.inMem = false;
+opts = vl_argparse(opts, varargin);
 
 assert(exist(opts.rootDir, 'dir') == 7, 'Dataset dir does not exist.');
 sequences = sort(utls.listdirs(opts.rootDir));
@@ -27,6 +23,7 @@ imdb.sequences.set(isTestSeq) = 3;
 imdb.meta.patchimages = opts.patchImages;
 imdb.meta.seq2idx = containers.Map(sequences, 1:numel(sequences));
 imdb.meta.im2idx = containers.Map(opts.patchImages, 1:numel(opts.patchImages));
+imdb.meta.name = 'hpatch';
 
 if ~exist(opts.matDir, 'dir'), mkdir(opts.matDir); end
 getPatchPath = @(seqidx, imidx) fullfile(opts.rootDir, sequences{seqidx}, ...

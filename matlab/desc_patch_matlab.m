@@ -1,6 +1,6 @@
 function desc = desc_patch_matlab( patches, varargin )
 opts.method = 'SURF';
-opts.resolution = 15;
+opts.resolution = 32;
 opts.builtinMag = 6;
 opts.SURFSize = 128;
 opts = vl_argparse(opts, varargin);
@@ -13,7 +13,8 @@ psz = opts.resolution * 2 + 1;
 frm = SURFPoints((psz ./ 2 + 0.5) * ones(1, 2), 'Scale', psz ./ 2 ./ opts.builtinMag);
 desc = [];
 for pi = 1:size(patches, 3)
-  p = imresize(patches(:,:,pi), [psz, psz]);
+  p = patches(:,:,pi);
+  if any(size(p) ~= [psz, psz]), p = imresize(p, [psz, psz]); end
   [d, ~] = extractFeatures(p, frm, 'Upright', true, 'Method', opts.method, ...
     'SURFSize', opts.SURFSize);
   assert(~isempty(d));
