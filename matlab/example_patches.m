@@ -1,7 +1,7 @@
 %% Example script how to load patches
 % Load the imdb
 
-imdb = hpatches_dataset();
+imdb = hpatches_dataset('inMem', true);
 
 %% Show few clusters
 sequence = 'v_underground';

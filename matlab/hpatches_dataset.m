@@ -1,12 +1,14 @@
 function imdb = hpatches_dataset(varargin)
+
 p = inputParser();
 addOptional(p, 'rootDir', fullfile('..','data','hpatches'), @(x) exist(x, 'dir'));
 addOptional(p, 'matDir', fullfile('data', 'hpatches_mat'), @(x) exist(x, 'dir'));
 addOptional(p, 'patchImages', {'ref', ...
   'e1', 'e2', 'e3', 'e4', 'e5', ...
   'h1', 'h2', 'h3', 'h4', 'h5'});
+addOptional(p, 'inMem', false, @islogical);
 parse(p, varargin{:}); opts = p.Results;
-% TODO allow to read to memory
+% TODO allow to read to memory insted of mat files
 
 assert(exist(opts.rootDir, 'dir') == 7, 'Dataset dir does not exist.');
 sequences = sort(utls.listdirs(opts.rootDir));
@@ -45,6 +47,10 @@ for seqi = 1:numel(sequences)
     if ~all(data{seqi}.datasize == datasize)
       data{seqi} = []; % Invalid data, recreate
     else
+      if opts.inMem
+        data{seqi} = struct('data', data{seqi}.data, ...
+          'datasize', data{seqi}.datasize);
+      end
       updt(nsi); nsi = nsi + numel(opts.patchImages);
       continue;
     end
@@ -60,6 +66,10 @@ for seqi = 1:numel(sequences)
     patches = mat2cell(patches, psize(2)*ones(1, npatches), psize(2));
     patches = permute(patches, [2, 3, 4, 1]);
     data{seqi}.data(:,:,:,:,imi) = cell2mat(patches);
+    if opts.inMem
+      data{seqi} = struct('data', data{seqi}.data, ...
+        'datasize', data{seqi}.datasize);
+    end
     updt(nsi); nsi = nsi + 1;
   end
 end
