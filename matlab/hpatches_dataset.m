@@ -1,6 +1,8 @@
 function imdb = hpatches_dataset(varargin)
-opts.rootDir = fullfile('..','data','hpatches');
-opts.matDir = fullfile('data', 'hpatches_mat');
+funpath = fileparts(mfilename('fullpath'));
+opts.rootDir = fullfile(funpath, '..','data','hpatches');
+opts.matDir = fullfile(funpath, 'data', 'hpatches_mat');
+% TODO for shuffled test set, needs to have variable imnames per sequence
 opts.patchImages = {'ref', 'e1', 'e2', 'e3', 'e4', 'e5', ...
   'h1', 'h2', 'h3', 'h4', 'h5'};
 opts.inMem = false;
@@ -20,7 +22,14 @@ imdb.data = {};
 imdb.sequences.name = sequences;
 imdb.sequences.set = ones(1, numel(sequences));
 imdb.sequences.set(isTestSeq) = 3;
+imdb.sequences.npatches = zeros(1, numel(sequences));
 imdb.meta.patchimages = opts.patchImages;
+imdb.meta.categories = {'illum', 'viewpoint'};
+categories = zeros(1, numel(sequences));
+categories(cellfun(@(x) strcmp(x(1:2), 'i_'), sequences)) = 1;
+categories(cellfun(@(x) strcmp(x(1:2), 'v_'), sequences)) = 2;
+assert(all(categories) > 0);
+imdb.sequences.categories = categories;
 imdb.meta.seq2idx = containers.Map(sequences, 1:numel(sequences));
 imdb.meta.im2idx = containers.Map(opts.patchImages, 1:numel(opts.patchImages));
 imdb.meta.name = 'hpatch';
@@ -38,6 +47,7 @@ for seqi = 1:numel(sequences)
   matFile = getMatPath(seqi);
   psize = utls.get_image_size(getPatchPath(seqi, 1));
   npatches = psize(1)/psize(2);
+  imdb.sequences.npatches(seqi) = npatches;
   datasize = [psize(2), psize(2), 1, npatches, numel(opts.patchImages)];
   if exist(matFile, 'file') % Attempt to load existing file
     data{seqi} = matfile(matFile, 'Writable', false);
@@ -72,28 +82,41 @@ for seqi = 1:numel(sequences)
 end
 imdb.data = data;
 imdb.getPatches = @(varargin) getpatches(imdb, varargin{:});
-imdb.createSignature = @(varargin) createsignature(imdb, varargin{:});
+imdb.encodeSignature = @(varargin) encode_signature(imdb, varargin{:});
+imdb.decodeSignature = @(varargin) decode_signature(imdb, varargin{:});
 fprintf('\n');
 end
 
-function [sequence, imagename, patches] = decode_signature(signature)
+function [sequence, imagename, patches] = decode_signature(imdb, signature, numeric)
+assert(ischar(signature));
+if nargin < 3, numeric = false; end;
 C = strsplit(signature, '.');
 if numel(C) < 2 || numel(C) > 3, error('Invalid signature.'); end;
-[sequence, imagename] = deal(C{:});
+[sequence, imagename] = deal(C{1:2});
+assert(ismember(sequence, imdb.sequences.name), ...
+  'Invalid sequence name %s.', sequence);
+assert(ismember(imagename, imdb.meta.patchimages), ...
+  'Invalid image name %s.', imagename);
 patches = nan;
 % Signatures are zero based
 if numel(C) > 2, patches = str2double(C{3}) + 1; end
+if numeric
+  sequence = [imdb.meta.seq2idx(sequence); imdb.meta.im2idx(imagename)];
+  if ~isnan(patches), sequence = [sequence; patches]; end
+end
 end
 
-function sign = createsignature(imdb, seq, imnm, patches)
+function sign = encode_signature(imdb, seq, imnm, patches)
 if isscalar(seq), seq = imdb.sequences.name{seq}; end;
 sign = seq;
 if nargin > 2
-  if isscalar(imnm), imnm = imdb.meta.patchimages(imnm); end;
+  if isscalar(imnm), imnm = imdb.meta.patchimages{imnm}; end;
   sign = [sign, '.' imnm];
   if nargin > 3
-    assert(isscalar(patches), 'Invlaid patches def.');
-    sign = [sign, '.', sprintf('%d', patches)];
+    seqidx = imdb.meta.seq2idx(seq);
+    assert(isscalar(patches) && patches > 0 && ...
+      patches <= imdb.sequences.npatches(seqidx), 'Invlaid patch index.');
+    sign = [sign, '.', sprintf('%d', patches - 1)];
   end;
 end
 end
@@ -102,8 +125,10 @@ function data = getpatches(imdb, sequence, imagename, patches)
 assert(nargin > 0);
 if nargin < 3, imagename = nan; end; 
 if nargin < 4, patches = nan; end; 
-if nargin == 2 && strfind(sequence, '.')
-  [sequence, imagename, patches] = decode_signature(sequence);
+decoded = false;
+if nargin == 2 && ~isempty(strfind(sequence, '.'))
+  [sequence, imagename, patches] = decode_signature(imdb, sequence);
+  decoded = true;
 end
 seqidx = imdb.meta.seq2idx(sequence);
 % Return patches for the whole sequence
@@ -115,8 +140,11 @@ else
   imidx = imagename;
   assert(all(imidx > 0), all(imidx <= numel(imdb.meta.patchimages)));
 end
-if nargin < 3 || (numel(patches) == 1 && isnan(patches))
+if (nargin < 3 && ~decoded) || (numel(patches) == 1 && isnan(patches))
+  % Get all patches
   patches = 1:imdb.data{seqidx}.datasize(1, 4);
 end
+assert(all(patches > 0) && all(patches <= imdb.sequences.npatches(seqidx)), ...
+      'Invlaid patch indexes.');
 data = imdb.data{seqidx}.data(:,:,:,patches,imidx);
 end

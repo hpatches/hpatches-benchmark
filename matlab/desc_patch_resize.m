@@ -1,4 +1,4 @@
-function desc = desc_patch_resize(patches, numbins)
+function desc = desc_patch_resize(numbins, signature, patches)
 
 patches = single(squeeze(patches));
 meanVal = reshape(mean(mean(patches, 1), 2), 1, 1, []);

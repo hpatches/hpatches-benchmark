@@ -1,4 +1,4 @@
-function desc = desc_patch_matlab( patches, varargin )
+function desc = desc_patch_matlab( signature, patches, varargin )
 opts.method = 'SURF';
 opts.resolution = 32;
 opts.builtinMag = 6;

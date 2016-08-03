@@ -1,4 +1,4 @@
-function desc = desc_patch_meanstd(patches)
+function desc = desc_patch_meanstd(signature, patches)
 
 patches = single(squeeze(patches));
 meanVal = reshape(mean(mean(patches, 1), 2), 1, []);
