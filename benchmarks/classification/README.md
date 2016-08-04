@@ -79,6 +79,8 @@ name (scripts will be provided soon).
 
 # References
 [1] S. Winder, G. Hua and M. Brown - Picking the best daisy
+
 [2] E. Simo-Serra, E. Trulls, L. Ferraz, I. Kokkinos, P. Fua and  F. Moreno-Noguer
 Discriminative learning of deep convolutional feature point descriptors
+
 [3] J. Davis and M. Goadrich. The relationship between PR and ROC curves. In ICML , 2006
