@@ -7,6 +7,7 @@ labels = utls.readfile(labelspath);
 results = utls.readfile(resultspath);
 
 aps = cell(1, size(benchmarks, 2));
+apsCh = cell(1, size(benchmarks, 2));
 updt = utls.textprogressbar(size(benchmarks, 2));
 li = 1; ri = 1;
 for ti = 1:size(benchmarks, 2)
@@ -36,6 +37,10 @@ for ti = 1:size(benchmarks, 2)
   end
   
   aps{ti} = zeros(size(querySignsN, 2), 1);
+  apsCh{ti} = zeros(size(querySignsN, 2), 1);
+  poolNPathces = sum(imdb.sequences.npatches(poolSignsN(1, :)));
+  clustersNPatches = cellfun(@(c) sum(imdb.sequences.npatches(c(1,:))), clusters);
+
   ri = ri + 1;
   for qi = 1:size(querySignsN, 2)
     assert(ri <= numel(results), 'Results file does not contain all records.');
@@ -50,13 +55,16 @@ for ti = 1:size(benchmarks, 2)
     
     cluster = clusters{queryClusters(qi)};
     isValid = ismember(solN(1:2,:)', cluster', 'rows');
-    [~, ~, info] = vl_pr(isValid * 2 - 1, -(1:numel(isValid)));
+    [~, ~, info] = vl_pr(isValid(2:end) * 2 - 1, -(2:numel(isValid)));
+    if isnan(info.ap), info.ap = 0; end
     aps{ti}(qi) = info.ap;
+    apsCh{ti}(qi) = (clustersNPatches(queryClusters(qi)) - 1) / (poolNPathces - 1);
     ri = ri + 1;
   end  
   updt(ti);
 end
-out = struct('ap', cell2mat(aps), 'numbenchmarks', size(benchmarks, 2));
+out = struct('ap', cell2mat(aps), 'apChance', cell2mat(apsCh), ...
+  'numbenchmarks', size(benchmarks, 2));
 end
 
 function numSigns = decodeSigns(imdb, line)

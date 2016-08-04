@@ -3,9 +3,10 @@ opts.cacheName = '';
 opts = vl_argparse(opts, varargin);
 
 benchmarks = utls.readfile(benchpath);
+vl_xmkdir(fileparts(outpath));
 
 updt = utls.textprogressbar(numel(benchmarks));
-fo = fopen(outpath, 'w');
+fo = fopen(outpath, 'w');  assert(fo > 0, 'Unable to open %s', outpath);
 for ti = 1:numel(benchmarks);
   fprintf(fo, '%s\n', benchmarks{ti});
   singatures = strsplit(benchmarks{ti}, ',');
