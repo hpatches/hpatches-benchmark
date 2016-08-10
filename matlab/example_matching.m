@@ -1,6 +1,6 @@
 %% Example how to compute the matching benchmarks
 % Load the imdb
-
+setup();
 imdb = hpatches_dataset();
 
 %% Compute the matching task for some simple descriptors

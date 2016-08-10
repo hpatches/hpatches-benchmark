@@ -1,6 +1,6 @@
 %% Example how to compute the matching benchmarks
 % Load the imdb
-
+setup();
 imdb = hpatches_dataset();
 
 %% Compute the retrieval task for some simple descriptors
@@ -22,12 +22,17 @@ retrieval_compute(imdb, retrieval_task, @desc_patch_matlab, desc_surf_p, ...
 %% Evaluate the results
 
 labels_file = fullfile('..', 'benchmarks', 'retrieval', 'example_small.labels');
-results_desc_meanstd = retrieval_eval(imdb, retrieval_task, labels_file, desc_meanstd_p);
-results_desc_resize = retrieval_eval(imdb, retrieval_task, labels_file, desc_resize_p);
-results_desc_surf = retrieval_eval(imdb, retrieval_task, labels_file, desc_surf_p);
-
+results_chance = retrieval_eval_chance(imdb, labels_file);
+results_desc_meanstd = retrieval_eval(retrieval_task, labels_file, desc_meanstd_p);
+results_desc_resize = retrieval_eval(retrieval_task, labels_file, desc_resize_p);
+results_desc_surf = retrieval_eval(retrieval_task, labels_file, desc_surf_p);
+%%
+fprintf('Image retrieval:\n');
 fprintf('Chance mAP: %.2f\nMeanStd mAP: %.2f\nResize mAP: %.2f\nSURF mAP: %.2f\n', ...
-  mean(results_desc_meanstd.apChance(:)) * 100, ...
-  mean(results_desc_meanstd.ap(:))*100, ...
-  mean(results_desc_resize.ap(:))*100, ...
-  mean(results_desc_surf.ap(:))*100);
+  mean(results_chance.image_retr_ap) * 100, mean(results_desc_meanstd.image_retr_ap)*100, ...
+  mean(results_desc_resize.image_retr_ap)*100, mean(results_desc_surf.image_retr_ap)*100);
+
+fprintf('\nPatch retrieval:\n');
+fprintf('Chance mAP: %.2f\nMeanStd mAP: %.2f\nResize mAP: %.2f\nSURF mAP: %.2f\n', ...
+  mean(results_chance.patch_retr_ap) * 100, mean(results_desc_meanstd.patch_retr_ap)*100, ...
+  mean(results_desc_resize.patch_retr_ap)*100, mean(results_desc_surf.patch_retr_ap)*100);

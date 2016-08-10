@@ -1,19 +1,23 @@
 function imdb = hpatches_dataset(varargin)
 funpath = fileparts(mfilename('fullpath'));
 opts.rootDir = fullfile(funpath, '..','data','hpatches');
-opts.binDir = fullfile(funpath, 'data', 'hpatches-bincache');
-opts.ext = '.png';
+opts.imext = '.png';
 opts = vl_argparse(opts, varargin);
 
 assert(exist(opts.rootDir, 'dir') == 7, 'Dataset dir does not exist.');
 sequences = sort(utls.listdirs(opts.rootDir));
-tstFile = fopen(fullfile(opts.rootDir, 'test_set.txt'), 'r');
-testSeqD = textscan(tstFile, '%s', 'delimiter', '\n'); fclose(tstFile);
-[~, testSeq] = cellfun(@fileparts, testSeqD{1}, 'UniformOutput', false);
-[testSeqFound, testSequences] = ismember(testSeq, sequences);
-isTestSeq = false(1, numel(sequences)); isTestSeq(testSequences) = true;
-assert(all(testSeqFound), 'Some test sequences not found, invalid data?');
-[isTestSeq, tOrder] = sort(isTestSeq); sequences = sequences(tOrder);
+tstSplitPath = fullfile(opts.rootDir, 'test_set.txt');
+if exist(tstSplitPath, 'file')
+  tstSplitF = fopen(tstSplitPath, 'r');
+  testSeqD = textscan(tstSplitF, '%s', 'delimiter', '\n'); fclose(tstSplitF);
+  [~, testSeq] = cellfun(@fileparts, testSeqD{1}, 'UniformOutput', false);
+  [testSeqFound, testSequences] = ismember(testSeq, sequences);
+  isTestSeq = false(1, numel(sequences)); isTestSeq(testSequences) = true;
+  assert(all(testSeqFound), 'Some test sequences not found, invalid data?');
+  [isTestSeq, tOrder] = sort(isTestSeq); sequences = sequences(tOrder);
+else
+  isTestSeq = ismember(sequences, {'test'});
+end
 
 imdb.data = {};
 imdb.sequences.name = sequences;
@@ -22,64 +26,54 @@ imdb.sequences.set(isTestSeq) = 3;
 imdb.sequences.npatches = zeros(1, numel(sequences));
 imdb.sequences.images = cell(1, numel(sequences));
 imdb.meta.categories = {'illum', 'viewpoint'};
-categories = zeros(1, numel(sequences));
+categories = -ones(1, numel(sequences));
 categories(cellfun(@(x) strcmp(x(1:2), 'i_'), sequences)) = 1;
 categories(cellfun(@(x) strcmp(x(1:2), 'v_'), sequences)) = 2;
-assert(all(categories) > 0);
+categories(cellfun(@(x) strcmp(x, 'z_test'), sequences)) = 0;
+assert(all(categories) >= 0);
 imdb.sequences.categories = categories;
 imdb.meta.seq2idx = containers.Map(sequences, 1:numel(sequences));
 imdb.meta.name = 'hpatch';
 imdb.meta.rootDir = opts.rootDir;
+imdb.meta.imext = opts.imext;
 
-if ~exist(opts.binDir, 'dir'), mkdir(opts.binDir); end
-getImPath = @(seqidx, im) fullfile(opts.rootDir, sequences{seqidx}, [im, opts.ext]);
-getBinPath = @(seqidx) fullfile(opts.binDir, [sequences{seqidx}, '.bin']);
-getDonePath = @(seqidx) fullfile(opts.binDir, [sequences{seqidx}, '.done']);
+getImPath = @(opts, sequence, im) fullfile(opts.rootDir, sequence, [im, opts.imext]);
 
 data = cell(1, numel(sequences));
 updt = utls.textprogressbar(numel(sequences));
 for seqidx = 1:numel(sequences)
-  ims = dir(fullfile(opts.rootDir, sequences{seqidx}, ['*', opts.ext]));
-  ims = cellfun(@(fn) strrep(fn, opts.ext, ''), {ims.name}, ...
+  sequence = sequences{seqidx};
+  ims = dir(fullfile(opts.rootDir, sequence, ['*', opts.imext]));
+  ims = cellfun(@(fn) strrep(fn, opts.imext, ''), {ims.name}, ...
     'UniformOutput', false);
-  ims = sort(ims); imsString = strjoin(ims, ',');
-  binFile = getBinPath(seqidx); doneFile = getDonePath(seqidx);
-  psize = utls.get_image_size(getImPath(seqidx, ims{1}));
+  ims = sort(ims);
+  psize = utls.get_image_size(getImPath(opts, sequence, ims{1}));
   npatches = psize(1)/psize(2);
   imdb.sequences.npatches(seqidx) = npatches;
   imdb.sequences.images{seqidx} = ims;
   imdb.sequences.im2idx{seqidx} = containers.Map(ims, 1:numel(ims));
-  datasize = [psize(2), psize(2), 1, npatches, numel(ims)];
-  if exist(doneFile, 'file') && exist(binFile, 'file')
-    doneIms = utls.readfile(doneFile);
-    data{seqidx} = utls.BinaryData(binFile, true);
-    if all(size(data{seqidx}) == datasize) && numel(doneIms) == 1 && ...
-        strcmp(doneIms{1}, imsString)
-      updt(seqidx); continue;
-    else
-      % Dataset has changed, delete the cache files.
-      delete(doneFile); delete(binFile);
-    end
-  end
-  if exist(utls.BinaryData.LOCK_FILE(binFile), 'file')
-    delete(utls.BinaryData.LOCK_FILE(binFile));
-  end
-  data{seqidx} = utls.BinaryData.zeros(binFile, datasize, 'uint8');
-  for imi = 1:numel(ims)
-    patches = imread(getImPath(seqidx, ims{imi}));
-    assert(all(size(patches) == psize(1:2)), 'Invalid patches');
-    patches = mat2cell(patches, psize(2)*ones(1, npatches), psize(2));
-    patches = permute(patches, [2, 3, 4, 1]);
-    data{seqidx}(:,:,:,:,imi) = cell2mat(patches);
-  end
-  df = fopen(doneFile, 'w'); fprintf(df, imsString); fclose(df);
   updt(seqidx);
 end
-imdb.data = data;
-imdb.getPatches = @(varargin) getpatches(imdb, varargin{:});
+imdb.getPatches = @(signature) getpatches(imdb, signature);
+imdb.getNumPatches = @(signature) getNumPatches(imdb, signature);
 imdb.encodeSignature = @(varargin) encode_signature(imdb, varargin{:});
 imdb.decodeSignature = @(varargin) decode_signature(imdb, varargin{:});
 fprintf('\n');
+end
+
+function patches = loadpatches(imdb, sequence, imname)
+impath = fullfile(imdb.meta.rootDir, sequence, [imname, imdb.meta.imext]);
+patches = imread(impath);
+npatches = size(patches, 1) ./ size(patches, 2);
+assert(mod(npatches, 1) == 0, 'Invalid patch image height.');
+patches = mat2cell(patches, size(patches, 2)*ones(1, npatches), size(patches, 2));
+patches = permute(patches, [2, 3, 4, 1]);
+patches = cell2mat(patches);
+end
+
+function np = getNumPatches(imdb, signature)
+sequenceNum = decode_signature(imdb, signature, true);
+np = imdb.sequences.npatches(sequenceNum(1));
 end
 
 function [sequence, imagename, patches] = decode_signature(imdb, signature, numeric)
@@ -117,27 +111,14 @@ if nargin > 2
 end
 end
 
-function data = getpatches(imdb, sequence, imagename, patches)
+function data = getpatches(imdb, signature)
 assert(nargin > 1);
-if nargin < 4, patches = nan; end; 
-assert(numel(patches) == 1);
-decoded = false;
-if nargin == 2 && ~isempty(strfind(sequence, '.'))
-  % Decode the signature
-  [sequence, imagename, patches] = decode_signature(imdb, sequence);
-  decoded = true;
-end
+[sequence, imagename, patches] = decode_signature(imdb, signature);
 seqidx = imdb.meta.seq2idx(sequence);
-% Return patches for the whole sequence
-if ischar(imagename) || iscell(imagename)
-  if ~iscell(imagename), imagename = {imagename}; end;
-  imidx = cellfun(@(imn) imdb.sequences.im2idx{seqidx}(imn), imagename);
-end
-if (nargin < 3 && ~decoded) || isnan(patches)
-  data = imdb.data{seqidx}(:,:,:,:,imidx);
-else
+data = loadpatches(imdb, sequence, imagename);
+if ~isnan(patches) % sequence.imname
   assert(all(patches > 0) && all(patches <= imdb.sequences.npatches(seqidx)), ...
-    'Invlaid patch indexes.');
-  data = imdb.data{seqidx}(:,:,:,patches,imidx);
+    'Invlaid patch index.');
+  data = data(:,:,:,patches);
 end
 end

@@ -14,18 +14,22 @@ for ti = 1:numel(benchmarks);
   % Compute the descriptors
   descA = get_descriptors(imdb, singatures{1}, descfun, opts);
   descB = get_descriptors(imdb, singatures{2}, descfun, opts);
+  assert(size(descA, 2) == size(descB, 2));
   
   % Do the matching
   tr = vl_kdtreebuild(descB);
-  [idx, dist] = vl_kdtreequery(tr, descB, descA);
+  [idx, dist] = vl_kdtreequery(tr, descB, descA, 'NumNeighbors', 2);
   
   % Write to a file (values are zero-indexed)
-  daStr = sprintf('%d,', (1:size(descA, 2)) - 1);
-  dbStr = sprintf('%d,', idx - 1);
-  distStr = sprintf('%.6g,', dist);
-  fprintf(fo, '%s\n%s\n%s\n', daStr(1:end-1), dbStr(1:end-1), distStr(1:end-1));  
+  fprintf(fo, '%s\n', num2line((1:size(descA, 2)) - 1));
+  fprintf(fo, '%s\n', num2line(idx(1, :) - 1)); fprintf(fo, '%s\n', num2line(dist(1, :)));
+  fprintf(fo, '%s\n', num2line(idx(2, :) - 1)); fprintf(fo, '%s\n', num2line(dist(2, :)));
   updt(ti);
 end
 fclose(fo);
 end
 
+function l = num2line(n)
+l = sprintf('%d,', n);
+l = l(1:end-1);
+end
