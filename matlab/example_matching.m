@@ -7,17 +7,17 @@ imdb = hpatches_dataset();
 
 matching_task = fullfile('..', 'benchmarks', 'matching', 'example_small.benchmark');
 
-desc_meanstd_p = fullfile('..', 'results', 'matching', 'example_small', 'desc_meanstd.results');
+desc_meanstd_p = fullfile('..', 'results', 'matching', 'example_small', 'meanstd.results');
 matching_compute(imdb, matching_task, @desc_patch_meanstd, desc_meanstd_p, ...
-  'cacheName', 'desc_meanstd');
+  'cacheName', 'meanstd');
 
-desc_resize_p = fullfile('..', 'results', 'matching', 'example_small', 'desc_resize.results');
+desc_resize_p = fullfile('..', 'results', 'matching', 'example_small', 'resize_4.results');
 matching_compute(imdb, matching_task, @(varargin) desc_patch_resize(4, varargin{:}), desc_resize_p, ...
-  'cacheName', 'desc_resize_4');
+  'cacheName', 'resize_4');
 
-desc_surf_p = fullfile('..', 'results', 'matching', 'example_small', 'desc_surf.results');
+desc_surf_p = fullfile('..', 'results', 'matching', 'example_small', 'surf.results');
 matching_compute(imdb, matching_task, @desc_patch_matlab, desc_surf_p, ...
-  'cacheName', 'desc_matlab_surf');
+  'cacheName', 'matlab_surf');
 
 %% Evaluate the results
 
