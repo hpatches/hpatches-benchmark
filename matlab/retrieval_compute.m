@@ -40,15 +40,17 @@ fprintf('Done in %.2fs.\n', toc(stime));
 
 querySignatures = benchmarks(2:end);
 qDesc = cell(1, numel(querySignatures)); stime = tic;
-fprintf('Computing %d queries descriptors... ', numel(querySignatures));
+fprintf('Computing %d queries descriptors...\n', numel(querySignatures));
+updt = utls.textprogressbar(numel(querySignatures));
 for qi = 1:numel(querySignatures)
   qDesc{qi} = get_descriptors(imdb, querySignatures{qi}, descfun);
+  updt(qi);
 end
 qDesc = cell2mat(qDesc);
 fprintf('Done in %.2fs.\n', toc(stime));
 
-fprintf('Matching top-%d %d queries -> %d descriptors... ', opts.topN, ...
-  size(qDesc, 2), size(descPool, 2)); stime = tic();
+fprintf('Retrieving closest %d features for %d queries -> %d descriptors... ', ...
+  opts.topN, size(qDesc, 2), size(descPool, 2)); stime = tic();
 pIdxs = vl_kdtreequery(tr, descPool, qDesc, 'numNeighbors', opts.topN, ...
   'maxNumComparisons', opts.maxNumComparisons);
 fprintf('Done in %.2f.\n', toc(stime));

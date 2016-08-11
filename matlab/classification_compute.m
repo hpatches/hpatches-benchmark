@@ -12,7 +12,8 @@ for ti = 1:numel(benchmarks);
   
   descA = get_descriptors(imdb, singatures{1}, descfun, opts);
   descB = get_descriptors(imdb, singatures{2}, descfun, opts);
-  assert(size(descA, 2) == 1); assert(size(descB, 2) == 1);
+  assert(size(descA, 2) == 1, 'Invalid benchmark file.');
+  assert(size(descB, 2) == 1, 'Invalid benchmark file.');
   
   dist = sum((descA - descB).^2);
   fprintf(fo, '%.6f\n', dist);
