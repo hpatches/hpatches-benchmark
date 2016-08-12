@@ -13,7 +13,7 @@ matching_labels_path = fullfile('..', 'benchmarks', 'matching', ...
 %% Compute the task
 
 matching_get_results_path = @(method) fullfile('..', 'results', 'matching', ...
-  matching_task_name, [method.name, '.results']);
+  method.name, [matching_task_name, '.results']);
 
 for mi = 1:numel(methods)
   res_path = matching_get_results_path(methods(mi));

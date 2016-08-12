@@ -13,7 +13,7 @@ classif_neg_path = fullfile('..', 'benchmarks', 'classification', ...
 %% Compute the task
 
 classif_get_results_path = @(method, label) fullfile('..', 'results', ...
-  'classification', classif_task_name, [method.name, '_', label, '.results']);
+  'classification', method.name, [classif_task_name, '_', label, '.results']);
 
 for mi = 1:numel(methods)
   res_path = classif_get_results_path(methods(mi), 'pos');

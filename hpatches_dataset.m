@@ -1,6 +1,6 @@
 function imdb = hpatches_dataset(varargin)
 funpath = fileparts(mfilename('fullpath'));
-opts.rootDir = fullfile(funpath, '..','data','hpatches');
+opts.rootDir = fullfile(funpath,'data','hpatches');
 opts.imext = '.png';
 opts = vl_argparse(opts, varargin);
 

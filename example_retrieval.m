@@ -13,7 +13,7 @@ retr_labels_path = fullfile('..', 'benchmarks', 'retrieval', ...
 %% Compute the task
 
 retr_get_results_path = @(method) fullfile('..', 'results', 'retrieval', ...
-  retr_task_name, [method.name, '.results']);
+  method.name, [retr_task_name, '.results']);
 
 for mi = 1:numel(methods)
   res_path = retr_get_results_path(methods(mi));
