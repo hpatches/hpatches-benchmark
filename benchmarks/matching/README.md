@@ -10,6 +10,8 @@ Measured value is a mean average precision (mAP) computed over all image matchin
 
 Similarly, `test_hard_illum.benchmark` and `test_hard_viewpoint.benchmark` contains patches with harder affine jitter between the patches.
 
+## Benchmark File Format
+
 The format of the benchmark files is:
 ``` bash
 im_a,im_b  # First image pair
@@ -18,7 +20,7 @@ im_x,im_y
 ```
 Where each line specifies the signatures of a pair of patch-images among which the descriptors should be matched.
 
-# Evaluation
+## Evaluation
 For each patch-image pair, use your descriptor to compute the feature vector for all patches of the images. Then use your required distance measure (e.g. L1 or L2) to find the two closest patches from `im_b` from the `im_a` together with their distances.
 
 You can generate the results files with MATLAB scripts `../matching_compute.m` and compute the PR curves and the AP with `../matching_eval.m`.
@@ -54,5 +56,5 @@ s_boring.a,s_boring.b
 14.2, 27.4
 ```
 
-# References
+## References
 [1] K. Mikolajczyk and C. Schmid. A performance evaluation of local descriptors. In IEEE TPAMI 2005.

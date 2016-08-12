@@ -21,10 +21,9 @@ performance. Note that in this case, ROC curves should not be used
 they are not food for imbalanced datasets [3].
 
 
-# Pair files description
+## Pairs files
 
-We provide 4 files with ground truth pairs for patch pair
-classification.
+We provide 4 files with ground truth pairs for patch pair classification.
 
 E.g. the files for the test set are
 ``` bash
@@ -56,7 +55,7 @@ patch_x,patch_y,label # Second pair
 ```
 Where the patch signatures `patch_a` and `patch_b` are followed by a label (0 for negative pair, 1, for positive pair).
 
-# Evaluation
+## Evaluation
 
 For each patch pair, use your descriptor to compute the
 feature vector for both patches of the pair. Then use your required
@@ -89,7 +88,7 @@ Use the provided codes in MATLAB to compute the ROC
 curves, and the PR curves, and save the results using your descriptor
 name.
 
-# References
+## References
 [1] S. Winder, G. Hua and M. Brown - Picking the best daisy
 
 [2] E. Simo-Serra, E. Trulls, L. Ferraz, I. Kokkinos, P. Fua and  F. Moreno-Noguer
