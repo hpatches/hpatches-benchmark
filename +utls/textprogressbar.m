@@ -204,7 +204,7 @@ function upd = textprogressbar(n, varargin)
                 return;
             end
             if i > 0
-                fprintf(delAll);
+                fprintf(isdeployed+1, delAll);
             end
             %pause(1)
             nextRenderPoint = min([nextRenderPoint + updStep, n]);
@@ -248,8 +248,8 @@ function upd = textprogressbar(n, varargin)
                     end
                 end
                 
-                fprintf('%s', array);
-                fprintf('\n');
+                fprintf(isdeployed+1, '%s', array);
+                fprintf(isdeployed+1, '\n');
                 return;
             end
             
@@ -273,7 +273,7 @@ function upd = textprogressbar(n, varargin)
                remTimeStr = time2str(remTime);
                array(remTimeStart:remTimeEnd) = remTimeStr;
             end
-            fprintf('%s', array);
+            fprintf(isdeployed+1, '%s', array);
         end
     
     % Do the first render:

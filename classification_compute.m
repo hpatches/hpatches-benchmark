@@ -1,6 +1,13 @@
-function classification_compute( imdb, pairspath, descfun, outpath, varargin )
+function classification_compute( pairspath, descfun, outpath, varargin )
 opts.cacheName = '';
+opts.imdb = [];
 opts = vl_argparse(opts, varargin);
+if isempty(opts.imdb), opts.imdb = hpatches_dataset(); end;
+imdb = opts.imdb;
+if ischar(descfun)
+  opts.cacheName = descfun;
+  descfun = @desc_none;
+end
 
 % For a reasonable evaluation speed, descriptors are stored in memory so
 % they do not have to be recomputed
@@ -11,7 +18,8 @@ cache = containers.Map();
     if cache.isKey(imsign)
       desc = cache(imsign);
     else
-      desc = get_descriptors(imdb, imsign, descfun, opts);
+      desc = get_descriptors(imdb, imsign, descfun, ...
+        'cacheName', opts.cacheName);
       cache(imsign) = desc;
     end
     desc = desc(:, patch);

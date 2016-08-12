@@ -1,11 +1,10 @@
 # Classification benchmark
 
 This benchmark evaluates the performance of feature descriptors when
-used as simple naive bayes classifiers, based on thresholding of
+used as simple naive Bayes classifiers, based on thresholding of
 distance between positive and negative pairs.
 
-Evaluation can be done either in terms of ROC [1] curves, or P-R
-curves [2].
+Evaluation can be done either in terms of ROC [1] curves, or P-R curves [2].
 
 We provide two protocols for the evaluation:
 
@@ -14,7 +13,7 @@ This is based on a balanced positive and negative pairs dataset similarly to [1]
 
 2) *Imbalanced positive and negative pairs*
 This is based on the idea that the
-number of positive pairs are sifnicicantly less compared to negative
+number of positive pairs are signicicantly less compared to negative
 pairs, so we also provide a separate list of 1M negatives that can be
 used together with the 200K positive ones to test the
 performance. Note that in this case, ROC curves should not be used
@@ -53,7 +52,8 @@ patch_a,patch_b,label # First pair
 patch_x,patch_y,label # Second pair
 ...
 ```
-Where the patch signatures `patch_a` and `patch_b` are followed by a label (0 for negative pair, 1, for positive pair).
+Where the patch signatures `patch_a` and `patch_b` are followed by a label
+(0 for negative pair, 1, for positive pair).
 
 ## Evaluation
 
@@ -61,12 +61,13 @@ For each patch pair, use your descriptor to compute the
 feature vector for both patches of the pair. Then use your required
 distance measure (e.g. L1 or L2), to get a pair distance.
 
-E.g. for a descriptor `<desc_name>`, your results will be called
-
+E.g. for a descriptor `desc_name` and pairs file `pairs_file`,
+your results should be stored in:
 ``` bash
-../results/classification/<desc_name>/<pairs_file_name>.results
+../results/classification/desc_name/pairs_file.results
 ```
-So, if you call your descriptor `benchmark_killer`, your results will be stored in 4 files:
+So, if you call your descriptor `benchmark_killer`, your results will be
+stored in 4 files:
 ```
 ../results/classification/benchmark_killer/test_pos_easy.results
 ../results/classification/benchmark_killer/test_pos_hard.results

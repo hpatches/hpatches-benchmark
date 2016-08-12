@@ -1,9 +1,16 @@
-function retrieval_compute( imdb, benchpath, descfun, outpath, varargin )
+function retrieval_compute( benchpath, descfun, outpath, varargin )
 opts.cacheName = '';
 opts.topN = 51;
 opts.maxNumComparisons = 0;
+opts.imdb = [];
 opts.debug = false;
 opts = vl_argparse(opts, varargin);
+if isempty(opts.imdb), opts.imdb = hpatches_dataset(); end;
+imdb = opts.imdb;
+if ischar(descfun)
+  opts.cacheName = descfun;
+  descfun = @desc_none;
+end
 
 benchmarks = utls.readfile(benchpath);
 vl_xmkdir(fileparts(outpath));
@@ -13,7 +20,7 @@ fo = fopen(outpath, 'w'); assert(fo > 0, 'Unable to open %s', outpath);
 fprintf(fo, '%s\n', benchmarks{1});
 % Load the descriptors pool
 poolSignatures = strsplit(benchmarks{1}, ',');
-fprintf('Computing the descriptor pool (%d patch images).\n', ...
+fprintf(isdeployed+1, 'Computing the descriptor pool (%d patch images).\n', ...
   numel(poolSignatures));
 descPool = cell(1, numel(poolSignatures));
 descPoolLabels = cell(1, numel(poolSignatures));
@@ -30,30 +37,30 @@ for pi = 1:numel(poolSignatures)
 end
 descPool = cell2mat(descPool);
 descPoolInfo = whos('descPool');
-fprintf('Desc pool size: %.2fMiB. ', descPoolInfo.bytes ./ 1024^2);
+fprintf(isdeployed+1, 'Desc pool size: %.2fMiB. ', descPoolInfo.bytes ./ 1024^2);
 descPoolLabels = cell2mat(descPoolLabels);
 
 % Do the matching
-fprintf('Building the KD-Tree... '); stime = tic;
+fprintf(isdeployed+1, 'Building the KD-Tree... '); stime = tic;
 tr = vl_kdtreebuild(descPool);
-fprintf('Done in %.2fs.\n', toc(stime));
+fprintf(isdeployed+1, 'Done in %.2fs.\n', toc(stime));
 
 querySignatures = benchmarks(2:end);
 qDesc = cell(1, numel(querySignatures)); stime = tic;
-fprintf('Computing %d queries descriptors...\n', numel(querySignatures));
+fprintf(isdeployed+1, 'Computing %d queries descriptors...\n', numel(querySignatures));
 updt = utls.textprogressbar(numel(querySignatures));
 for qi = 1:numel(querySignatures)
   qDesc{qi} = get_descriptors(imdb, querySignatures{qi}, descfun);
   updt(qi);
 end
 qDesc = cell2mat(qDesc);
-fprintf('Done in %.2fs.\n', toc(stime));
+fprintf(isdeployed+1, 'Done in %.2fs.\n', toc(stime));
 
-fprintf('Retrieving closest %d features for %d queries -> %d descriptors... ', ...
+fprintf(isdeployed+1, 'Retrieving closest %d features for %d queries -> %d descriptors... ', ...
   opts.topN, size(qDesc, 2), size(descPool, 2)); stime = tic();
 pIdxs = vl_kdtreequery(tr, descPool, qDesc, 'numNeighbors', opts.topN, ...
   'maxNumComparisons', opts.maxNumComparisons);
-fprintf('Done in %.2f.\n', toc(stime));
+fprintf(isdeployed+1, 'Done in %.2f.\n', toc(stime));
 
 resSignatures = cell(numel(querySignatures), opts.topN);
 for qi = 1:numel(querySignatures)

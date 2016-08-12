@@ -48,6 +48,11 @@ for lni = 2:numel(benchmarks)
   updt(lni);
 end
 out = struct('image_retr_ap', imRetAps, 'patch_retr_ap', patchRetAps);
+
+if isdeployed
+  fprintf('%s\timage_retr_map\t%.2f\tpatch_retr_map\t%.2f\n', ...
+    opts.cacheName, mean(imRetAps(:)), mean(patchRetAps(:)));
+end
 end
 
 function signs = remove_patchnum(signs)

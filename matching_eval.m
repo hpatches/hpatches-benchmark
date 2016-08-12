@@ -53,4 +53,8 @@ for ti = 1:numel(benchmarks)
 end
 out = cell2mat(out);
 
+if isdeployed
+  fprintf('%s\timage_matching_map\t%.2f\n', opts.cacheName, mean(out.ap(:)));
+end
+
 end

@@ -40,6 +40,7 @@ imdb.meta.imext = opts.imext;
 getImPath = @(opts, sequence, im) fullfile(opts.rootDir, sequence, [im, opts.imext]);
 
 data = cell(1, numel(sequences));
+fprintf(isdeployed+1, 'Loading the patches database from %s.\n', opts.rootDir);
 updt = utls.textprogressbar(numel(sequences));
 for seqidx = 1:numel(sequences)
   sequence = sequences{seqidx};
@@ -58,7 +59,7 @@ imdb.getPatches = @(signature) getpatches(imdb, signature);
 imdb.getNumPatches = @(signature) getNumPatches(imdb, signature);
 imdb.encodeSignature = @(varargin) encode_signature(imdb, varargin{:});
 imdb.decodeSignature = @(varargin) decode_signature(imdb, varargin{:});
-fprintf('\n');
+fprintf(isdeployed+1,'\n');
 end
 
 function patches = loadpatches(imdb, sequence, imname)
