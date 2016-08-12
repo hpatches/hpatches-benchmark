@@ -24,9 +24,9 @@ they are not food for imbalanced datasets [3].
 # Pair files description
 
 We provide 4 files with ground truth pairs for patch pair
-classification. 
+classification.
 
-The files are
+E.g. the files for the test set are
 ``` bash
 test_neg_diffseq.pairs
 test_neg_sameseq.pairs
@@ -66,11 +66,11 @@ X_test_pos_hard.results
 Each file will contain a distance, and a label:
 e.g.
 ```
-0 1.2
-1 0.1
-0 3.8
+1.2,0
+0.1,1
+3.8,0
 ...
-1 0.5
+0.5,1
 ```
 
 Use the provided codes in python, matlab or torch to compute the ROC

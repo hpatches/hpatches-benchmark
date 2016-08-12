@@ -1,3 +1,3 @@
-## Data
+## HPatches data
 
-To download the data, run download_hpatches.py
+To download the data, run ./download.sh
