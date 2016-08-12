@@ -3,17 +3,17 @@
 setup();
 imdb = hpatches_dataset();
 methods = simple_descriptors();
-task_name = 'train_example';
+classif_task_name = 'train_example';
 
 classif_pos_path = fullfile('..', 'benchmarks', 'classification', ...
-  [task_name, '_pos.pairs']);
+  [classif_task_name, '_pos.pairs']);
 classif_neg_path = fullfile('..', 'benchmarks', 'classification', ...
-  [task_name, '_neg.pairs']);
+  [classif_task_name, '_neg.pairs']);
 
-%% Compute the classification task
+%% Compute the task
 
 classif_get_results_path = @(method, label) fullfile('..', 'results', ...
-  'classification', task_name, [method.name, '_', label, '.results']);
+  'classification', classif_task_name, [method.name, '_', label, '.results']);
 
 for mi = 1:numel(methods)
   res_path = classif_get_results_path(methods(mi), 'pos');
