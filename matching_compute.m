@@ -21,7 +21,6 @@ for ti = 1:numel(benchmarks);
   [idx, dist] = vl_kdtreequery(tr, descB, descA, 'NumNeighbors', 2);
   
   % Write to a file (values are zero-indexed)
-  fprintf(fo, '%s\n', num2line((1:size(descA, 2)) - 1));
   fprintf(fo, '%s\n', num2line(idx(1, :) - 1)); fprintf(fo, '%s\n', num2line(dist(1, :)));
   fprintf(fo, '%s\n', num2line(idx(2, :) - 1)); fprintf(fo, '%s\n', num2line(dist(2, :)));
   updt(ti);
