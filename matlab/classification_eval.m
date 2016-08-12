@@ -1,18 +1,28 @@
-function res = classification_eval( benchpath, labelspath, resultspath )
+function res = classification_eval( pos_res_path, neg_res_path, varargin )
+opts.balanced = false;
+opts = vl_argparse(opts, varargin);
+
 % Read the benchmark file
-benchmarks = utls.readfile(benchpath);
-% Read the labels file
-labels = utls.readfile(labelspath);
-assert(numel(labels) == numel(benchmarks), 'Invalid labels file.');
-labels = cellfun(@num2double, labels);
-assert(all(~isnan(labels)), 'Invalid results - unable to read the numeric values.');
+pos_dists = readres(pos_res_path, 1);
+neg_dists = readres(neg_res_path, 0);
 
-% Read the results file
-results = utls.readfile(resultspath);
-assert(numel(results) == numel(benchmarks), 'Invalid results file.');
-results = cellfun(@num2double, results);
-assert(all(~isnan(results)), 'Invalid results - unable to read the numeric values.');
+if opts.balanced, neg_dists = neg_dists(1:numel(pos_dists)); end
 
-[tpr, tnr, res] = vl_roc(labels*2 - 1, -results);
-res.tpr = tpr; res.tnr = tnr;
+labels = [ones(1, numel(pos_dists)), -ones(1, numel(neg_dists))];
+scores = [-pos_dists, -neg_dists];
+
+[tpr, tnr, info_roc] = vl_roc(labels, scores);
+[recall, precision, info_pr] = vl_pr(labels, scores);
+
+res = struct(...
+  'precision', precision, 'recall', recall, 'ap', info_pr.ap,  ...
+  'tpr', tpr, 'tnr', tnr, 'auc', info_roc.auc, ...
+  'numpos', numel(pos_dists), 'numneg', numel(neg_dists));
+end
+
+function dists = readres(path, label)
+res = dlmread(path, ',');
+assert(size(res, 2) == 2, 'Invalid results file.');
+assert(all(res(:, 2) == label), 'Invalid results file.');
+dists = res(:, 1)';
 end

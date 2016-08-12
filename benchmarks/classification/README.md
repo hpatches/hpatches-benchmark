@@ -28,10 +28,10 @@ classification.
 
 The files are
 ``` bash
-classification_neg_diffseq.txt
-classification_neg_sameseq.txt
-classification_pos_easy.txt
-classification_pos_hard.txt
+test_neg_diffseq.pairs
+test_neg_sameseq.pairs
+test_pos_easy.pairs
+test_pos_hard.pairs
 ```
 
 `classification_pos_easy.txt` contains positive pairs that are easier
@@ -57,10 +57,10 @@ distance measure (e.g. L1 or L2), to get a pair distance.
 E.g. if your descriptor is called X, your results will be called
 
 ``` bash
-X_classification_neg_diffseq.txt
-X_classification_neg_sameseq.txt
-X_classification_pos_easy.txt
-X_classification_pos_hard.txt
+X_test_neg_diffseq.results
+X_test_neg_sameseq.results
+X_test_pos_easy.results
+X_test_pos_hard.results
 ```
 
 Each file will contain a distance, and a label:

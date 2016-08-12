@@ -80,7 +80,12 @@ function [sequence, imagename, patches] = decode_signature(imdb, signature, nume
 assert(ischar(signature));
 if nargin < 3, numeric = false; end;
 C = strsplit(signature, '.');
-if numel(C) < 2 || numel(C) > 3, error('Invalid signature.'); end;
+if numel(C) == 1
+  sequence = signature; imagename = nan; patches = nan;
+  if numeric, sequence = imdb.meta.seq2idx(signature); end
+  return;
+end
+if numel(C) > 3, error('Invalid signature.'); end;
 [sequence, imagename] = deal(C{1:2});
 assert(ismember(sequence, imdb.sequences.name), ...
   'Invalid sequence name %s.', sequence);
