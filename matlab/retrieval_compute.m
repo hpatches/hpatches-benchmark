@@ -1,16 +1,44 @@
 function retrieval_compute( benchpath, descfun, outpath, varargin )
+% RETRIEVAL_COMPUTE Compute the results file for a retrieval task file
+%  RETRIEVAL_COMPUTE(BENCH_FILE, DESC_FUN, OUTPATH) Computes the
+%  results for a retrieval task defined in BENCH_FILE using the DESC_FUN for
+%  computing descriptors. Stores the results in OUTPATH.
+%
+%  Additionally accepts the following name value pair arguments:
+%
+%  cacheName :: ''
+%    Name of the descriptors cache.
+%
+%  imdb :: hpatches_dataset
+%    Imdb to be used to retrieve the patches.
+%
+%  topN :: 51
+%    Number of retrieved descriptors.
+%
+%  macNumComparison :: 0
+%    Set to a positive value to use ANN.
+%
+%  debug :: false
+%    Set to true to plot the retrieved patches.
+%
+%  See also: retrieval_eval
+
+% Copyright (C) 2016 Karel Lenc
+% All rights reserved.
+%
+% This file is part of the VLFeat library and is made available under
+% the terms of the BSD license (see the COPYING file).
 opts.cacheName = '';
+opts.imdb = [];
 opts.topN = 51;
 opts.maxNumComparisons = 0;
-opts.imdb = [];
 opts.debug = false;
 opts = vl_argparse(opts, varargin);
 if isempty(opts.imdb), opts.imdb = hpatches_dataset(); end;
 imdb = opts.imdb;
-if ischar(descfun)
-  opts.cacheName = descfun;
-  descfun = @desc_none;
-end
+fprintf(isdeployed+1,...
+  'Computing retrieval results:\n\tBENCHMARK=%s\n\tDESC=%s\n\tOUT=%s\n', ...
+  benchpath, opts.cacheName, outpath);
 
 benchmarks = utls.readfile(benchpath);
 vl_xmkdir(fileparts(outpath));
@@ -50,7 +78,8 @@ qDesc = cell(1, numel(querySignatures)); stime = tic;
 fprintf(isdeployed+1, 'Computing %d queries descriptors...\n', numel(querySignatures));
 updt = utls.textprogressbar(numel(querySignatures));
 for qi = 1:numel(querySignatures)
-  qDesc{qi} = get_descriptors(imdb, querySignatures{qi}, descfun);
+  qDesc{qi} = get_descriptors(imdb, querySignatures{qi}, descfun, ...
+    'cacheName', opts.cacheName);
   updt(qi);
 end
 qDesc = cell2mat(qDesc);

@@ -1,4 +1,29 @@
 function out = matching_eval( benchpath, labelspath, resultspath )
+%MATCHING_EVAL Evaluate the matching task results
+%  RES = MATCHING_EVAL(BENCHPATH, LABELSPATH, RESULTSPATH) Evaluates the
+%  matching benchmark specified in BENCHPATH with labels stored in
+%  LABELSPATH and results stored in RESULTSPATH.
+%
+%  Returns a structure array with values per image pair in mathcing task:
+%    name              - Image pair specification
+%    precision, recall - Points on the PR curve
+%    ap                - Average precision
+%    precision_2nnr, recall_2nnr
+%                      - Points on the PR curve using the Lowe's 2NN ratio
+%    ap_2nnr           - AP using the Lowe's 2NN ratio.
+%
+%  See also: matching_compute
+
+% Copyright (C) 2016 Karel Lenc
+% All rights reserved.
+%
+% This file is part of the VLFeat library and is made available under
+% the terms of the BSD license (see the COPYING file).
+
+fprintf(isdeployed+1, ...
+  'Evaluating matching results:\n\tBENCHMARK=%s\n\tLABELS=%s\n\tRESFILE=%s\n', ...
+  benchpath, labelspath, resultspath);
+
 % Read the benchmark file
 benchmarks = utls.readfile(benchpath);
 % Read the labels file
@@ -52,9 +77,5 @@ for ti = 1:numel(benchmarks)
   updt(ti);
 end
 out = cell2mat(out);
-
-if isdeployed
-  fprintf('%s\timage_matching_map\t%.2f\n', opts.cacheName, mean(out.ap(:)));
-end
 
 end

@@ -1,19 +1,19 @@
 %% Example how to compute the classification benchmarks
 
-setup();
+hb_setup();
 imdb = hpatches_dataset();
 methods = simple_descriptors();
 classif_task_name = 'train_example';
 
-classif_pos_path = fullfile(hbpath, 'benchmarks', 'classification', ...
+classif_pos_path = fullfile(hb_path, 'benchmarks', 'classification', ...
   [classif_task_name, '_pos.pairs']);
-classif_neg_path = fullfile(hbpath, 'benchmarks', 'classification', ...
+classif_neg_path = fullfile(hb_path, 'benchmarks', 'classification', ...
   [classif_task_name, '_neg.pairs']);
 
 %% Compute the task
 
-classif_get_results_path = @(method, label) fullfile(hbpath, 'results', ...
-  'classification', method.name, [classif_task_name, '_', label, '.results']);
+classif_get_results_path = @(method, label) fullfile(hb_path, 'results', ...
+  method.name, 'classification', [classif_task_name, '_', label, '.results']);
 
 for mi = 1:numel(methods)
   res_path = classif_get_results_path(methods(mi), 'pos');

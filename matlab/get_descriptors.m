@@ -1,6 +1,12 @@
 function descriptors = get_descriptors( imdb, signature, descfun, varargin )
 % GET_DESCRIPTORS Compute descriptors and eventually cache them
-opts.cachePath = fullfile(hbpath, 'data', 'descriptors');
+
+% Copyright (C) 2016 Karel Lenc
+% All rights reserved.
+%
+% This file is part of the VLFeat library and is made available under
+% the terms of the BSD license (see the COPYING file).
+opts.cachePath = fullfile(hb_path, 'data', 'descriptors');
 opts.cacheName = '';
 opts = vl_argparse(opts, varargin);
 

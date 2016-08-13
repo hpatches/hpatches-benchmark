@@ -1,4 +1,25 @@
 function out = retrieval_eval( benchpath, labelspath, resultspath )
+%RETRIEVAL_EVAL Evaluate the retrieval task results
+%  RES = RETRIEVAL_EVAL(BENCHPATH, LABELSPATH, RESULTSPATH) Evaluates the
+%  retrieval benchmark specified in BENCHPATH with labels stored in
+%  LABELSPATH and results stored in RESULTSPATH.
+%
+%  Returns a structure array with values per image pair in mathcing task:
+%    image_retr_ap  - APs per query for image retrieval task
+%    patch_retr_ap  - APs per query for patch retrieval task
+%
+%  See also: retrieval_compute
+
+% Copyright (C) 2016 Karel Lenc
+% All rights reserved.
+%
+% This file is part of the VLFeat library and is made available under
+% the terms of the BSD license (see the COPYING file).
+
+fprintf(isdeployed+1, ...
+  'Evaluating retrieval results:\n\tBENCHMARK=%s\n\tLABELS=%s\n\tRESFILE=%s\n', ...
+  benchpath, labelspath, resultspath);
+
 % Read the files
 benchmarks = utls.readfile(benchpath);
 labels = utls.readfile(labelspath);
@@ -48,11 +69,6 @@ for lni = 2:numel(benchmarks)
   updt(lni);
 end
 out = struct('image_retr_ap', imRetAps, 'patch_retr_ap', patchRetAps);
-
-if isdeployed
-  fprintf('%s\timage_retr_map\t%.2f\tpatch_retr_map\t%.2f\n', ...
-    opts.cacheName, mean(imRetAps(:)), mean(patchRetAps(:)));
-end
 end
 
 function signs = remove_patchnum(signs)

@@ -1,19 +1,19 @@
 %% Example how to compute the retrieval benchmarks
 
-setup();
+hb_setup();
 imdb = hpatches_dataset();
 methods = simple_descriptors();
 retr_task_name = 'train_example';
 
-retr_benchmark_path = fullfile(hbpath, 'benchmarks', 'retrieval', ...
+retr_benchmark_path = fullfile(hb_path, 'benchmarks', 'retrieval', ...
   [retr_task_name '.benchmark']);
-retr_labels_path = fullfile(hbpath, 'benchmarks', 'retrieval', ...
+retr_labels_path = fullfile(hb_path, 'benchmarks', 'retrieval', ...
   [retr_task_name '.labels']);
 
 %% Compute the task
 
-retr_get_results_path = @(method) fullfile(hbpath, 'results', 'retrieval', ...
-  method.name, [retr_task_name, '.results']);
+retr_get_results_path = @(method) fullfile(hb_path, 'results', ...
+  method.name, 'retrieval', [retr_task_name, '.results']);
 
 for mi = 1:numel(methods)
   res_path = retr_get_results_path(methods(mi));

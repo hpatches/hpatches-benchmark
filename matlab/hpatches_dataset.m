@@ -1,9 +1,17 @@
 function imdb = hpatches_dataset(varargin)
-opts.rootDir = fullfile(hbpath, 'data','hpatches');
+%HPATCHES_DATASET HPatches dataset wrapper
+
+% Copyright (C) 2016 Karel Lenc
+% All rights reserved.
+%
+% This file is part of the VLFeat library and is made available under
+% the terms of the BSD license (see the COPYING file).
+opts.rootDir = fullfile(hb_path, 'data','hpatches');
 opts.imext = '.png';
 opts = vl_argparse(opts, varargin);
 
-assert(exist(opts.rootDir, 'dir') == 7, 'Dataset dir does not exist.');
+assert(exist(opts.rootDir, 'dir') == 7, ...
+  'Dataset dir %s does not exist. %s %s', opts.rootDir, ctfroot, pwd);
 sequences = sort(utls.listdirs(opts.rootDir));
 tstSplitPath = fullfile(opts.rootDir, 'test_set.txt');
 if exist(tstSplitPath, 'file')

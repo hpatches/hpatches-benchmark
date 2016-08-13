@@ -1,13 +1,36 @@
 function classification_compute( pairspath, descfun, outpath, varargin )
+%CLASSIFICATION_COMPUTE Compute the results file for a *.pairs file
+%  CLASSIFICATION_COMPUT(PAIRS_FILE, DESC_FUN, OUTPATH) Computes the
+%  distances between pairs specified in PAIRS_FILE using the DESC_FUN for
+%  computing descriptors and stores the distances in OUTPATH.
+%
+%  Additionally accepts the following arguments:
+%
+%  cacheName :: ''
+%    Name of the descriptors cache.
+%
+%  imdb :: hpatches_dataset
+%    Imdb to be used to retrieve the patches.
+%
+%  See also: classification_eval
+
+% Copyright (C) 2016 Karel Lenc
+% All rights reserved.
+%
+% This file is part of the VLFeat library and is made available under
+% the terms of the BSD license (see the COPYING file).
+
 opts.cacheName = '';
 opts.imdb = [];
 opts = vl_argparse(opts, varargin);
 if isempty(opts.imdb), opts.imdb = hpatches_dataset(); end;
 imdb = opts.imdb;
-if ischar(descfun)
-  opts.cacheName = descfun;
-  descfun = @desc_none;
-end
+
+fprintf(isdeployed+1,...
+  'Computing classif results:\n\tPAIRS=%s\n\tDESC=%s\n\tOUT=%s\n', ...
+  pairspath, opts.cacheName, outpath);
+
+assert(~isempty(strfind(pairspath, '.pairs')), 'Input must be a .pairs file.');
 
 % For a reasonable evaluation speed, descriptors are stored in memory so
 % they do not have to be recomputed

@@ -1,19 +1,19 @@
 %% Example how to compute the mathcing benchmarks
 
-setup();
+hb_setup();
 imdb = hpatches_dataset();
 methods = simple_descriptors();
 matching_task_name = 'train_example';
 
-matching_benchmark_path = fullfile(hbpath, 'benchmarks', 'matching', ...
+matching_benchmark_path = fullfile(hb_path, 'benchmarks', 'matching', ...
   [matching_task_name, '.benchmark']);
-matching_labels_path = fullfile(hbpath, 'benchmarks', 'matching', ...
+matching_labels_path = fullfile(hb_path, 'benchmarks', 'matching', ...
   [matching_task_name, '.labels']);
 
 %% Compute the task
 
-matching_get_results_path = @(method) fullfile(hbpath, 'results', 'matching', ...
-  method.name, [matching_task_name, '.results']);
+matching_get_results_path = @(method) fullfile(hb_path, 'results', ...
+  method.name, 'matching', [matching_task_name, '.results']);
 
 for mi = 1:numel(methods)
   res_path = matching_get_results_path(methods(mi));
