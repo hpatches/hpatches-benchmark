@@ -1,6 +1,6 @@
 function descriptors = get_descriptors( imdb, signature, descfun, varargin )
 % GET_DESCRIPTORS Compute descriptors and eventually cache them
-opts.cachePath = fullfile(fileparts(mfilename('fullpath')), 'data', 'descriptors');
+opts.cachePath = fullfile(hbpath, 'data', 'descriptors');
 opts.cacheName = '';
 opts = vl_argparse(opts, varargin);
 
