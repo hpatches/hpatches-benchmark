@@ -10,61 +10,59 @@ function hb(cmd, descname, taskname, varargin)
 %
 % This file is part of the VLFeat library and is made available under
 % the terms of the BSD license (see the COPYING file).
+hb_setup();
+opts.packWildCard = '*';
+opts.override = true;
+[opts, varargin] = vl_argparse(opts, varargin);
+imdb = hpatches_dataset();
+if nargin == 2, taskname = ''; end;
 
-valid_commands = {'classification', 'matching', 'retrieval'};
+% Check the command
+valid_commands = {'classification', 'matching', 'retrieval', 'pack', ...
+  'checkdesc'};
 if nargin == 0 || ~ischar(cmd) || nargin == 0 || ...
     ~ismember(cmd, valid_commands)
   usage(valid_commands);
   return;
 end
 
+% Chech validity of the descritpros
 desc_path = fullfile(hb_path, 'data', 'descriptors', descname);
 if ~exist(desc_path, 'dir')
   error('Unable to find descriptors in `%s`.', desc_path);
 end
-imdb = hpatches_dataset();
 desc_fun = @(a, b) desc_none(a, b, descname);
 
+% Handle the wildcard task names
+if ~isempty(strfind(taskname, '*')) && ~ismember(cmd, {'pack', 'checkdesc'})
+  task_names = cellfun(@(a)strrep(strrep(a, '_pos', ''), '_neg', ''), ...
+    listtasks(cmd, taskname));
+  task_names = sort(unique(task_names));
+  fprintf(isdeployed+1, 'Processing %d tasks: %s\n', numel(tasks_names), ...
+    strjoin(task_names, ', '));
+  for ti = 1:numel(task_names)
+    hb(cmd, descname, task_names{ti});
+  end
+end
+
 switch cmd
-  case 'classification'
-    pos_pairs = fullfile(hb_path, 'benchmarks', 'classification', ...
-      [taskname, '_pos.pairs']);
-    if ~exist(pos_pairs, 'file')
-      error('Unable to find %s.', pos_pairs);
-    end;
-    neg_pairs = fullfile(hb_path, 'benchmarks', 'classification', ...
-      [taskname, '_neg.pairs']);
-    if ~exist(neg_pairs, 'file')
-      error('Unable to find %s.', neg_pairs);
-    end;
-    
-    pos_res = fullfile(hb_path, 'results', descname, ...
-      'classification', [taskname, '_pos.results']);
-    neg_res = fullfile(hb_path, 'results', descname, ...
-      'classification', [taskname, '_neg.results']);
-    
-    classification_compute(pos_pairs, desc_fun, pos_res, ...
-      'cacheName', descname, 'imdb', imdb);
-    classification_compute(neg_pairs, desc_fun, neg_res, ...
-      'cacheName', descname, 'imdb', imdb);
-    
-    res = classification_eval(pos_res, neg_res, varargin{:});
-    fprintf(isdeployed+1, 'Classification results:\n');
-    fprintf('%s\tpatch_classif_auc\t%.4f\tpatch_classif_ap\t%.4f\n', ...
-      descname, res.auc*100, res.ap*100);
-  case {'matching', 'retrieval'}
+  case {'classification', 'matching', 'retrieval'}
     bench_file = fullfile(hb_path, 'benchmarks', cmd, [taskname, '.benchmark']);
     if ~exist(bench_file, 'file'), error('Unable to find %s.', bench_file); end;
-    res_file = fullfile(hb_path, 'results', descname, ...
-      cmd, [taskname, '.results']);
+    res_file = fullfile(hb_path, 'results', descname, cmd, [taskname, '.results']);
 
-    switch cmd
-      case 'matching'
-        matching_compute(bench_file, desc_fun, res_file, ...
-          'cacheName', descname, 'imdb', imdb);
-      case 'retrieval'
-        retrieval_compute(bench_file, desc_fun, res_file, ...
-          'cacheName', descname, 'imdb', imdb);
+    if ~exist(res_file, 'file') || opts.override
+      switch cmd
+        case 'classification'
+          classification_compute(bench_file, desc_fun, res_file, ...
+            'cacheName', descname)
+        case 'matching'
+          matching_compute(bench_file, desc_fun, res_file, ...
+            'cacheName', descname);
+        case 'retrieval'
+          retrieval_compute(bench_file, desc_fun, res_file, ...
+            'cacheName', descname);
+      end
     end
     
     labels_file = fullfile(hb_path, 'benchmarks', cmd, [taskname, '.labels']);
@@ -72,7 +70,12 @@ switch cmd
       fprintf('Labels file does not exist.\n');
       return;
     end
+    
     switch cmd
+      case 'classification'
+        res = classification_eval(bench_file, labels_file, res_file, varargin{:});
+        fprintf('%s\tclassification_auc\t%.4f\tclassification_ap\t%.4f\n', ...
+          descname, mean([res(:).auc])*100, mean([res(:).ap])*100);
       case 'matching'
         res = matching_eval(bench_file, labels_file, res_file, varargin{:});
         fprintf('%s\timage_matching_map\t%.4f\n', descname, mean([res(:).ap])*100);
@@ -81,14 +84,89 @@ switch cmd
         fprintf('%s\timage_retr_map\t%.4f\tpatch_retr_map\t%.4f\n', ...
           descname, mean(res.image_retr_ap(:))*100, mean(res.patch_retr_ap(:))*100);
     end
+  case 'pack'
+    commands = {'classification', 'retrieval', 'matching'};
+    for ci = 1:numel(commands)
+      task_names = listtasks(commands{ci}, opts.packWildCard);
+      for ti = 1:numel(task_names)
+        [valid, resfile] = checkresults(commands{ci}, descname, task_names{ti});
+        if ~valid
+          warning('Invalid results file %s. Recomputing.', resfile);
+          tn = strrep(strrep(task_names{ti}, '_pos', ''), '_neg', '');
+          hb(commands{ci}, descname, tn);
+        end
+      end
+    end
+    zipFile = fullfile(hb_path, [descname, '_results.zip']);
+    fprintf('Packing the results to %s.\n', zipFile);
+    zip(fullfile(hb_path, 'results', descname), zipFile);
+    submitLink = utls.readfile(fullfile(hb_path, 'results', 'submit.url'));
+    fprintf('\n\nDone. Please submit the file:\n\t%s\n\tto:%s\n', ...
+      zipFile, submitLink{1});
+    
+  case 'packdescs'
+    hb('checkdescs', descname);
+    zipFile = fullfile(hb_path, [descname, '_descriptors.zip']);
+    fprintf('Packing the descriptors to %s.\n', zipFile);
+    zip(fullfile(hb_path, 'descriptors', descname), zipFile);
+    submitLink = utls.readfile(fullfile(hb_path, 'results', 'submit.url'));
+    fprintf('\n\nDone. Please submit the file:\n\t%s\n\tto:%s\n', ...
+      zipFile, submitLink{1});
+  case 'checkdesc'
+    descdim = [];
+    fprintf('Checking %s descriptors for %d sequences.\n', ...
+      descname, numel(imdb.sequences.name));
+    status = utls.textprogressbar(numel(imdb.sequences.name));
+    for si = 1:numel(imdb.sequences.name)
+      numPatches = imdb.sequences.npatches(si);
+      for imi = 1:numel(imdb.sequences.images{si})
+        sign = [imdb.sequences.name{si}, '.', imdb.sequences.images{si}{imi}];
+        [descs, cachePath] = get_descriptors(imdb, sign, desc_fun, ...
+          'cacheName', descname);
+        if isempty(descdim)
+          descdim = size(descs, 1);
+        else
+          if descdim ~= size(descs, 1)
+            error(['Invalid descriptors in %s.\n',...
+            'The dimensionality does not agree (%d vs %d)'], ...
+              cachePath, size(descs, 1), descdim);
+          end
+        end
+        if size(descs, 2) ~= numPatches
+          error(['Invalid descriptors in %s.\n',...
+            'Invalid number of descriptors (%d vs %d)'], ...
+              cachePath, size(descs, 2), numPatches);
+        end
+      end
+      status(si);
+    end
+    fprintf('All descriptors of %d appear to be valid.\n', descname);
   case 'help'
-    usage;
+    usage(valid_commands);
   otherwise
     error('Unknown command.');
 end
 
 end
 
+function task_names = listtasks(cmd, taskname)
+  task_files = dir(fullfile(hb_path, 'benchmarks', cmd, [taskname, '.benchmark']));
+  task_names = {task_files.name};
+  for ti = 1:numel(task_names)
+    [~, task_names{ti}] = fileparts(task_names{ti});
+  end
+end
+
+function [valid, resfile] = checkresults(cmd, descname, taskname)
+valid = false;
+resfile = fullfile(hb_path, 'results', ...
+  descname, cmd, [taskname, '.results']);
+if ~exist(resfile, 'file'), return; end;
+finfo = dir(resfile);
+valid = ~finfo.isdir && finfo.bytes > 0;
+end
+
 function usage()
-fprintf(2, 'Usage: `run_hb command desc_name task_name`\n');
+fprintf(isdeployed+1, 'Usage: `run_hb command desc_name task_name`\n');
+fprintf(isdeployed+1, 'Valid commands: %s.\n', strjoin(valid_commands, ', '));
 end

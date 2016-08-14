@@ -1,5 +1,21 @@
-function descriptors = get_descriptors( imdb, signature, descfun, varargin )
-% GET_DESCRIPTORS Compute descriptors and eventually cache them
+function [descriptors, cachePath] = get_descriptors( imdb, signature, descfun, varargin )
+%GET_DESCRIPTORS Compute descriptors and eventually cache them
+%  DESC = GET_DESCRIPTORS(IMDB, SIGNATURE, DESCFUN) Compute descriptors
+%  using the DESCFUN for a patch with SIGNATURE from the IMDB. The DESCFUN
+%  must be a function with signature:
+%
+%    DESC = DESCFUN(SIGNATURE, PATCHES)
+%
+%  Additionally the function accepts the following arguments:
+%
+%  cacheName :: ''
+%    When specified, cache the descriptors in csv files in folder defined
+%    by the `cachePath` argument. If empty, cache is not used. When caching
+%    enabled and the function is called with a patch signature, descriptors
+%    of all patches within a single image are computed and cached.
+%
+%  cachePath :: fullfile(hb_path, 'data', 'descriptors')
+%    Specify a different cachePath.
 
 % Copyright (C) 2016 Karel Lenc
 % All rights reserved.
@@ -10,7 +26,7 @@ opts.cachePath = fullfile(hb_path, 'data', 'descriptors');
 opts.cacheName = '';
 opts = vl_argparse(opts, varargin);
 
-doCache = ~isempty(opts.cacheName);
+doCache = ~isempty(opts.cacheName); cachePath = [];
 if doCache
   signParts = strsplit(signature, '.');
   cachePath = fullfile(opts.cachePath, opts.cacheName, ...

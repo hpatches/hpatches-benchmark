@@ -1,17 +1,31 @@
 function imdb = hpatches_dataset(varargin)
-%HPATCHES_DATASET HPatches dataset wrapper
+%HPATCHES_DATASET HPatches dataset wrapper, singleton
 
 % Copyright (C) 2016 Karel Lenc
 % All rights reserved.
 %
 % This file is part of the VLFeat library and is made available under
 % the terms of the BSD license (see the COPYING file).
-opts.rootDir = fullfile(hb_path, 'data','hpatches');
+opts.rootDir = fullfile(hb_path, 'data', 'hpatches');
 opts.imext = '.png';
 opts = vl_argparse(opts, varargin);
 
-assert(exist(opts.rootDir, 'dir') == 7, ...
-  'Dataset dir %s does not exist. %s %s', opts.rootDir, ctfroot, pwd);
+persistent imdb_c;
+if ~isempty(imdb_c) && strcmp(opts.rootDir, imdb_c.meta.rootDir)
+  imdb = imdb_c; return;
+end;
+
+% Provision the datasets
+if utls.provision(fullfile(hb_path, 'data', 'hpatches_train.url'), opts.rootDir);
+  trainDir = fullfile(opts.rootDir, 'hpatches-train', '*');
+  movefile(trainDir, opts.rootDir); delete(trainDir);
+end
+if utls.provision(fullfile(hb_path, 'data', 'hpatches_test.url'), opts.rootDir)
+  testDir = fullfile(opts.rootDir, 'hpatches-test', '*');
+  movefile(testDir, opts.rootDir); delete(testDir);
+  assert(exist(fullfile(opts.rootDir, 'test_set.txt'), 'file') > 0);
+end
+
 sequences = sort(utls.listdirs(opts.rootDir));
 tstSplitPath = fullfile(opts.rootDir, 'test_set.txt');
 if exist(tstSplitPath, 'file')
@@ -46,7 +60,6 @@ imdb.meta.imext = opts.imext;
 
 getImPath = @(opts, sequence, im) fullfile(opts.rootDir, sequence, [im, opts.imext]);
 
-data = cell(1, numel(sequences));
 fprintf(isdeployed+1, 'Loading the patches database from %s.\n', opts.rootDir);
 updt = utls.textprogressbar(numel(sequences));
 for seqidx = 1:numel(sequences)
@@ -67,6 +80,7 @@ imdb.getNumPatches = @(signature) getNumPatches(imdb, signature);
 imdb.encodeSignature = @(varargin) encode_signature(imdb, varargin{:});
 imdb.decodeSignature = @(varargin) decode_signature(imdb, varargin{:});
 fprintf(isdeployed+1,'\n');
+imdb_c = imdb;
 end
 
 function patches = loadpatches(imdb, sequence, imname)

@@ -9,17 +9,25 @@ function hb_deploy()
 
 hb_setup();
 target_dir = fullfile(hb_path, 'bin');
-dependecies = {};
-switch computer
-  case 'GLNXA64'
-    dependecies{end+1} = '-a';
-    dependecies{end+1} = fullfile(vl_root, 'toolbox', 'mex', mexext,'libvl.so');
-  otherwise
-    error('Unsupported architecture.');
-end
+dependecies = vl_deps();
 
 mcc('-m', 'hb.m', '-d', target_dir, '-o', 'hb', ...
   dependecies{:});
 
 end
 
+function depargs = vl_deps()
+archs = struct();
+archs.mexw64 = '*.dll'; archs.mexw32 = '*.dll';
+archs.mexmaci64 = '*.dylib'; archs.mexmaci32 = '*.dylib';
+archs.mexa64 = '*.so'; archs.mexaglx = '*.so';
+
+depargs = {};
+mexdir = fullfile(vl_root, 'toolbox', 'mex', mexext);
+libs = dir(fullfile(mexdir, archs.(mexext)));
+for li = 1:numel(libs)
+  depargs{end+1} = '-a';
+  depargs{end+1} = fullfile(mexdir, libs(li).name);
+end
+
+end
