@@ -1,7 +1,7 @@
-function classification_compute( pairspath, descfun, outpath, varargin )
+function classification_compute( benchpath, descfun, outpath, varargin )
 %CLASSIFICATION_COMPUTE Compute the results file for a *.pairs file
-%  CLASSIFICATION_COMPUT(PAIRS_FILE, DESC_FUN, OUTPATH) Computes the
-%  distances between pairs specified in PAIRS_FILE using the DESC_FUN for
+%  CLASSIFICATION_COMPUT(BENCHPATH, DESC_FUN, OUTPATH) Computes the
+%  distances between pairs specified in BENCHPATH using the DESC_FUN for
 %  computing descriptors and stores the distances in OUTPATH.
 %
 %  Additionally accepts the following arguments:
@@ -26,11 +26,9 @@ opts = vl_argparse(opts, varargin);
 if isempty(opts.imdb), opts.imdb = hpatches_dataset(); end;
 imdb = opts.imdb;
 
-fprintf(isdeployed+1,...
-  'Computing classif results:\n\tPAIRS=%s\n\tDESC=%s\n\tOUT=%s\n', ...
-  pairspath, opts.cacheName, outpath);
-
-assert(~isempty(strfind(pairspath, '.pairs')), 'Input must be a .pairs file.');
+fprintf(isdeployed+1, 'Computing classif results:\n\tBENCH=%s\n\tDESC=%s\n\tOUT=%s\n', ...
+  benchpath, opts.cacheName, outpath);
+assert(~isempty(strfind(benchpath, '.benchmark')), 'Input must be a .benchmark file.');
 
 % For a reasonable evaluation speed, descriptors are stored in memory so
 % they do not have to be recomputed
@@ -48,7 +46,10 @@ cache = containers.Map();
     desc = desc(:, patch);
   end
 
-pairs = utls.readfile(pairspath);
+pairs_files = utls.readfile(benchpath); assert(numel(pairs_files) == 2);
+benchdir = fileparts(benchpath);
+pairs = [utls.readfile(fullfile(benchdir, pairs_files{1}));
+  utls.readfile(fullfile(benchdir, pairs_files{2}))];
 vl_xmkdir(fileparts(outpath));
 
 updt = utls.textprogressbar(numel(pairs));

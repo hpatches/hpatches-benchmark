@@ -7,6 +7,12 @@ The challenge consists of three common computer vision tasks. For more details a
 * [Image Matching](./benchmarks/matching/README.md)
 * [Image and Patch Retrieval](./benchmarks/retrieval/README.md)
 
+## Getting started
+
+## Command Line Interface
+
+## MATLAB Interface
+
 ## Referencing patch-images and patches
 For referring patch-images we use the following signatures:
 ```

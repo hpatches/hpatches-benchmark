@@ -1,8 +1,8 @@
-function res = classification_eval( pos_res_path, neg_res_path, varargin )
+function res = classification_eval( benchpath, labelspath, resultspath, varargin )
 %CLASSIFICATION_EVAL Evaluate the auc and map for classification results
-%  RES = CLASSIFICATION_EVAL(POS_RES_FILE, NEG_RES_FILE) computes AUC and AP
-%  for the classification task using the computed distances from
-%  POS_RES_FILE and NEG_RES_FILE.
+%  RES = CLASSIFICATION_EVAL(BENCHPATH, LABELSPATH, RESULTSPATH)
+%  computes AUC and AP for the classification task using the computed
+%  distances from RESULTS_FILE.
 %
 %  Returns a structure with fields:
 %    precision, recall - Points on the PR curve
@@ -29,28 +29,27 @@ function res = classification_eval( pos_res_path, neg_res_path, varargin )
 % This file is part of the VLFeat library and is made available under
 % the terms of the BSD license (see the COPYING file).
 opts.balanced = false;
-opts.plot = false;
+opts.plot = [];
 opts = vl_argparse(opts, varargin);
 
-fprintf(isdeployed+1,'Evaluating classif results:\n\tPAIRS_POS=%s\n\tPAIRS_NEG=%s\n', ...
-  pos_res_path, neg_res_path);
+fprintf(isdeployed+1,'Evaluating classif results:\n\tRESPATH=%s\n', ...
+  resultspath);
 
 % Read the benchmark file
-pos_dists = readres(pos_res_path, 1);
-neg_dists = readres(neg_res_path, 0);
+[dists, labels] = readres(resultspath);
+if opts.balanced
+  is_pos = find(labels == 1); is_neg = find(labels == 0, numel(is_pos));
+  dists = dists([is_pos, is_neg]); labels = labels([is_pos, is_neg]);
+end
+labels = labels * 2 - 1;
 
-if opts.balanced, neg_dists = neg_dists(1:numel(pos_dists)); end
-
-labels = [ones(1, numel(pos_dists)), -ones(1, numel(neg_dists))];
-scores = [-pos_dists, -neg_dists];
-
-[tpr, tnr, info_roc] = vl_roc(labels, scores);
-[recall, precision, info_pr] = vl_pr(labels, scores);
+[tpr, tnr, info_roc] = vl_roc(labels, -dists);
+[recall, precision, info_pr] = vl_pr(labels, -dists);
 
 res = struct(...
   'precision', precision, 'recall', recall, 'ap', info_pr.ap,  ...
   'tpr', tpr, 'tnr', tnr, 'auc', info_roc.auc, ...
-  'numpos', numel(pos_dists), 'numneg', numel(neg_dists));
+  'numpos', sum(labels==1), 'numneg', sum(labels==-1));
 
 if ~isempty(opts.plot)
   figure(1); clf; subplot(1,2,1);
@@ -72,11 +71,11 @@ end
 
 end
 
-function dists = readres(path, label)
+function [dists, labels] = readres(path)
 res = dlmread(path, ',');
 assert(size(res, 2) == 2, 'Invalid results file.');
-assert(all(res(:, 2) == label), 'Invalid results file.');
-dists = res(:, 1)';
+dists = res(:, 1)'; labels = res(:, 2)';
+assert(all(labels ==0 | labels == 1), 'Invalid labels.');
 end
 
 
