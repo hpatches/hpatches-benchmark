@@ -91,6 +91,7 @@ pIdxs = vl_kdtreequery(tr, descPool, qDesc, 'numNeighbors', opts.topN, ...
   'maxNumComparisons', opts.maxNumComparisons);
 fprintf(isdeployed+1, 'Done in %.2f.\n', toc(stime));
 
+fprintf(isdeployed+1, 'Writing the results... '); stime = tic;
 resSignatures = cell(numel(querySignatures), opts.topN);
 for qi = 1:numel(querySignatures)
   for si = 1:opts.topN
@@ -98,10 +99,17 @@ for qi = 1:numel(querySignatures)
     resSignatures{qi, si} = imdb.encodeSignature(imdb.sequences.name{lbl(1)}, ...
       imdb.sequences.images{lbl(1)}{lbl(2)}, lbl(3));
   end
-  assert(strcmp(resSignatures{qi, 1}, querySignatures{qi}), ...
-    'Invalid descriptor - query patch not retrieved as the first patch.');
+  if ~strcmp(resSignatures{qi, 1}, querySignatures{qi})
+    warning(['Phew, what a descriptor - query patch not retrieved as the first patch.',...
+      'Applying a hotfix...']);
+    [qDescFound, qDescPos] = ismember(querySignatures{qi}, resSignatures(qi, :));
+    assert(qDescFound, 'Invalid descriptor. Query descriptor not within top 50.');
+    resSignatures{qi, qDescPos} = resSignatures{qi, 1};
+    resSignatures{qi, 1} = querySignatures{qi};
+  end
   fprintf(fo, '%s\n', strjoin(resSignatures(qi,:), ','));
 end
+fprintf(isdeployed+1, 'Done in %.2f.\n', toc(stime));
 
 if opts.debug
   patches = cellfun(@(s) imdb.getPatches(s), resSignatures(:), 'UniformOutput', false);

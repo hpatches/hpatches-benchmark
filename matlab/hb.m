@@ -15,11 +15,12 @@ opts.packWildCard = '*';
 opts.override = true;
 [opts, varargin] = vl_argparse(opts, varargin);
 imdb = hpatches_dataset();
-if nargin == 2, taskname = ''; end;
+if nargin == 2, taskname = opts.packWildCard; end;
+if ischar(opts.override), opts.override = strcmp(opts.override, 'true'); end;
 
 % Check the command
 valid_commands = {'classification', 'matching', 'retrieval', 'pack', ...
-  'checkdesc'};
+  'checkdesc', 'packdesc'};
 if nargin == 0 || ~ischar(cmd) || nargin == 0 || ...
     ~ismember(cmd, valid_commands)
   usage(valid_commands);
@@ -34,14 +35,15 @@ end
 desc_fun = @(a, b) desc_none(a, b, descname);
 
 % Handle the wildcard task names
-if ~isempty(strfind(taskname, '*')) && ~ismember(cmd, {'pack', 'checkdesc'})
+if ~isempty(strfind(taskname, '*')) && ...
+    ~ismember(cmd, {'pack', 'checkdesc', 'packdesc'})
   task_names = cellfun(@(a)strrep(strrep(a, '_pos', ''), '_neg', ''), ...
     listtasks(cmd, taskname));
   task_names = sort(unique(task_names));
   fprintf(isdeployed+1, 'Processing %d tasks: %s\n', numel(tasks_names), ...
     strjoin(task_names, ', '));
   for ti = 1:numel(task_names)
-    hb(cmd, descname, task_names{ti});
+    hb(cmd, descname, task_names{ti}, 'override', opts.override);
   end
 end
 
@@ -50,8 +52,9 @@ switch cmd
     bench_file = fullfile(hb_path, 'benchmarks', cmd, [taskname, '.benchmark']);
     if ~exist(bench_file, 'file'), error('Unable to find %s.', bench_file); end;
     res_file = fullfile(hb_path, 'results', descname, cmd, [taskname, '.results']);
+    done_file = utls.get_donepath(res_file);
 
-    if ~exist(res_file, 'file') || opts.override
+    if ~exist(done_file, 'file') || opts.override
       switch cmd
         case 'classification'
           classification_compute(bench_file, desc_fun, res_file, ...
@@ -63,6 +66,7 @@ switch cmd
           retrieval_compute(bench_file, desc_fun, res_file, ...
             'cacheName', descname);
       end
+      df = fopen(done_file, 'w'); fclose(df);
     end
     
     labels_file = fullfile(hb_path, 'benchmarks', cmd, [taskname, '.labels']);
@@ -85,32 +89,33 @@ switch cmd
           descname, mean(res.image_retr_ap(:))*100, mean(res.patch_retr_ap(:))*100);
     end
   case 'pack'
+    fprintf('Packing all results for descriptor %s.\n', descname);
+    fprintf('Please not that this does not recompute existing results.\n');
     commands = {'classification', 'retrieval', 'matching'};
     for ci = 1:numel(commands)
-      task_names = listtasks(commands{ci}, opts.packWildCard);
+      task_names = listtasks(commands{ci}, taskname);
       for ti = 1:numel(task_names)
         [valid, resfile] = checkresults(commands{ci}, descname, task_names{ti});
         if ~valid
           warning('Invalid results file %s. Recomputing.', resfile);
           tn = strrep(strrep(task_names{ti}, '_pos', ''), '_neg', '');
-          hb(commands{ci}, descname, tn);
+          hb(commands{ci}, descname, tn, 'override', opts.override);
         end
       end
     end
     zipFile = fullfile(hb_path, [descname, '_results.zip']);
     fprintf('Packing the results to %s.\n', zipFile);
-    zip(fullfile(hb_path, 'results', descname), zipFile);
+    zip(zipFile, fullfile(hb_path, 'results', descname));
     submitLink = utls.readfile(fullfile(hb_path, 'results', 'submit.url'));
-    fprintf('\n\nDone. Please submit the file:\n\t%s\n\tto:%s\n', ...
+    fprintf('\nDone. Please submit the file:\n\t%s\nto:\n\t%s\n', ...
       zipFile, submitLink{1});
-    
-  case 'packdescs'
-    hb('checkdescs', descname);
+  case 'packdesc'
+    hb('checkdesc', descname);
     zipFile = fullfile(hb_path, [descname, '_descriptors.zip']);
     fprintf('Packing the descriptors to %s.\n', zipFile);
-    zip(fullfile(hb_path, 'descriptors', descname), zipFile);
+    zip(zipFile, fullfile(hb_path, 'data', 'descriptors', descname));
     submitLink = utls.readfile(fullfile(hb_path, 'results', 'submit.url'));
-    fprintf('\n\nDone. Please submit the file:\n\t%s\n\tto:%s\n', ...
+    fprintf('\nDone. Please submit the file:\n\t%s\nto:\n\t%s\n', ...
       zipFile, submitLink{1});
   case 'checkdesc'
     descdim = [];
@@ -140,7 +145,7 @@ switch cmd
       end
       status(si);
     end
-    fprintf('All descriptors of %d appear to be valid.\n', descname);
+    fprintf('All descriptors of %s appear to be valid.\n', descname);
   case 'help'
     usage(valid_commands);
   otherwise
@@ -157,16 +162,16 @@ function task_names = listtasks(cmd, taskname)
   end
 end
 
-function [valid, resfile] = checkresults(cmd, descname, taskname)
+function [valid, res_file] = checkresults(cmd, descname, taskname)
 valid = false;
-resfile = fullfile(hb_path, 'results', ...
-  descname, cmd, [taskname, '.results']);
-if ~exist(resfile, 'file'), return; end;
-finfo = dir(resfile);
+res_file = fullfile(hb_path, 'results', descname, cmd, [taskname, '.results']);
+done_file = utls.get_donepath(res_file);
+if ~exist(res_file, 'file') || ~exist(done_file, 'file'), return; end;
+finfo = dir(res_file);
 valid = ~finfo.isdir && finfo.bytes > 0;
 end
 
-function usage()
+function usage(valid_commands)
 fprintf(isdeployed+1, 'Usage: `run_hb command desc_name task_name`\n');
-fprintf(isdeployed+1, 'Valid commands: %s.\n', strjoin(valid_commands, ', '));
+fprintf(isdeployed+1, '%s\n', evalc('help hb'));
 end
