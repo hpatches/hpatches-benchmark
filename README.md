@@ -1,22 +1,22 @@
 # HBench
-A toolbox for evaluating local feature descriptors in common computer vision tasks with the HPatches dataset (Homography patches).
+A toolbox for evaluating local feature descriptors in common computer vision tasks with the *HPatches* dataset (Homography patches).
 This toolbox is a support code for the challenge for
 [Local Features: State of the Art, Open Problems and Performance Evaluation](http://www.iis.ee.ic.ac.uk/ComputerVision/DescrWorkshop/index.html)
 workshop at ECCV 2016.
 
 ## Getting started
 In order to take part in the challenge, one needs to send the archived `*.results`
-files for each `*.benchmark` file in the `./benchmarks/` sub-folders. To do
+files for each `*.benchmark` file in the `benchmarks/` sub-folders. To do
 so, the simplest way is to use this toolbox.
 
-HBench is written in MATLAB but provides a simple command line interface
+*HBench* is written in MATLAB but provides a simple command line interface
 for producing the `.results` files from descriptors stored in CSV files. You do not need to own a MATLAB license as we provide a [binary distribution](https://dl.dropboxusercontent.com/u/555392/hbench-v0.1.tar.gz) which needs only on the freely available MATLAB Compiler Runtime (MCR)
 
 ### Participate in the challange
 To obtain the results files, once the test set is released, you generally proceed as follows:
-* Donwload and unpac the [binary distribution](https://dl.dropboxusercontent.com/u/555392/hbench-v0.1.tar.gz) of HPatches.
+* Donwload and unpack the [binary distribution](https://dl.dropboxusercontent.com/u/555392/hbench-v0.1.tar.gz) of HPatches.
 * If you do not own MATLAB R2016a, install [MCR R2016a](http://www.mathworks.com/products/compiler/mcr/) to `MCRPATH`. Otherwise `MCRPATH` should be your MATLAB path. See [Install MCR](#install-mcr) for more details.
-* Download the HPatches dataset. The dataset is organized in patch-images in `data/hpatches/SEQUENCE/IMNAME.png`.
+* Download the *HPatches* dataset. The dataset is organized in patch-images in `data/hpatches/SEQUENCE/IMNAME.png`.
 You can download the dataset by running `bin/hb_run.sh MCRPATH`
 * For each patch-image compute the descriptor DESCNAME and store it in a numeric [CSV file](#csv-descriptors)
 `data/descriptors/DESCNAME/SEQUENCE/IMNAME.csv` with one
@@ -42,7 +42,7 @@ More details how to install the MCR can be found [here](http://www.mathworks.com
 Please note that around 2GB of free space is required.
 
 ### Command line interface
-To run the HBenchmarks command line interface with the MCR located in the default path, run:
+To run the *HBench* command line interface with the MCR located in the default path, run:
 ``` bash
 ./bin/run_hb.sh /usr/local/MATLAB/MATLAB_Runtime/v901 COMMAND DESCNAME BENCHMARK
 ```
