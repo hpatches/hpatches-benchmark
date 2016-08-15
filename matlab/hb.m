@@ -57,6 +57,7 @@ opts.packWildCard = '*';
 opts.override = [];
 [opts, varargin] = vl_argparse(opts, varargin);
 imdb = hpatches_dataset();
+if isempty(cmd), return; end;
 if nargin == 2, taskname = opts.packWildCard; end;
 cmd = lower(cmd); descname = lower(descname);
 

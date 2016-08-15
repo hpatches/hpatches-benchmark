@@ -1,30 +1,29 @@
 # HBench
-A toolbox for evaluating common computer vision tasks with the HPatches dataset.
-This code implements the challenge for the
+A toolbox for evaluating local feature descriptors in common computer vision tasks with the HPatches dataset (Homography patches).
+This toolbox is a support code for the challenge for
 [Local Features: State of the Art, Open Problems and Performance Evaluation](http://www.iis.ee.ic.ac.uk/ComputerVision/DescrWorkshop/index.html)
 workshop at ECCV 2016.
 
 ## Getting started
-In order to take part in the challenge, one needs to send the the `*.results`
-files for each `*.benchmark` file in the `./benchmarks/` directory. To do
-so, the easiest way is to use the provided HBench toolbox.
+In order to take part in the challenge, one needs to send the archived `*.results`
+files for each `*.benchmark` file in the `./benchmarks/` sub-folders. To do
+so, the simplest way is to use this toolbox.
 
-The HBench is written in MATLAB but provides a simple command line interface
-for computing the results tasks. If you do not own a license to MATLAB, you
-can also use the freely available MATLAB compiler runtime (MCR).
+HBench is written in MATLAB but provides a simple command line interface
+for producing the `.results` files from descriptors stored in CSV files. You do not need to own a MATLAB license as we provide a [binary distribution](https://dl.dropboxusercontent.com/u/555392/hbench-v0.1.tar.gz) which needs only on the freely available MATLAB Compiler Runtime (MCR)
 
 ### Participate in the challange
 To obtain the results files you generally proceed as follows:
-* Install [MATLAB Compiler Runtime](http://www.mathworks.com/products/compiler/mcr/) to `MCRPATH`.
-* Download the HPatches dataset, stored in patch-images `./data/hpatches/<seqquence>/<patchimage>.png`.
-e.g. with the command line interface by running `./bin/hb_run.sh MCRPATH`
+* If you do not own MATLAB R2016a, install [MATLAB Compiler Runtime R2016a](http://www.mathworks.com/products/compiler/mcr/) to `MCRPATH`. Otherwise `MCRPATH` should be your MATLAB path. See [Install MCR](#install-mcr) for more details.
+* Download the HPatches dataset. The dataset is organized in patch-images in `./data/hpatches/<seqquence>/<patchimage>.png`.
+You can download the dataset by running `./bin/hb_run.sh MCRPATH`
 * For each patch-image compute the descriptor and store it in a CSV file
 `./data/descriptors/DESCNAME/<seq_name>/<patchimage>.csv` with one
-descriptor per line. E.g. for a patch image  `./data/datasets/i_ski/ref.png` and a SURF descriptor there will be a csv file `./data/descriptors/surf/i_ski/ref.csv` with 623 lines (one line per descriptor).
-* Run all the tasks `./bin/hb_run.sh MCRPATH pack DESCNAME`. This also checks the validity of your descriptors.
-* Send the archive `./DESCNAME_results.zip` to the [submission folder](https://www.dropbox.com/request/2MJm7vV15XJnl1RzuCzl).
+descriptor per line. E.g. for a patch image  `./data/datasets/i_ski/ref.png` and a MEGADEEP descriptor there will be a CSV file `./data/descriptors/megadeep/i_ski/ref.csv` with 623 lines (one line per descriptor). The CSV can contain only numeric values.
+* Compute the results for all the tasks with `./bin/hb_run.sh MCRPATH pack DESCNAME`. This also checks at first whether your descriptors are valid.
+* Send the archive `./DESCNAME_results.zip` to the [Dropbox submission folder](https://www.dropbox.com/request/2MJm7vV15XJnl1RzuCzl).
 
-To see details how to use the command line interface, see the [Command Line Interface](#Command line interface).
+To see details how to use the command line interface, see the section [Command Line Interface](#command-line-interface).
 
 Additionally you can also experiment with the MATLAB code directly, using the
 provided interface to compute your own descriptors.
@@ -59,6 +58,9 @@ If you have MATLAB R2016a installed, you can also easily run the `hb` function d
 cd matlab
 hb COMMAND DESCNAME BENCHMARK
 ```
+
+Or you can experiment directly with the evaluation functions and the dataset
+structures. There are few examples prepared in `./matlab/example_*`.
 
 ### Compute Baseline Descriptors
 To compute the baseline descriptors and to check if everything works as it should,
