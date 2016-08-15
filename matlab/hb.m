@@ -17,6 +17,9 @@ function hb(cmd, descname, taskname, varargin)
 %    HB pack DESCNAME * override true
 %    ```
 %    or delete the appropriate `.results` file.
+%
+%    Please note that the classification benchmark loads the descriptors to
+%    memory.
 %    
 %  `HB computedesc DESCNAME`  
 %    Compute some of the provided baseline descriptors. Supported
@@ -40,6 +43,9 @@ function hb(cmd, descname, taskname, varargin)
 %    ```
 %      results/DESCNAME/retrieval/BENCHMARKNAME.results
 %    ```
+%
+%    Please note that the classification benchmark caches descriptors in
+%    memory.
 %
 %  `HB packdesc DESCNAME`  
 %     Pack all the descriptors DESCNAME to `DESCNAME_descriptors.zip`.
