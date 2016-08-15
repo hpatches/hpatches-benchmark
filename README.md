@@ -66,7 +66,7 @@ you can run:
 ```
 ./bin/run_hb.sh MCRPATH computedesc DESCNAME
 ```
-Currently implemented descriptors are `surf`, `meanstd` and `resize`.
+Currently implemented descriptors are `meanstd` and `resize`.
 
 You can see the list of all available commands [here](./bin/README.md).
 

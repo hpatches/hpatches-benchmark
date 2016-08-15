@@ -20,7 +20,6 @@ or delete the appropriate `.results` file.
 `bin/hb_run.sh MCRPATH computedesc DESCNAME`  
 Compute some of the provided baseline descriptors. Supported
 descriptors currently are:
-* `surf`- SURF descriptor provided by MATLAB
 * `meanstd`  - 2D descriptor with mean and standard deviation of a patch
 * `resize`   - resize patch into 4x4 patch and perform meanstd norm.
  

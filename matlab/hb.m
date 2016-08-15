@@ -21,7 +21,6 @@ function hb(cmd, descname, taskname, varargin)
 %  `HB computedesc DESCNAME`  
 %    Compute some of the provided baseline descriptors. Supported
 %    descriptors currently are:
-%      * `surf`     - SURF descriptor provided by MATLAB
 %      * `meanstd`  - 2D descriptor with mean and standard deviation of a patch
 %      * `resize`   - resize patch into 4x4 patch and perform meanstd norm.
 %
@@ -191,8 +190,6 @@ switch cmd
     fprintf('All descriptors of %s appear to be valid.\n', descname);
   case 'computedesc'
     switch descname
-      case 'surf'
-        desc_fun = @desc_patch_matlab;
       case 'meanstd'
         desc_fun = @desc_patch_meanstd;
       case 'resize'
