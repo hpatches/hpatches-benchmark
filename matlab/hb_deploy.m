@@ -9,16 +9,18 @@ function hb_deploy()
 
 hb_setup();
 target_dir = fullfile(hb_path, 'bin');
-dependecies = vl_deps();
-
-mcc('-m', 'hb.m', '-d', target_dir, '-o', 'hb', ...
-  dependecies{:});
 
 helpstr = evalc('help hb');
-strrep(helpstr, '<strong>hb</strong> ', 'bin/hb_run MCRPATH ');
-fd = fopen(fullfile(hb_path, 'bin', 'README.md'), 'w');
+helpstr = strrep(helpstr, '<strong>hb</strong>', 'bin/hb_run.sh MCRPATH');
+helpstr = strrep(helpstr, '    ', '');
+helpstr = strrep(helpstr, '   `', '`');
+fd = fopen(fullfile(target_dir, 'README.md'), 'w');
 fprintf(fd, '#%s', helpstr);
 fclose(fd);
+
+dependecies = vl_deps();
+mcc('-m', 'hb.m', '-d', target_dir, '-o', 'hb', ...
+  dependecies{:});
 end
 
 function depargs = vl_deps()

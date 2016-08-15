@@ -1,40 +1,36 @@
 function hb(cmd, descname, taskname, varargin)
-% HB Main command line interface for HBenchmarks
+%HBenchmarks command line interface
 %  `HB COMMAND DESCNAME BENCHMARKNAME` Is a general call of the HBenchmarks
 %  command line interface. The supported commands are:
 %
-%  `HB checkdesc DESCNAME`
+%  `HB checkdesc DESCNAME`  
 %    Check the validity of the descriptors located in:
 %      data/descriptors/DESCNAME/<sequence_name>/<patchimage>.csv
 %   
-%  `HB pack DESCNAME`
+%  `HB pack DESCNAME`  
 %    Run evaluation on all benchmark files defined in `./benchmarks/` and
 %    pack the results to `./DESCNAME_results.zip`.
 %    Descriptors `DESCNAME` **must** be stored in an appropriate folders.
 %    This commands computes the results only for tasks, where the results
 %    file does not exist. To recompute all the results, call:
 %    ```
-%      HB pack DESCNAME * override true
+%    HB pack DESCNAME * override true
 %    ```
 %    or delete the appropriate `.results` file.
 %    
-%  `HB computedesc DESCNAME`
+%  `HB computedesc DESCNAME`  
 %    Compute some of the provided baseline descriptors. Supported
 %    descriptors currently are:
-%      * surf     - SURF descriptor provided by MATLAB
-%      * meanstd  - 2D descriptor with mean and standard deviation of a patch
-%      * resize   - resize patch into 4x4 patch and perform meanstd norm.
+%      * `surf`     - SURF descriptor provided by MATLAB
+%      * `meanstd`  - 2D descriptor with mean and standard deviation of a patch
+%      * `resize`   - resize patch into 4x4 patch and perform meanstd norm.
 %
-%  `HB classification DESCNAME BENCHMARKNAME`
-%  `HB matching DESCNAME BENCHMARKNAME`
-%  `HB retrieval DESCNAME BENCHMARKNAME`
-%    Compute results only for a specified .benchmark file stored in either
-%    of there filders:
+%  `HB TASK DESCNAME BENCHMARKNAME`  
+%    Compute results only for a specified .benchmark file stored in:
 %    ```
-%      benchmarks/classification/BENCHMARKNAME.benchmark
-%      benchmarks/retrieval/BENCHMARKNAME.benchmark
-%      benchmarks/matching/BENCHMARKNAME.benchmark
+%      benchmarks/TASK/BENCHMARKNAME.benchmark
 %    ```
+%    And TASK is one of `classification`, `retrieval` or `matching`.
 %    BENCHMARKNAME can contain an asterisk `*` wildcard. E.g. to run all
 %    train retrieval task, call:
 %    ```
@@ -46,10 +42,10 @@ function hb(cmd, descname, taskname, varargin)
 %      results/DESCNAME/retrieval/BENCHMARKNAME.results
 %    ```
 %
-%  `HB packdesc DESCNAME`
+%  `HB packdesc DESCNAME`  
 %     Pack all the descriptors DESCNAME to `DESCNAME_descriptors.zip`.
 %
-%  `HB help`
+%  `HB help`  
 %     Print this help string.
 
 % Copyright (C) 2016 Karel Lenc

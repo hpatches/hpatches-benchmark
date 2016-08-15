@@ -1,6 +1,10 @@
 results
 data/descriptors
 vlfeat
-bin/*
+bin/hb
+bin/hb_run.sh
+bin/*.log
+bin/*.txt
+bin/*.sh
 *~
 *.zip
