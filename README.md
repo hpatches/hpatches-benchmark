@@ -13,20 +13,20 @@ HBench is written in MATLAB but provides a simple command line interface
 for producing the `.results` files from descriptors stored in CSV files. You do not need to own a MATLAB license as we provide a [binary distribution](https://dl.dropboxusercontent.com/u/555392/hbench-v0.1.tar.gz) which needs only on the freely available MATLAB Compiler Runtime (MCR)
 
 ### Participate in the challange
-To obtain the results files you generally proceed as follows:
+To obtain the results files, once the test set is released, you generally proceed as follows:
+* Donwload and unpac the [binary distribution](https://dl.dropboxusercontent.com/u/555392/hbench-v0.1.tar.gz) of HPatches.
 * If you do not own MATLAB R2016a, install [MCR R2016a](http://www.mathworks.com/products/compiler/mcr/) to `MCRPATH`. Otherwise `MCRPATH` should be your MATLAB path. See [Install MCR](#install-mcr) for more details.
 * Download the HPatches dataset. The dataset is organized in patch-images in `data/hpatches/SEQUENCE/IMNAME.png`.
 You can download the dataset by running `bin/hb_run.sh MCRPATH`
 * For each patch-image compute the descriptor DESCNAME and store it in a numeric [CSV file](#csv-descriptors)
 `data/descriptors/DESCNAME/SEQUENCE/IMNAME.csv` with one
 descriptor per line.
-* Compute the results for all the tasks with `./bin/hb_run.sh MCRPATH pack DESCNAME`. This also checks at first whether your descriptors are valid.
+* Compute the results for all the tasks with `./bin/hb_run.sh MCRPATH pack DESCNAME`. This also checks at first whether your descriptors are valid. More details about the interface [here](#command-line-interface).
 * Send the archive `./DESCNAME_results.zip` to the [Dropbox submission folder](https://www.dropbox.com/request/2MJm7vV15XJnl1RzuCzl).
 
-To see details how to use the command line interface, see the section [Command Line Interface](#command-line-interface).
-
 Additionally you can also experiment with the MATLAB code directly, using the
-provided interface to compute your own descriptors.
+provided interface to compute your own descriptors. You can also clone the
+[GIT repository](https://github.com/featw/hbench), however to run the source code you need a MATLAB license.
 
 ### Install MCR
 The command line interface needs either MATLAB R2016a installed or the MCR installed.
