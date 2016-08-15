@@ -23,10 +23,13 @@ end
 if utls.provision(fullfile(hb_path, 'data', 'hpatches_test.url'), opts.rootDir)
   testDir = fullfile(opts.rootDir, 'hpatches-test', '*');
   movefile(testDir, opts.rootDir); delete(testDir);
-  assert(exist(fullfile(opts.rootDir, 'test_set.txt'), 'file') > 0);
+  assert(exist(fullfile(opts.rootDir, 'test_set.txt'), 'file') > 0, ...
+    'Unable to find the test_set.txt');
 end
 
-sequences = sort(utls.listdirs(opts.rootDir));
+sequences = [utls.listdirs(fullfile(opts.rootDir, 'i_*')), ...
+  utls.listdirs(fullfile(opts.rootDir, 'v_*'))];
+sequences = sort(sequences);
 tstSplitPath = fullfile(opts.rootDir, 'test_set.txt');
 if exist(tstSplitPath, 'file')
   tstSplitF = fopen(tstSplitPath, 'r');

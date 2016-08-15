@@ -14,6 +14,11 @@ dependecies = vl_deps();
 mcc('-m', 'hb.m', '-d', target_dir, '-o', 'hb', ...
   dependecies{:});
 
+helpstr = evalc('help hb');
+strrep(helpstr, '<strong>hb</strong> ', 'bin/hb_run MCRPATH ');
+fd = fopen(fullfile(hb_path, 'bin', 'README.md'), 'w');
+fprintf(fd, '#%s', helpstr);
+fclose(fd);
 end
 
 function depargs = vl_deps()

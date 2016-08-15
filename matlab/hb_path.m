@@ -11,13 +11,13 @@ if isdeployed
   paths = {pwd, fullfile(pwd, '..')};
   for pi = 1:numel(paths)
     path = paths{pi};
-    if exist(fullfile(path, 'data'), 'dir') && ...
-       exist(fullfile(path, 'benchmarks'), 'dir') && ...
-       exist(fullfile(path, 'results'), 'dir')
+    if exist(fullfile(path, 'benchmarks'), 'dir') && ...
+       exist(fullfile(path, 'matlab'), 'dir')
      dpath = path;
      return;
     end
   end
+  error('Hbenchmarks not found.');
 else
   funpath = fileparts(mfilename('fullpath'));
   dpath = fullfile(fileparts(funpath));

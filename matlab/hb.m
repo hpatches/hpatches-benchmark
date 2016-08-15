@@ -1,9 +1,56 @@
 function hb(cmd, descname, taskname, varargin)
-% HP Main command line entrypoint for the deployed application
-%   HP(COMMAND, DESCNAME, TASKNAME) Runs the benchmark task with a
-%   precomputed descriptor files. Descriptors must be stored in:
+% HB Main command line interface for HBenchmarks
+%  `HB COMMAND DESCNAME BENCHMARKNAME` Is a general call of the HBenchmarks
+%  command line interface. The supported commands are:
 %
-%   <hbench_root>/data/descriptors/DESCNAME/<sequence_name>/<im_name>.csv
+%  `HB checkdesc DESCNAME`
+%    Check the validity of the descriptors located in:
+%      data/descriptors/DESCNAME/<sequence_name>/<patchimage>.csv
+%   
+%  `HB pack DESCNAME`
+%    Run evaluation on all benchmark files defined in `./benchmarks/` and
+%    pack the results to `./DESCNAME_results.zip`.
+%    Descriptors `DESCNAME` **must** be stored in an appropriate folders.
+%    This commands computes the results only for tasks, where the results
+%    file does not exist. To recompute all the results, call:
+%    ```
+%      HB pack DESCNAME * override true
+%    ```
+%    or delete the appropriate `.results` file.
+%    
+%  `HB computedesc DESCNAME`
+%    Compute some of the provided baseline descriptors. Supported
+%    descriptors currently are:
+%      * surf     - SURF descriptor provided by MATLAB
+%      * meanstd  - 2D descriptor with mean and standard deviation of a patch
+%      * resize   - resize patch into 4x4 patch and perform meanstd norm.
+%
+%  `HB classification DESCNAME BENCHMARKNAME`
+%  `HB matching DESCNAME BENCHMARKNAME`
+%  `HB retrieval DESCNAME BENCHMARKNAME`
+%    Compute results only for a specified .benchmark file stored in either
+%    of there filders:
+%    ```
+%      benchmarks/classification/BENCHMARKNAME.benchmark
+%      benchmarks/retrieval/BENCHMARKNAME.benchmark
+%      benchmarks/matching/BENCHMARKNAME.benchmark
+%    ```
+%    BENCHMARKNAME can contain an asterisk `*` wildcard. E.g. to run all
+%    train retrieval task, call:
+%    ```
+%      HB retrieval DESCNAME train_*
+%    ```
+%    This always overwrites existing results files. Results will be stored
+%    in:
+%    ```
+%      results/DESCNAME/retrieval/BENCHMARKNAME.results
+%    ```
+%
+%  `HB packdesc DESCNAME`
+%     Pack all the descriptors DESCNAME to `DESCNAME_descriptors.zip`.
+%
+%  `HB help`
+%     Print this help string.
 
 % Copyright (C) 2016 Karel Lenc
 % All rights reserved.
@@ -12,15 +59,15 @@ function hb(cmd, descname, taskname, varargin)
 % the terms of the BSD license (see the COPYING file).
 hb_setup();
 opts.packWildCard = '*';
-opts.override = true;
+opts.override = [];
 [opts, varargin] = vl_argparse(opts, varargin);
 imdb = hpatches_dataset();
 if nargin == 2, taskname = opts.packWildCard; end;
-if ischar(opts.override), opts.override = strcmp(opts.override, 'true'); end;
+cmd = lower(cmd); descname = lower(descname);
 
 % Check the command
 valid_commands = {'classification', 'matching', 'retrieval', 'pack', ...
-  'checkdesc', 'packdesc'};
+  'checkdesc', 'packdesc', 'computedesc'};
 if nargin == 0 || ~ischar(cmd) || nargin == 0 || ...
     ~ismember(cmd, valid_commands)
   usage(valid_commands);
@@ -29,14 +76,14 @@ end
 
 % Chech validity of the descritpros
 desc_path = fullfile(hb_path, 'data', 'descriptors', descname);
-if ~exist(desc_path, 'dir')
+if ~ismember(cmd,  {'computedesc'}) && ~exist(desc_path, 'dir')
   error('Unable to find descriptors in `%s`.', desc_path);
 end
 desc_fun = @(a, b) desc_none(a, b, descname);
 
 % Handle the wildcard task names
 if ~isempty(strfind(taskname, '*')) && ...
-    ~ismember(cmd, {'pack', 'checkdesc', 'packdesc'})
+    ~ismember(cmd, {'pack', 'checkdesc', 'packdesc', 'computedesc'})
   task_names = cellfun(@(a)strrep(strrep(a, '_pos', ''), '_neg', ''), ...
     listtasks(cmd, taskname));
   task_names = sort(unique(task_names));
@@ -54,20 +101,18 @@ switch cmd
     res_file = fullfile(hb_path, 'results', descname, cmd, [taskname, '.results']);
     done_file = utls.get_donepath(res_file);
 
-    if ~exist(done_file, 'file') || opts.override
-      switch cmd
-        case 'classification'
-          classification_compute(bench_file, desc_fun, res_file, ...
-            'cacheName', descname)
-        case 'matching'
-          matching_compute(bench_file, desc_fun, res_file, ...
-            'cacheName', descname);
-        case 'retrieval'
-          retrieval_compute(bench_file, desc_fun, res_file, ...
-            'cacheName', descname);
-      end
-      df = fopen(done_file, 'w'); fclose(df);
+    switch cmd
+      case 'classification'
+        classification_compute(bench_file, desc_fun, res_file, ...
+          'cacheName', descname)
+      case 'matching'
+        matching_compute(bench_file, desc_fun, res_file, ...
+          'cacheName', descname);
+      case 'retrieval'
+        retrieval_compute(bench_file, desc_fun, res_file, ...
+          'cacheName', descname);
     end
+    df = fopen(done_file, 'w'); fclose(df);
     
     labels_file = fullfile(hb_path, 'benchmarks', cmd, [taskname, '.labels']);
     if ~exist(labels_file, 'file')
@@ -89,6 +134,7 @@ switch cmd
           descname, mean(res.image_retr_ap(:))*100, mean(res.patch_retr_ap(:))*100);
     end
   case 'pack'
+    hb('checkdesc', descname);
     fprintf('Packing all results for descriptor %s.\n', descname);
     fprintf('Please not that this does not recompute existing results.\n');
     commands = {'classification', 'retrieval', 'matching'};
@@ -96,7 +142,7 @@ switch cmd
       task_names = listtasks(commands{ci}, taskname);
       for ti = 1:numel(task_names)
         [valid, resfile] = checkresults(commands{ci}, descname, task_names{ti});
-        if ~valid
+        if ~valid || ~isempty(opts.override)
           warning('Invalid results file %s. Recomputing.', resfile);
           tn = strrep(strrep(task_names{ti}, '_pos', ''), '_neg', '');
           hb(commands{ci}, descname, tn, 'override', opts.override);
@@ -121,6 +167,7 @@ switch cmd
     descdim = [];
     fprintf('Checking %s descriptors for %d sequences.\n', ...
       descname, numel(imdb.sequences.name));
+    fprintf('Descriptors sored in %s.\n', desc_path);
     status = utls.textprogressbar(numel(imdb.sequences.name));
     for si = 1:numel(imdb.sequences.name)
       numPatches = imdb.sequences.npatches(si);
@@ -146,6 +193,20 @@ switch cmd
       status(si);
     end
     fprintf('All descriptors of %s appear to be valid.\n', descname);
+  case 'computedesc'
+    switch descname
+      case 'surf'
+        desc_fun = @desc_patch_matlab;
+      case 'meanstd'
+        desc_fun = @desc_patch_meanstd;
+      case 'resize'
+        desc_fun = @(varargin) desc_patch_resize(4, varargin{:});
+      otherwise
+        error('Unsupported baseline descriptor.');
+    end
+    fprintf('Computing the %s descriptor for %d sequences.\n', descname, ...
+      numel(imdb.sequences.name));
+    cache_all_desc(imdb, desc_fun, descname);
   case 'help'
     usage(valid_commands);
   otherwise
