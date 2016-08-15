@@ -14,12 +14,12 @@ for producing the `.results` files from descriptors stored in CSV files. You do 
 
 ### Participate in the challange
 To obtain the results files you generally proceed as follows:
-* If you do not own MATLAB R2016a, install [MATLAB Compiler Runtime R2016a](http://www.mathworks.com/products/compiler/mcr/) to `MCRPATH`. Otherwise `MCRPATH` should be your MATLAB path. See [Install MCR](#install-mcr) for more details.
-* Download the HPatches dataset. The dataset is organized in patch-images in `./data/hpatches/<seqquence>/<patchimage>.png`.
-You can download the dataset by running `./bin/hb_run.sh MCRPATH`
-* For each patch-image compute the descriptor and store it in a CSV file
-`./data/descriptors/DESCNAME/<seq_name>/<patchimage>.csv` with one
-descriptor per line. E.g. for a patch image  `./data/datasets/i_ski/ref.png` and a MEGADEEP descriptor there will be a CSV file `./data/descriptors/megadeep/i_ski/ref.csv` with 623 lines (one line per descriptor). The CSV can contain only numeric values.
+* If you do not own MATLAB R2016a, install [MCR R2016a](http://www.mathworks.com/products/compiler/mcr/) to `MCRPATH`. Otherwise `MCRPATH` should be your MATLAB path. See [Install MCR](#install-mcr) for more details.
+* Download the HPatches dataset. The dataset is organized in patch-images in `data/hpatches/SEQUENCE/IMNAME.png`.
+You can download the dataset by running `bin/hb_run.sh MCRPATH`
+* For each patch-image compute the descriptor DESCNAME and store it in a numeric [CSV file](#csv-descriptors)
+`data/descriptors/DESCNAME/SEQUENCE/IMNAME.csv` with one
+descriptor per line.
 * Compute the results for all the tasks with `./bin/hb_run.sh MCRPATH pack DESCNAME`. This also checks at first whether your descriptors are valid.
 * Send the archive `./DESCNAME_results.zip` to the [Dropbox submission folder](https://www.dropbox.com/request/2MJm7vV15XJnl1RzuCzl).
 
@@ -52,6 +52,8 @@ instead of the MCR:
 ./bin/run_hb.sh /usr/local/MATLAB/R2016a COMMAND DESCNAME BENCHMARK
 ```
 
+You can see the list of all available commands [here](./bin/README.md).
+
 ### MATLAB Interface
 If you have MATLAB R2016a installed, you can also easily run the `hb` function directly in MATLAB by running e.g.:
 ``` bash
@@ -60,7 +62,18 @@ hb COMMAND DESCNAME BENCHMARK
 ```
 
 Or you can experiment directly with the evaluation functions and the dataset
-structures. There are few examples prepared in `./matlab/example_*`.
+structures. There are few examples prepared in `matlab/example_*.m`.
+
+### CSV Descriptors
+Descriptors should be stored in simple comma-separated files. They can contain only numeric
+values. The data are organized as one descriptor per line. All descriptors must have the same number of elements.
+
+For example, for a patch image  `data/hpatches/i_ski/ref.png` and a MEGADEEP descriptor there will be a CSV file `data/descriptors/megadeep/i_ski/ref.csv` with 623 lines (one line per descriptor). The CSV can contain only numeric values.
+
+You can check if you have descriptors for all image files in a valid format with:
+```
+bin/run_hb.sh MCRPATH checkdesc DESCNAME
+```
 
 ### Compute Baseline Descriptors
 To compute the baseline descriptors and to check if everything works as it should,
@@ -69,8 +82,6 @@ you can run:
 ./bin/run_hb.sh MCRPATH computedesc DESCNAME
 ```
 Currently implemented descriptors are `meanstd` and `resize`.
-
-You can see the list of all available commands [here](./bin/README.md).
 
 ## Tasks
 The challenge consists of three common computer vision tasks.
@@ -82,17 +93,17 @@ For more details about the challenges, see the following links:
 ## Referencing patch-images and patches
 For referring patch-images we use the following signatures:
 ```
-sequence_name.image_name
+SEQUENCE.IMNAME
 ```
-where the image is stored in `./data/hpatches/sequence_name/image_name.png`.
+where the image is stored in `data/hpatches/SEQUENCE/IMNAME.png`.
 
 For referring a particular patch within the image we use a signature:
 ```
-sequence_name.image_name.patch_idx
+SEQUENCE.IMNAME.PATCH_IDX
 ```
-Where `patch_idx` is a zero-based index within the patches. How to get a particular patch is shown in the following pseudo-code:
+Where `PATCH_IDX` is a zero-based index within the patches. How to get a particular patch is shown in the following pseudo-code:
 ``` python
-image = read_image('data/hpatches/sequence_name/image_name.png');
+image = read_image('data/hpatches/SEQUENCE/IMNAME.png');
 patch = image(start_row=patch_num*65, end_row=(patch_num+1)*65);
 ```
 Patches with the same index has been extracted from the same location in the scene (plus some additional noise) within the sequence.
