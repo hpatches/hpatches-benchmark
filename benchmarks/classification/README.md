@@ -13,7 +13,7 @@ This is based on a balanced positive and negative pairs dataset similarly to [1]
 
 2) *Imbalanced positive and negative pairs*
 This is based on the idea that the
-number of positive pairs are signicicantly less compared to negative
+number of positive pairs are significantly less compared to negative
 pairs, so we also provide a separate list of 1M negatives that can be
 used together with the 200K positive ones to test the
 performance. Note that in this case, ROC curves should not be used

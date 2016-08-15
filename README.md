@@ -5,7 +5,7 @@ This code implements the challenge for the
 workshop at ECCV 2016.
 
 ## Getting started
-In order to take part in the challenge, one needs to send the the `*.results`
+In order to take part in the challenge, one needs to send the `*.results`
 files for each `*.benchmark` file in the `./benchmarks/` directory. To do
 so, the easiest way is to use the provided HBench toolbox.
 
@@ -13,7 +13,7 @@ The HBench is written in MATLAB but provides a simple command line interface
 for computing the results tasks. If you do not own a license to MATLAB, you
 can also use the freely available MATLAB compiler runtime (MCR).
 
-### Participate in the challange
+### Participate in the challenge
 To obtain the results files you generally proceed as follows:
 * Install [MATLAB Compiler Runtime](http://www.mathworks.com/products/compiler/mcr/) to `MCRPATH`.
 * Download the HPatches dataset, stored in patch-images `./data/hpatches/<seqquence>/<patchimage>.png`.
@@ -24,7 +24,7 @@ descriptor per line. E.g. for a patch image  `./data/datasets/i_ski/ref.png` and
 * Run all the tasks `./bin/hb_run.sh MCRPATH pack DESCNAME`. This also checks the validity of your descriptors.
 * Send the archive `./DESCNAME_results.zip` to the [submission folder](https://www.dropbox.com/request/2MJm7vV15XJnl1RzuCzl).
 
-To see details how to use the command line interface, see the [Command Line Interface](#Command line interface).
+To see details of how to use the command line interface, see the [Command Line Interface](#Command line interface).
 
 Additionally you can also experiment with the MATLAB code directly, using the
 provided interface to compute your own descriptors.

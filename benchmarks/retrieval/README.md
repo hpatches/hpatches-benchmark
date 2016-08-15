@@ -1,5 +1,5 @@
 # Image and Patch Retrieval Benchmark
-This benchmark evaluates performance of a feature descriptor in ranking task for image-to-many-images matching. Similarly as in [1] using the mean Average Precision (mAP) measure, proposed in [2], for both image and patch retrieval.
+This benchmark evaluates the performance of a feature descriptor in a ranking task for image-to-many-images matching. Similarly as in [1] the mean Average Precision (mAP) measure, proposed in [2], is used for both image and patch retrieval.
 
 From a defined pool of patches, an ideal image retrieval algorithm ranks the highest the patches from the same sequence. For patch retrieval, the patches must be also from the same location within the sequence of images. For simplicity, we use only the descriptor distance to rank the patches from the pool.
 

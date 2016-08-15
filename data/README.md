@@ -6,7 +6,7 @@ Patches are organised as:
 ```
 ./data/hpatches/<sequence_name>/<image_name>.png
 ```
-All images withing the same sequence are of the same size.
+All images within the same sequence are of the same size.
 
 `descriptors` Computed descriptors in csv format.
 Descriptors are organised as:
