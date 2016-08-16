@@ -64,16 +64,27 @@ hb_setup();
 opts.packWildCard = '*';
 opts.override = [];
 [opts, varargin] = vl_argparse(opts, varargin);
-imdb = hpatches_dataset();
-if nargin == 0, fprintf('Nothing to do.\n'); end;
+valid_commands = {'pack', 'checkdesc', 'computedesc', 'classification', ...
+  'matching', 'retrieval', 'packdesc', 'help'};
+if nargin == 0
+  fprintf(isdeployed+1, 'Nothing to do.\n');
+  usage(valid_commands); return;
+end;
+if nargin == 1
+  if strcmp(cmd, 'help')
+    fprintf(isdeployed+1, '%s\n', evalc('help hb'));
+    return;
+  end
+  fprintf(isdeployed+1, 'Missing DESCNAME.\n');
+  usage(valid_commands); return;
+end;
 if nargin == 2, taskname = opts.packWildCard; end;
 cmd = lower(cmd); descname = lower(descname);
+imdb = hpatches_dataset();
 
 % Check the command
-valid_commands = {'classification', 'matching', 'retrieval', 'pack', ...
-  'checkdesc', 'packdesc', 'computedesc'};
-if nargin == 0 || ~ischar(cmd) || nargin == 0 || ...
-    ~ismember(cmd, valid_commands)
+if ~ischar(cmd) || ~ismember(cmd, valid_commands) || ~ischar(descname) || ...
+  ~ischar(taskname)
   usage(valid_commands);
   return;
 end
@@ -213,8 +224,6 @@ switch cmd
     fprintf('Computing the %s descriptor for %d sequences.\n', descname, ...
       numel(imdb.sequences.name));
     cache_all_desc(imdb, desc_fun, descname);
-  case 'help'
-    usage(valid_commands);
   otherwise
     error('Unknown command.');
 end
@@ -254,7 +263,7 @@ end
 end
 
 function usage(valid_commands)
-fprintf(isdeployed+1, 'Usage: `run_hb command desc_name task_name`\n');
+fprintf(isdeployed+1, 'Usage: `run_hb.sh COMMAND DESCNAME BENCHMARK`\n');
 fprintf(isdeployed+1, 'Valid commands: %s\n', strjoin(valid_commands, ', '));
-fprintf(isdeployed+1, '%s\n', evalc('help hb'));
+fprintf(isdeployed+1, 'See `hb_run.sh help` for help.\n');
 end
