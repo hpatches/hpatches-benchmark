@@ -17,11 +17,11 @@ To obtain the results files, once the test set is released, you generally procee
 * Donwload and unpack the [binary distribution](https://dl.dropboxusercontent.com/u/555392/hbench-v0.1.tar.gz) of *HBench*.
 * If you do not own MATLAB R2016a, install [MCR R2016a](http://www.mathworks.com/products/compiler/mcr/) to `MCRPATH`. Otherwise `MCRPATH` should be your MATLAB path. See [Install MCR](#install-mcr) for more details.
 * Download the *HPatches* dataset. The dataset is organized in patch-images in `data/hpatches/SEQUENCE/IMNAME.png`.
-You can download the dataset by running `bin/hb_run.sh MCRPATH`
+You can download the dataset by running `bin/run_hb.sh MCRPATH`
 * For each patch-image compute the descriptor DESCNAME and store it in a numeric [CSV file](#csv-descriptors)
 `data/descriptors/DESCNAME/SEQUENCE/IMNAME.csv` with one
 descriptor per line.
-* Compute the results for all the tasks with `./bin/hb_run.sh MCRPATH pack DESCNAME`. This also checks at first whether your descriptors are valid. More details about the interface [here](#command-line-interface).
+* Compute the results for all the tasks with `./bin/run_hb.sh MCRPATH pack DESCNAME`. This also checks at first whether your descriptors are valid. More details about the interface [here](#command-line-interface).
 * Send the archive `./DESCNAME_results.zip` to the [Dropbox submission folder](https://www.dropbox.com/request/2MJm7vV15XJnl1RzuCzl).
 
 Additionally you can also experiment with the MATLAB code directly, using the
