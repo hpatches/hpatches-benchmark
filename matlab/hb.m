@@ -269,5 +269,5 @@ end
 function usage(valid_commands)
 fprintf(isdeployed+1, 'Usage: `run_hb.sh COMMAND DESCNAME BENCHMARK`\n');
 fprintf(isdeployed+1, 'Valid commands: %s\n', strjoin(valid_commands, ', '));
-fprintf(isdeployed+1, 'See `hb_run.sh help` for help.\n');
+fprintf(isdeployed+1, 'See `run_hb.sh help` for help.\n');
 end

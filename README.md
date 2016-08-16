@@ -29,7 +29,7 @@ provided interface to compute your own descriptors. You can also clone the
 [GIT repository](https://github.com/featw/hbench), however to run the source code you need a MATLAB license.
 
 ### Install MCR
-The command line interface needs either MATLAB R2016a installed or the MCR installed.
+The binary command line interface needs either MATLAB R2016a installed or the MCR installed.
 If you do not have MATLAB installed, you can download the MCR for:
 * [Download MCR for Linux 64-bit](http://www.mathworks.com/supportfiles/downloads/R2016a/deployment_files/R2016a/installers/glnxa64/MCR_R2016a_glnxa64_installer.zip)
 Download the zip archive, unpack and run the `./install` script.
@@ -52,10 +52,12 @@ instead of the MCR:
 ./bin/run_hb.sh /usr/local/MATLAB/R2016a COMMAND DESCNAME BENCHMARK
 ```
 
-You can see the list of all available commands [here](./bin/README.md).
+You can see the list of all available commands [here](./bin/README.md). The command
+line interface works only with MATLAB R2016a, if you have an older version,
+you can still use the [MATLAB interface](matlab-interface).
 
 ### MATLAB Interface
-If you have MATLAB R2016a installed, you can also easily run the `hb` function directly in MATLAB by running e.g.:
+If you have MATLAB >R2014b installed, you can also easily run the `hb` function directly in MATLAB by running e.g.:
 ``` bash
 cd matlab
 hb COMMAND DESCNAME BENCHMARK
