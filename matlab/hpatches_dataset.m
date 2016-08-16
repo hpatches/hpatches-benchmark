@@ -20,12 +20,12 @@ if utls.provision(fullfile(hb_path, 'data', 'hpatches_train.url'), opts.rootDir)
   trainDir = fullfile(opts.rootDir, 'hpatches-train', '*');
   movefile(trainDir, opts.rootDir); delete(trainDir);
 end
-if utls.provision(fullfile(hb_path, 'data', 'hpatches_test.url'), opts.rootDir)
-  testDir = fullfile(opts.rootDir, 'hpatches-test', '*');
-  movefile(testDir, opts.rootDir); delete(testDir);
-  assert(exist(fullfile(opts.rootDir, 'test_set.txt'), 'file') > 0, ...
-    'Unable to find the test_set.txt');
-end
+%if utls.provision(fullfile(hb_path, 'data', 'hpatches_test.url'), opts.rootDir)
+%  testDir = fullfile(opts.rootDir, 'hpatches-test', '*');
+%  movefile(testDir, opts.rootDir); delete(testDir);
+%  assert(exist(fullfile(opts.rootDir, 'test_set.txt'), 'file') > 0, ...
+%    'Unable to find the test_set.txt');
+%end
 
 sequences = [utls.listdirs(fullfile(opts.rootDir, 'i_*')), ...
   utls.listdirs(fullfile(opts.rootDir, 'v_*'))];

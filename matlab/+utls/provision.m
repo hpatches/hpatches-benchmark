@@ -1,9 +1,11 @@
 function downloaded = provision( url_file, tgt_dir )
 
 downloaded = false;
-if ~exist(url_file, 'file'), return; end;
+if ~exist(url_file, 'file')
+  error('Unable to find the URL file %s.', url_file);
+end;
 [~, url_file_nm] = fileparts(url_file);
-vl_xmkdir(tgt_dir);
+[~,~] = mkdir(tgt_dir);
 done_file = fullfile(tgt_dir, ['.', url_file_nm, '.done']);
 if exist(done_file, 'file'), return; end;
 url = utls.readfile(url_file);
