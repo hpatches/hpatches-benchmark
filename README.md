@@ -81,7 +81,7 @@ you can run:
 ```
 ./bin/run_hb.sh MCRPATH computedesc DESCNAME
 ```
-Currently implemented descriptors are `meanstd` and `resize`.
+Currently implemented descriptors are `sift`, `meanstd` and `resize`.
 
 ## Tasks
 The challenge consists of three common computer vision tasks.

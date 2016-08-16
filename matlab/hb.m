@@ -225,7 +225,7 @@ switch cmd
       otherwise
         error('Unsupported baseline descriptor.');
     end
-    fprintf('Computing the %s descriptor for %d sequences.\n', descname, ...
+    fprintf('Computing %s descriptor for %d sequences.\n', descname, ...
       numel(imdb.sequences.name));
     cache_all_desc(imdb, desc_fun, descname);
   otherwise
