@@ -9,7 +9,7 @@ function hb(cmd, descname, taskname, varargin)
 %   
 %  `HB pack DESCNAME`  
 %    Run evaluation on all benchmark files defined in `./benchmarks/` and
-%    pack the results to `./DESCNAME_results.zip`.
+%    pack the results to `DESCNAME_results.zip`.
 %    Descriptors `DESCNAME` **must** be stored in an appropriate folders.
 %    This commands computes the results only for tasks, where the results
 %    file does not exist. To recompute all the results, call:
@@ -17,6 +17,8 @@ function hb(cmd, descname, taskname, varargin)
 %    HB pack DESCNAME * override true
 %    ```
 %    or delete the appropriate `.results` file.
+%    This command also makes sure that the submission name and contact
+%    email address are stored in `data/descriptors/DESCNAME/info.txt`.
 %
 %    Please note that the classification benchmark loads the descriptors to
 %    memory.
@@ -136,6 +138,8 @@ switch cmd
           descname, mean(res.image_retr_ap(:))*100, mean(res.patch_retr_ap(:))*100);
     end
   case 'pack'
+    % TODO ask for contact details.
+    % TODO check if test set available
     hb('checkdesc', descname);
     fprintf('Packing all results for descriptor %s.\n', descname);
     fprintf('Please not that this does not recompute existing results.\n');
@@ -151,6 +155,7 @@ switch cmd
         end
       end
     end
+    getdescinfo(descname);
     zipFile = fullfile(hb_path, [descname, '_results.zip']);
     fprintf('Packing the results to %s.\n', zipFile);
     zip(zipFile, fullfile(hb_path, 'results', descname));
@@ -159,6 +164,7 @@ switch cmd
       zipFile, submitLink{1});
   case 'packdesc'
     hb('checkdesc', descname);
+    getdescinfo(descname);
     zipFile = fullfile(hb_path, [descname, '_descriptors.zip']);
     fprintf('Packing the descriptors to %s.\n', zipFile);
     zip(zipFile, fullfile(hb_path, 'data', 'descriptors', descname));
@@ -169,7 +175,7 @@ switch cmd
     descdim = [];
     fprintf('Checking %s descriptors for %d sequences.\n', ...
       descname, numel(imdb.sequences.name));
-    fprintf('Descriptors sored in %s.\n', desc_path);
+    fprintf('Descriptors stored in %s.\n', desc_path);
     status = utls.textprogressbar(numel(imdb.sequences.name));
     for si = 1:numel(imdb.sequences.name)
       numPatches = imdb.sequences.npatches(si);
@@ -232,7 +238,23 @@ finfo = dir(res_file);
 valid = ~finfo.isdir && finfo.bytes > 0;
 end
 
+function getdescinfo(descname)
+descInfoFile = fullfile(hb_path, 'data', 'descriptors', descname, 'info.txt');
+if ~exist(descInfoFile, 'file') ||...
+    numel(utls.readfile(descInfoFile)) ~= 2
+  fprintf('\nTo continue, we need to know few details about your submission:\n');
+  submissisonName = input('Please enter submission name: ', 's');
+  emailAddress = input('Please enter contact email: ', 's');
+  ifd = fopen(descInfoFile, 'w');
+  fprintf(ifd, '%s\n%s', submissisonName, emailAddress);
+  fclose(ifd);
+  fprintf('Submission info wrote to %s. Edit this file for changes.\n', ...
+    descInfoFile);
+end
+end
+
 function usage(valid_commands)
 fprintf(isdeployed+1, 'Usage: `run_hb command desc_name task_name`\n');
+fprintf(isdeployed+1, 'Valid commands: %s\n', strjoin(valid_commands, ', '));
 fprintf(isdeployed+1, '%s\n', evalc('help hb'));
 end

@@ -1,5 +1,5 @@
 function hb_deploy()
-% HB_DEPLOY Deploy the command line interface of the HBenchmark
+% HB_DEPLOY Deploy the binary command line interface of the HBenchmark
 
 % Copyright (C) 2016 Karel Lenc
 % All rights reserved.
@@ -19,8 +19,7 @@ fprintf(fd, '#%s', helpstr);
 fclose(fd);
 
 dependecies = vl_deps();
-mcc('-m', 'hb.m', '-d', target_dir, '-o', 'hb', ...
-  dependecies{:});
+mcc('-m', 'hb.m', '-d', target_dir, '-o', 'hb', dependecies{:});
 end
 
 function depargs = vl_deps()

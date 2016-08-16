@@ -19,7 +19,9 @@ To obtain the results files, once the test set is released, you generally procee
 You can download the dataset by running `bin/run_hb.sh MCRPATH`. The script `run_hb.sh` is only in the [binary distribution](https://dl.dropboxusercontent.com/u/555392/hbench-v0.1.tar.gz).
 * For each patch-image compute the descriptor DESCNAME and store it in a numeric [CSV file](#csv-descriptors)
 `data/descriptors/DESCNAME/SEQUENCE/IMNAME.csv` with one descriptor per line.
-* Compute the results for all the tasks with `./bin/run_hb.sh MCRPATH pack DESCNAME`. This also checks at first whether your descriptors are valid. More details about the interface [here](#command-line-interface).
+* Compute the results for all the tasks with `./bin/run_hb.sh MCRPATH pack DESCNAME`.
+It checks the validity of descriptors, computes the results and asks for some
+details about your submission. More details about the interface [here](#command-line-interface).
 * Send the archive `./DESCNAME_results.zip` to the [Dropbox submission folder](https://www.dropbox.com/request/2MJm7vV15XJnl1RzuCzl).
 
 Additionally you can also experiment with the MATLAB code directly, using the

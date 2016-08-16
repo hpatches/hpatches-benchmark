@@ -8,7 +8,7 @@ data/descriptors/DESCNAME/<sequence_name>/<patchimage>.csv
 
 `bin/hb_run.sh MCRPATH pack DESCNAME`  
 Run evaluation on all benchmark files defined in `./benchmarks/` and
-pack the results to `./DESCNAME_results.zip`.
+pack the results to `DESCNAME_results.zip`.
 Descriptors `DESCNAME` **must** be stored in an appropriate folders.
 This commands computes the results only for tasks, where the results
 file does not exist. To recompute all the results, call:
@@ -16,6 +16,11 @@ file does not exist. To recompute all the results, call:
 bin/hb_run.sh MCRPATH pack DESCNAME * override true
 ```
 or delete the appropriate `.results` file.
+This command also makes sure that the submission name and contact
+email address are stored in `data/descriptors/DESCNAME/info.txt`.
+ 
+Please note that the classification benchmark loads the descriptors to
+memory.
 
 `bin/hb_run.sh MCRPATH computedesc DESCNAME`  
 Compute some of the provided baseline descriptors. Supported
@@ -39,6 +44,9 @@ in:
 ```
 results/DESCNAME/retrieval/BENCHMARKNAME.results
 ```
+ 
+Please note that the classification benchmark caches descriptors in
+memory.
  
 `bin/hb_run.sh MCRPATH packdesc DESCNAME`  
 Pack all the descriptors DESCNAME to `DESCNAME_descriptors.zip`.
