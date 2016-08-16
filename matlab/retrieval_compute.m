@@ -75,7 +75,7 @@ fprintf(isdeployed+1, 'Done in %.2fs.\n', toc(stime));
 
 querySignatures = benchmarks(2:end);
 qDesc = cell(1, numel(querySignatures)); stime = tic;
-fprintf(isdeployed+1, 'Computing %d queries descriptors...\n', numel(querySignatures));
+fprintf(isdeployed+1, 'Computing %d query descriptors...\n', numel(querySignatures));
 updt = utls.textprogressbar(numel(querySignatures));
 for qi = 1:numel(querySignatures)
   qDesc{qi} = get_descriptors(imdb, querySignatures{qi}, descfun, ...
