@@ -100,13 +100,14 @@ desc_fun = @(a, b) desc_none(a, b, descname);
 if ~isempty(strfind(taskname, '*')) && ...
     ~ismember(cmd, {'pack', 'checkdesc', 'packdesc', 'computedesc'})
   task_names = cellfun(@(a)strrep(strrep(a, '_pos', ''), '_neg', ''), ...
-    listtasks(cmd, taskname));
+    listtasks(cmd, taskname), 'UniformOutput', false);
   task_names = sort(unique(task_names));
-  fprintf(isdeployed+1, 'Processing %d tasks: %s\n', numel(tasks_names), ...
+  fprintf(isdeployed+1, 'Processing %d tasks: %s\n', numel(task_names), ...
     strjoin(task_names, ', '));
   for ti = 1:numel(task_names)
     hb(cmd, descname, task_names{ti}, 'override', opts.override);
   end
+  return;
 end
 
 switch cmd
