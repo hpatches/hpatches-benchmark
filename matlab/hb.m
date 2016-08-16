@@ -65,7 +65,7 @@ opts.packWildCard = '*';
 opts.override = [];
 [opts, varargin] = vl_argparse(opts, varargin);
 imdb = hpatches_dataset();
-if isempty(cmd), return; end;
+if nargin == 0, fprintf('Nothing to do.\n'); end;
 if nargin == 2, taskname = opts.packWildCard; end;
 cmd = lower(cmd); descname = lower(descname);
 
@@ -206,7 +206,7 @@ switch cmd
       case 'meanstd'
         desc_fun = @desc_patch_meanstd;
       case 'resize'
-        desc_fun = @(varargin) desc_patch_resize(4, varargin{:});
+        desc_fun = @(varargin) desc_patch_resize(6, varargin{:});
       otherwise
         error('Unsupported baseline descriptor.');
     end
