@@ -9,12 +9,12 @@ workshop at ECCV 2016. It implements the *HPatches* evaluation protocol and allo
 
 The *HPatches* benchmark assess local patch descriptors using a number of complementary tests. There are two ways to run such tests and enter the challenge:
 
-1. **Provide the patch descriptors.** This is the simplest although slightly less flexible manner. In this case, one simply computes a patch descriptor for each patch in *HPatches*, stores it in a CSV file, and uses the *HBench* toolbox to generate the result files. The main limitation is that descriptors are implicitly compared using the Euclidean distance.
+1. **Provide the patch descriptors and use HBench to compute the result files.** This is the simplest although slightly less flexible manner. In this case, one simply computes a patch descriptor for each patch in *HPatches*, stores it in a CSV file, and uses the *HBench* toolbox to generate the result files. The main limitation is that descriptors are implicitly compared using the Euclidean distance.
 
 2. **Provide the result files directly.** This method is more flexible as it allows to compare descriptors using an arbitrary method, but it requires to generate the result files directly. In particular, for each  `*.benchmark` file found in the folder hierarchy `benchmarks/`, one must provide a corresponding `*.results` file.
 
-The rest of this page discusses the first method, which relies on the *HBench* software. *HBench* is written in MATLAB but provides a simple command line interface
-for producing the `.results` files from descriptors stored in CSV files. You do not need to own a MATLAB license as we provide a [binary distribution](https://dl.dropboxusercontent.com/u/555392/hbench-v0.1.tar.gz) which needs only on the freely available MATLAB Compiler Runtime (MCR).
+The rest of this page discusses the first method, which relies on the *HBench* software. *HBench* provides a simple command line interface
+for producing the `.results` files from descriptors stored in CSV files. *HBench* is written in MATLAB, but you do not need to own a MATLAB license as we provide a [binary distribution](https://dl.dropboxusercontent.com/u/555392/hbench-v0.1.tar.gz) which needs only on the freely available MATLAB Compiler Runtime (MCR).
 
 ### Participate in the challenge
 
