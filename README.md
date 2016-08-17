@@ -1,36 +1,42 @@
 # HBench
-A toolbox for evaluating local feature descriptors in common computer vision tasks with the *HPatches* dataset (Homography patches).
-This toolbox is a support code for the challenge for
+
+*HBench* is a toolbox for evaluating local feature descriptors using the [*HPatches*](https://github.com/featw/hpatches) (Homography Patches) dataset and benchmark.
+This toolbox supports the descriptor matching challenge that will be presented at the
 [Local Features: State of the Art, Open Problems and Performance Evaluation](http://www.iis.ee.ic.ac.uk/ComputerVision/DescrWorkshop/index.html)
-workshop at ECCV 2016.
+workshop at ECCV 2016. It implements the *HPatches* evaluation protocol and allows to produce the result files required to enter the challenge.
 
 ## Getting started
-In order to take part in the challenge, one needs to send the archived `*.results`
-files for each `*.benchmark` file in the `benchmarks/` sub-folders. To do
-so, the simplest way is to use this toolbox.
 
-*HBench* is written in MATLAB but provides a simple command line interface
-for producing the `.results` files from descriptors stored in CSV files. You do not need to own a MATLAB license as we provide a [binary distribution](https://dl.dropboxusercontent.com/u/555392/hbench-v0.1.tar.gz) which needs only on the freely available MATLAB Compiler Runtime (MCR)
+The *HPatches* benchmark assess local patch descriptors using a number of complementary tests. There are two ways to run such tests and enter the challenge:
 
-### Participate in the challange
+1. **Provide the patch descriptors.** This is the simplest although slightly less flexible manner. In this case, one simply computes a patch descriptor for each patch in *HPatches*, stores it in a CSV file, and uses the *HBench* toolbox to generate the result files. The main limitation is that descriptors are implicitly compared using the Euclidean distance.
+
+2. **Provide the result files directly.** This method is more flexible as it allows to compare descriptors using an arbitrary method, but it requires to generate the result files directly. In particular, for each  `*.benchmark` file found in the folder hierarchy `benchmarks/`, one must provide a corresponding `*.results` file.
+
+The rest of this page discusses the first method, which relies on the *HBench* software. *HBench* is written in MATLAB but provides a simple command line interface
+for producing the `.results` files from descriptors stored in CSV files. You do not need to own a MATLAB license as we provide a [binary distribution](https://dl.dropboxusercontent.com/u/555392/hbench-v0.1.tar.gz) which needs only on the freely available MATLAB Compiler Runtime (MCR).
+
+### Participate in the challenge
+
 To obtain the results files, once the test set is released, you generally proceed as follows:
-* Donwload and unpack the [binary distribution](https://dl.dropboxusercontent.com/u/555392/hbench-v0.1.tar.gz) of *HBench*. If you do not have MATLAB R2016a, install [MCR R2016a](http://www.mathworks.com/products/compiler/mcr/) to some `MCRPATH`. Otherwise `MCRPATH` is your MATLAB path. See [Install MCR](#install-mcr) for more details.
-* Download the *HPatches* dataset. The dataset is organized in patch-images in `data/hpatches/SEQUENCE/IMNAME.png`.
-You can download the dataset by running `bin/run_hb.sh MCRPATH`. The script `run_hb.sh` is only in the [binary distribution](https://dl.dropboxusercontent.com/u/555392/hbench-v0.1.tar.gz).
-* For each patch-image compute the descriptor DESCNAME and store it in a numeric [CSV file](#csv-descriptors)
-`data/descriptors/DESCNAME/SEQUENCE/IMNAME.csv` with one descriptor per line.
-* Compute the results for all the tasks with `./bin/run_hb.sh MCRPATH pack DESCNAME`.
-It checks the validity of descriptors, computes the results and asks for some
-details about your submission. More details about the interface [here](#command-line-interface).
-* Send the archive `./DESCNAME_results.zip` to the [Dropbox submission folder](https://www.dropbox.com/request/2MJm7vV15XJnl1RzuCzl).
 
-Additionally you can also experiment with the MATLAB code directly, using the
+* **Install HBench.** Download and unpack the [binary distribution](https://dl.dropboxusercontent.com/u/555392/hbench-v0.1.tar.gz) of *HBench*. Let `HBPATH` be the path to the install directory.
+* **Install HPatches.** Download the [HPatches](https://github.com/featw/hpatches) dataset. You can download the dataset directly or by running the script `HBPATH/bin/run_hb.sh MCRPATH` available in the *binary* distribution of HBench (see above). Make sure that the HPatches data is unpacked in the subfolder `HBPATH/data/` of the HBench install.
+* **Install the required MATLAB components.** Install either MATLAB R2016a or the free MATLAB redistributable environment [MCR R2016a](http://www.mathworks.com/products/compiler/mcr/). In the following, let `MCRPATH` be the path to either the MATLAB or MCR install. See [Install MCR](#install-mcr) for more details.
+* **Compute the patch descriptors.** The HPatches dataset is organized in patch-images in `HBPATH/data/hpatches/SEQUENCE/IMNAME.png`. For each patch-image compute the descriptor `DESCNAME` (where `DESCNAME` is an arbitrary descriptor name such as `SIFT`) and store it in a numeric [CSV file](#csv-descriptors)
+`HBPATH/data/descriptors/DESCNAME/SEQUENCE/IMNAME.csv` with one descriptor per line.
+* **Compute the result files.** This can be done in one go from the command line using `HBPATH/bin/run_hb.sh MCRPATH pack DESCNAME`.
+This command checks the validity of descriptors, computes the results and asks for some
+details about your submission. More details about the interface can be found [here](#command-line-interface).
+* **Submit the results.** Send the archive `./DESCNAME_results.zip` to the [Dropbox submission folder](https://www.dropbox.com/request/2MJm7vV15XJnl1RzuCzl).
+
+Additionally, you can also experiment with the MATLAB code directly, using the
 provided interface to compute your own descriptors. You can also clone the
-[GIT repository](https://github.com/featw/hbench), however to run the source code you need a MATLAB license.
+[GIT repository](https://github.com/featw/hbench), but in order to run the source code you will need a MATLAB license.
 
 ### Install MCR
-The command line interface needs either MATLAB R2016a installed or the MCR installed.
-If you do not have MATLAB installed, you can download the MCR for:
+The command line interface requires either MATLAB R2016a or the MATLAB Compiler Rumtime (MCR) installed. If you do not have MATLAB, you can download and install the MCR for free as follows:
+
 * [Download MCR for Linux 64-bit](http://www.mathworks.com/supportfiles/downloads/R2016a/deployment_files/R2016a/installers/glnxa64/MCR_R2016a_glnxa64_installer.zip)
 Download the zip archive, unpack and run the `./install` script.
 * [Download MCR for Windows 64-bit](http://www.mathworks.com/supportfiles/downloads/R2016a/deployment_files/R2016a/installers/win64/MCR_R2016a_win64_installer.exe)
@@ -40,6 +46,8 @@ Download the zip archive, unpack and run the `./install` script.
 
 More details how to install the MCR can be found [here](http://www.mathworks.com/products/compiler/mcr/).
 Please note that around 2GB of free space is required.
+
+<a id=command-line-interface></a>
 
 ### Command line interface
 To run the *HBench* command line interface with the MCR located in the default path, run:
@@ -51,10 +59,10 @@ instead of the MCR:
 ``` bash
 ./bin/run_hb.sh /usr/local/MATLAB/R2016a COMMAND DESCNAME BENCHMARK
 ```
-
 You can see the list of all available commands [here](./bin/README.md).
 
 ### MATLAB Interface
+
 If you have MATLAB R2016a installed, you can also easily run the `hb` function directly in MATLAB by running e.g.:
 ``` bash
 cd matlab
