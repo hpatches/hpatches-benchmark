@@ -3,11 +3,11 @@ function hb(cmd, descname, taskname, varargin)
 %  `HB COMMAND DESCNAME BENCHMARKNAME` Is a general call of the HBenchmarks
 %  command line interface. The supported commands are:
 %
-%  `HB checkdesc DESCNAME`  
+%  `HB checkdesc DESCNAME`
 %    Check the validity of the descriptors located in:
 %      data/descriptors/DESCNAME/<sequence_name>/<patchimage>.csv
-%   
-%  `HB pack DESCNAME`  
+%
+%  `HB pack DESCNAME`
 %    Run evaluation on all benchmark files defined in `./benchmarks/` and
 %    pack the results to `DESCNAME_results.zip`.
 %    Descriptors `DESCNAME` **must** be stored in an appropriate folders.
@@ -22,15 +22,15 @@ function hb(cmd, descname, taskname, varargin)
 %
 %    Please note that the classification benchmark loads the descriptors to
 %    memory.
-%    
-%  `HB computedesc DESCNAME`  
+%
+%  `HB computedesc DESCNAME`
 %    Compute some of the provided baseline descriptors. Supported
 %    descriptors currently are:
 %      * `sift`     - SIFT descriptor (VLFeat implementation)
 %      * `meanstd`  - 2D descriptor with mean and standard deviation of a patch
 %      * `resize`   - resize patch into 4x4 patch and perform meanstd norm.
 %
-%  `HB TASK DESCNAME BENCHMARKNAME`  
+%  `HB TASK DESCNAME BENCHMARKNAME`
 %    Compute results only for a specified .benchmark file stored in:
 %    ```
 %      benchmarks/TASK/BENCHMARKNAME.benchmark
@@ -50,10 +50,10 @@ function hb(cmd, descname, taskname, varargin)
 %    Please note that the classification benchmark caches descriptors in
 %    memory.
 %
-%  `HB packdesc DESCNAME`  
+%  `HB packdesc DESCNAME`
 %     Pack all the descriptors DESCNAME to `DESCNAME_descriptors.zip`.
 %
-%  `HB help`  
+%  `HB help`
 %     Print this help string.
 
 % Copyright (C) 2016 Karel Lenc
@@ -130,13 +130,13 @@ switch cmd
           'cacheName', descname);
     end
     df = fopen(done_file, 'w'); fclose(df);
-    
+
     labels_file = fullfile(hb_path, 'benchmarks', cmd, [taskname, '.labels']);
     if ~exist(labels_file, 'file')
       fprintf('Labels file does not exist.\n');
       return;
     end
-    
+
     switch cmd
       case 'classification'
         res = classification_eval(bench_file, labels_file, res_file, varargin{:});
