@@ -5,7 +5,9 @@ This toolbox supports the descriptor matching challenge that will be presented a
 [Local Features: State of the Art, Open Problems and Performance Evaluation](http://www.iis.ee.ic.ac.uk/ComputerVision/DescrWorkshop/index.html)
 workshop at ECCV 2016. It implements the *HPatches* evaluation protocol and allows to produce the result files required to enter the challenge.
 
-## Getting started
+[TOC]
+
+## Quick start
 
 The *HPatches* benchmark assess local patch descriptors using a number of complementary tests. There are two ways to run such tests and enter the challenge:
 
@@ -64,6 +66,7 @@ You can see the list of all available commands [here](./bin/README.md).
 ### MATLAB Interface
 
 If you have MATLAB R2016a installed, you can also easily run the `hb` function directly in MATLAB by running e.g.:
+
 ``` bash
 cd matlab
 hb COMMAND DESCNAME BENCHMARK
@@ -91,9 +94,10 @@ you can run:
 ```
 Currently implemented descriptors are `sift`, `meanstd` and `resize`.
 
-## Tasks
-The challenge consists of three common computer vision tasks.
-For more details about the challenges, see the following links:
+## The challenge's tasks
+
+The challenge consists of three common computer vision tasks:
+
 * [Patch Classification](./benchmarks/classification/README.md)
 * [Image Matching](./benchmarks/matching/README.md)
 * [Image and Patch Retrieval](./benchmarks/retrieval/README.md)

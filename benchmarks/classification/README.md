@@ -1,24 +1,18 @@
-# Classification benchmark
+# Patch classification benchmark
 
-This benchmark evaluates the performance of feature descriptors when
-used as simple naive Bayes classifiers, based on thresholding of
-distance between positive and negative pairs.
-
-Evaluation can be done either in terms of ROC [1] curves, or P-R curves [2].
+The *Patch Classification Benchmark* (PCB) evaluates the performance of patch descriptors used to compare patch pairs and classify them as positive or negative based on the resulting patch similarity score. By default, descriptors are compared using the Euclidean distance. Evaluation can be done either in terms of ROC (receiver operating characteristic) curves [1] or P-R (precision-recall) curves [2].
 
 We provide two protocols for the evaluation:
 
-1) *Balanced positive and negative pairs*
-This is based on a balanced positive and negative pairs dataset similarly to [1].
+1. **Balanced positive and negative pairs.**
+This is based on a balanced dataset with an equal number of positive and negative pairs. This setup is similar to [1].
 
-2) *Imbalanced positive and negative pairs*
+2. **Imbalanced positive and negative pairs.**
 This is based on the idea that the
-number of positive pairs are signicicantly less compared to negative
-pairs, so we also provide a separate list of 1M negatives that can be
+number of positive pairs is significantly smaller compared to negative
+pairs, so we also provide a separate list of 1M negative paris that can be
 used together with the 200K positive ones to test the
-performance. Note that in this case, ROC curves should not be used
-they are not food for imbalanced datasets [3].
-
+performance. Note that in this case ROC curves should not be used for evaluation as they are not appropriate for highly-imbalanced datasets [3].
 
 ## Pairs files
 
