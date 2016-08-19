@@ -9,20 +9,20 @@ workshop at ECCV 2016. It implements the *HPatches* evaluation protocol and allo
 
 ## Overview
 
-The *HPatches* benchmark assess local patch descriptors using a number of complementary tests. There are two ways to run such tests and enter the challenge:
+The *HPatches* benchmark assesses local patch descriptors using a number of complementary tests. In order to enter the challenge, one needs to generate and submit corresponding result files. There are two ways to generate such files:
 
-1. **Comopute the patch descriptors and use HBench to compute the result files.** This is the simplest although slightly less flexible manner. In this case, one simply computes a patch descriptor for each patch in *HPatches*, stores it in a CSV file, and uses the *HBench* toolbox to generate the result files. The main limitation is that descriptors are implicitly compared using the Euclidean distance. This is explained [below](#quick).
+1. **Compute the patch descriptors and use *HBench* to generate the result files.** This is the simplest although slightly less flexible manner. In this case, one simply computes a patch descriptor for each patch in *HPatches*, stores it in a CSV file, and uses the *HBench* toolbox to generate the result files. The main limitation is that descriptors are implicitly compared using the Euclidean distance. This is explained [below](#quick).
 
-2. **Compute the result files directly.** This method is more flexible as it allows to compare descriptors using an arbitrary method, but it requires to generate the result files directly. In particular, for each  `*.benchmark` file found in the folder hierarchy `benchmarks/`, one must provide a corresponding `*.results` file. Please refer to the individual [benchmark definitions](#benchmarks) for details.
+2. **Generate the result files directly.** This method is more flexible as it allows to compare descriptors using an arbitrary method, but it requires to generate the result files manually. In particular, for each  `*.benchmark` file found in the folder hierarchy `benchmarks/`, one must provide a corresponding `*.results` file. Please refer to the individual [benchmark definitions](#benchmarks) for details.
 
 The rest of this page discusses the first method, which relies on the *HBench* software. *HBench* provides a simple command line interface
-for producing the `.results` files from descriptors stored in CSV files. *HBench* is written in MATLAB, but you do not need to own a MATLAB license as we provide a [binary distribution](https://dl.dropboxusercontent.com/u/555392/hbench-v0.1.tar.gz) which needs only on the freely available MATLAB Compiler Runtime (MCR).
+that generates the required `*.results` files from descriptors stored in CSV files. *HBench* is written in MATLAB, but you do not need to own a MATLAB license as we provide a [binary distribution](https://dl.dropboxusercontent.com/u/555392/hbench-v0.1.tar.gz) which needs only on the freely available MATLAB Compiler Runtime (MCR).
 
 <a id=quick></a>
 
 ### Entering the challenge: quick start
 
-The simplest way to enter the challenge is to compute patch descriptor for all patches in *HPatches* and use the tools in *HBench* to produce the result files that need to be submitted. For now, you can try this on the *HPatches* training set; once the test set is released, you will be able to follow the same procedure to generate the required files.
+The simplest way to enter the challenge is to compute patch descriptor for all patches in *HPatches* and use the tools in *HBench* to produce the result files that need to be submitted. For now, you can try this on the *HPatches* training set; once the test set is released, you will be able to follow the same procedure to generate the challenge submission files.
 
 The procedure can be summarized in a few steps:
 
@@ -57,7 +57,7 @@ Please note that around 2GB of free space is required.
 <a id=reading-patches></a>
 ### Extracting patches from the dataset
 
-Patches are stored in large PNG files, each containing several patch instances. Each such file, identified by a `SEQUENCE` and an `IMNAME` name, is found at
+Patches are stored in large PNG files, which we call "patch-images", each containing all the patches pre-extracted by a detector from a given image. Each such file, identified by a `SEQUENCE` name and an image `IMNAME`, is found at
 
 ```
 HBPATH/data/hpatches/SEQUENCE/IMNAME.png
@@ -71,9 +71,9 @@ In the benchmark definitions, patches are uniquely identified by labels of the t
 SEQUENCE.IMNAME.PATCH_IDX
 ```
 
-specifying the `SEQUENCE` and `IMNAME` of the image file and the index `PATCH_INDX` of the patch in the image. Indexes start from zero. For instance `i_ski.ref.3` denotes the *fourth* patch in the `data/hpatches/i_ski/ref.png` file.
+specifying the `SEQUENCE` and `IMNAME` of the patch-image containing the patch and the index `PATCH_INDX` of the patch in that image. Indexes start from zero, such that `i_ski.ref.3` denotes the *fourth* patch in the `data/hpatches/i_ski/ref.png` file.
 
-The following pseudo-code shows how to read patch `SEQUENCE.IMNAME.PATCH_IDX`:
+The following pseudo-code shows how to extract the patch `SEQUENCE.IMNAME.PATCH_IDX` from this data:
 
 ```python
 image = read_image('data/hpatches/SEQUENCE/IMNAME.png');
@@ -85,9 +85,9 @@ patch = image(start_row=PATCH_IDX*65, end_row=(PATCH_IDX+1)*65);
 <a id=csv-descriptors></a>
 ### Creating the CSV descriptor files
 
-Descriptors should be stored in simple comma-separated (CSV) files. These files can contain only numeric values, with one descriptor per line. All descriptors must have the same number of elements.
+Descriptors should be stored in *comma-separated values* (CSV) files. These files can contain only numeric values, with one descriptor per line, and all descriptors must have the same number of elements.
 
-For example, for a patch image  `data/hpatches/i_ski/ref.png` and a `my_desc` descriptor you should generate a CSV file `data/descriptors/my_desc/i_ski/ref.csv` with 623 lines (one line per descriptor).
+In order to allow comparing different descriptors, files are stored in a descriptor-specific location. For example, assume that your descriptor is called `my_desc`. Then, for a patch-image  `data/hpatches/i_ski/ref.png`, you should generate a corresponding CSV descriptor file `data/descriptors/my_desc/i_ski/ref.csv`. For this particular image, the CSV file would have 623 lines as there are 623 patches (one line per descriptor/patch).
 
 You can check if you have descriptors for all image files in a valid format with:
 

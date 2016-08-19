@@ -1,8 +1,10 @@
 # Image Matching Benchmark
 
-The *Image Matching Benchmark* (IMB) evaluates the ability of a patch descriptor to match a patch in a reference image to its corresponding patch in a target image. It is called "image matching" because  matching is restricted to patches coming from a single target image at a time.
+The *Image Matching Benchmark* (IMB) evaluates the ability of a patch descriptor to match a patch in a reference image to its corresponding patch in a target image. It is called "image matching" because matching is restricted to patches coming from two images only, a reference and a target.
 
-This problem is formulated as a ranking task: for each reference patch, all target patches are sorted by decreasing descriptor similarly to the reference patch and performance is measured by computing the average precision (AP) of the resulting rank list. The final performance is reported as the mean average precision (mAP) for all the reference patches. It is conceptually very similar to the nearest neighbor patch classifier evaluation explored in [1].
+This problem is formulated as a ranking task: each reference patch is compared to all target patches by computing the corresponding descriptor dissimilarity scores. The resulting reference-target patch pairs are then entered together with their scores in a patch pair rank list and the quality of the latter is assessed by computing its average precision (AP). Finally, the AP values for a number of reference-target image pairs are averaged to produce the mean average precision (mAP) of the descriptor. 
+
+Two types of scores are considered: the raw dissimilarity scores and the same scores, but renormalized by dividing them, for each reference, by the second nearest neighbor match dissimilarity. This protocol is similar to the nearest neighbor patch classifier evaluation explored in [1].
 
 [TOC]
 
@@ -18,7 +20,7 @@ train_hard_illum.benchmark
 train_hard_viewpoint.benchmark
 ```
 
-Once the test set will be made available, corresponding `test_*` files will also be delivered.
+Once the test set will be made available, corresponding `test_*` files will be provided. 
 
 The corresponding tasks are as follows:
 
@@ -28,7 +30,7 @@ The corresponding tasks are as follows:
 
 ### Benchmark file format
 
-Each `*.benchmark` file is of the type:
+The content of each `*.benchmark` file is of the type:
 
 ```
 im_a,im_b
@@ -36,7 +38,7 @@ im_x,im_y
 ...
 ```
 
-where each line specifies a pair of patch-image among which the descriptors should be matched. [Recall](../../README.md#reading-patches) that patches in *HPatches* are organized in patch-images, each identified by a pair `SEQNAME.IMNAME`. 
+where each line specifies a pair of patch-images among which the descriptors should be matched. [Recall](../../README.md#reading-patches) that patches in *HPatches* are organized in patch-images, each identified by a pair `SEQNAME.IMNAME`. 
 
 For exxample, the content of `train_easy_illum` looks as follows:
 
