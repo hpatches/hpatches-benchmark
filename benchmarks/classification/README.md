@@ -76,10 +76,6 @@ Each file should contain a line for each tested pair with the dissimilarity scor
 
 > **TODO:** Injecting the ground truth information in the result file is a bad idea and there is no need to do it.
 
-You can use the HBench tool in order to validate these files and compute the ROC and PR curves.
-
-> **TOOD:** give an example
-
 ### Entering all classification benchmarks
 
 In order to enter *all* the classification benchmarks, simply write a `*.results` files for all possible `*.pairs` files. There are only four such files (for each of training and test):
@@ -100,6 +96,10 @@ results/classification/my_desc/train_hard_pos.results
 results/classification/my_desc/train_diffseq_neg.results
 results/classification/my_desc/train_sameseq_neg.results
 ```
+
+### Generating and validating the result files
+
+You can generate the results files with MATLAB scripts `classification_compute.m` and compute the PR curves and the AP with `classification_eval.m` in the *HBench* toolbox.
 
 ## Appendix: benchmark contnets
 
