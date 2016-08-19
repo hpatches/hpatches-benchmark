@@ -56,7 +56,7 @@ Entering the benchmark is conceptually simple:
 
 1. Identify all the image pairs to be matched.
 2. Use your descriptor to compare each patch in the reference image (first image in the pair) to each patch in the target mage (second image in the pair). For this step, you can use your preferred distance measure (e.g. L1 or L2) or any other dissimilarity score.
-3. Write the results of such comparisons in a ranked list.
+3. Write the results of such comparisons to a ranked list.
 
 In more detail, for each `*.benchmark` file, you need to write a corresponding `*.results` file. In order to allow comparing different descriptors, each file must be store in a descriptor-specific directory. So, if `my_desc` is the name of your descriptor, you need to write the four files:
 

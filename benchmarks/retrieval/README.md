@@ -23,7 +23,6 @@ benchmarks/retrieval/train_easy_5s_01.benchmark
 benchmarks/retrieval/train_easy_5s_02.benchmark
 benchmarks/retrieval/train_easy_5s_03.benchmark
 benchmarks/retrieval/train_easy_5s_04.benchmark
-benchmarks/retrieval/train_example.benchmark
 benchmarks/retrieval/train_hard_40s_00.benchmark
 benchmarks/retrieval/train_hard_40s_01.benchmark
 benchmarks/retrieval/train_hard_5s_00.benchmark
@@ -41,7 +40,7 @@ The names of these files follow the pattern:
 <train|test>_<easy|hard>_<num_sequences>s_<random_seed>.benchmark
 ```
 
-where `<easy|hard>` is for easy or hard, indicating the amount of affine jitters between patches. The `<num_sequences>` is the number of sequences in descriptor pool and `<random_seed>` is the random seed used to initialize the draws of the sequences. The number of draws is proportional to the number of sequences in the set (train/test).
+where `<easy|hard>` is for easy or hard, indicating the amount of affine jitters between patches. The `<num_sequences>` is the number of patch-images (sequences) in the descriptor pool and `<random_seed>` is the random seed used to initialize the draws of the sequences. The number of draws is proportional to the number of sequences in the set (train/test).
 
 ### Benchmark file format
 
@@ -76,7 +75,7 @@ Entering the benchmark is conceptually simple:
 1. For each benchmark task, identify the required patch-images.
 2. Compute the descriptors for all patches in these patch-images.
 3. Use your descriptor to compare each reference (query) patch to all patches. For this step, you can use your preferred distance measure (e.g. L1 or L2) or any other dissimilarity score.
-4. Write the results of such comparisons in a ranked list.
+4. Write the results of such comparisons to a ranked list.
 
 In more detail, for each `*.benchmark` file, you need to write a corresponding `*.results` file. In order to allow comparing different descriptors, each file must be store in a descriptor-specific directory. So, if `my_desc` is the name of your descriptor, you need to write the four files:
 
@@ -106,6 +105,9 @@ For example, the file `train_easy_40s_00.results` may look something like:
 ```bash
 > cat results/retrieval/my_desc/train_easy_40s_00.results
 i_smurf.ref,i_smurf.e1,i_smurf.e2,i_smurf.e3,i_smurf.e4,i_smurf.e5,v_artisans.ref,...
+v_bricks.ref.85, v_grace.e5.1231,v_bricks.e1.85, v_bark.e1.666, ...
+i_dome.ref.1363, v_sunseason.e5.1241, v_wapping.ref.156, v_astronautis.e4.133, ...
+v_dirtywall.ref.643, v_dirtywall.e1.643, v_sunseason.ref.931, v_sunseason.ref.768, ...
 ...
 ```
 
@@ -113,6 +115,20 @@ i_smurf.ref,i_smurf.e1,i_smurf.e2,i_smurf.e3,i_smurf.e4,i_smurf.e5,v_artisans.re
 
 You can generate the results files with  `retrieval_compute.m` and compute the PR curves and the mAP with `retrieval_eval.m` in the *HBench* toolbox.
 
+### Ground-truth labels file format
+
+For each `*.benchmark` file, there is a corresponding `*.labels` file containing the ground-truth matching patches for each query patch. For example, the ground-truth file for the benchmark `train_easy_40s_00` looks like this:
+
+```bash
+> cat benchmarks/retrieval/train_easy_40s_00.labels
+i_smurf.ref,i_smurf.e1,i_smurf.e2,i_smurf.e3,i_smurf.e4,i_smurf.e5,v_artisans.ref,...
+v_bricks.ref.85,v_bricks.e1.85,v_bricks.e2.85,v_bricks.e3.85,v_bricks.e4.85,v_bricks.e5.85
+i_dome.ref.1363,i_dome.e1.1363,i_dome.e2.1363,i_dome.e3.1363,i_dome.e4.1363,i_dome.e5.1363
+v_dirtywall.ref.643,v_dirtywall.e1.643,v_dirtywall.e2.643,v_dirtywall.e3.643,v_dirtywall.e4.643,v_dirtywall.e5.643
+v_boat.ref.1232,v_boat.e1.1232,v_boat.e2.1232,v_boat.e3.1232,v_boat.e4.1232,v_boat.e5.1232
+```
+
+This means that the query patch `v_bricks.ref.85` is in correspondence with the patches `v_bricks.ref.85`, `v_bricks.e1.85`, `v_bricks.e2.85`, `v_bricks.e3.85`, `v_bricks.e4.85`, and `v_bricks.e5.85` and so on. Using this information, it is possible to compute the AP and mAP for the patch retrieval task. For the image retrieval task, a match is considered correct provided that it comes from the correct image sequence (e.g. for the reference (query) patch `v_bricks.ref.85` this is any patch from the image sequence `v_bricks`).
 
 ## References
 
