@@ -1,15 +1,14 @@
 # Image Matching Benchmark
 
-This benchmark evaluates the ability of a patch descriptor to match a patch in a reference image to its corresponding patch in a target image. It is called "image matching" because  matching is restricted to patches coming from a single target image at a time.
+The *Image Matching Benchmark* (IMB) evaluates the ability of a patch descriptor to match a patch in a reference image to its corresponding patch in a target image. It is called "image matching" because  matching is restricted to patches coming from a single target image at a time.
 
 This problem is formulated as a ranking task: for each reference patch, all target patches are sorted by decreasing descriptor similarly to the reference patch and performance is measured by computing the average precision (AP) of the resulting rank list. The final performance is reported as the mean average precision (mAP) for all the reference patches. It is conceptually very similar to the nearest neighbor patch classifier evaluation explored in [1].
 
 [TOC]
 
-
 ## Benchmark definitions
 
-The benchmark is composed of a number of tasks, each defined by a corresponding `.benchmark` files. There are four such files:
+The benchmark is composed of a number of tasks, each defined by a corresponding `.benchmark` file. There are four such files:
 
 ```bash
 > ls -1 benchmarks/matching/*benchmark
@@ -19,11 +18,13 @@ train_hard_illum.benchmark
 train_hard_viewpoint.benchmark
 ```
 
+Once the test set will be made available, corresponding `test_*` files will also be delivered.
+
 The corresponding tasks are as follows:
 
-* `test_easy_illum.benchmark` contains pairs of images with easy affine jitters between the corresponding patches from scenes where the illumination changes.
-* `test_easy_viewpoint.benchmark` contains pairs of images with easy affine jitter between the patches from scenes where the viewpoint changes.
-* Similarly, `test_hard_illum.benchmark` and `test_hard_viewpoint.benchmark` contains patches with harder affine jitter between the patches.
+* `train_easy_illum.benchmark` contains pairs of images with easy affine jitters between the corresponding patches from scenes where the illumination changes.
+* `train_easy_viewpoint.benchmark` contains pairs of images with easy affine jitter between the patches from scenes where the viewpoint changes.
+* Similarly, `train_hard_illum.benchmark` and `train_hard_viewpoint.benchmark` contains patches with harder affine jitter between the patches.
 
 ### Benchmark file format
 
@@ -51,7 +52,7 @@ This means that all patches in `i_botique.ref` should be matched to all patches 
 
 ## Entering the benchmarks
 
-Entering the benchmark is conceptually easy:
+Entering the benchmark is conceptually simple:
 
 1. Identify all the image pairs to be matched.
 2. Use your descriptor to compare each patch in the reference image (first image in the pair) to each patch in the target mage (second image in the pair). For this step, you can use your preferred distance measure (e.g. L1 or L2) or any other dissimilarity score.
@@ -129,7 +130,7 @@ s_boring.a,s_boring.b
 14.2, 27.4
 ```
 
-### Validating the files
+### Generating and validating the result files
 
 You can generate the results files with MATLAB scripts `matching_compute.m` and compute the PR curves and the AP with `matching_eval.m` in the *HBench* toolbox.
 

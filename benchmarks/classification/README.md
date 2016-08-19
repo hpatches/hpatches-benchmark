@@ -1,6 +1,6 @@
 # Patch classification benchmark
 
-The *Patch Classification Benchmark* (PCB) measures the ability of a patch descriptor to discriminate pair of patches that are in correspondence (come from the same 3D surface) from non-corresponding ones. 
+The *Patch Classification Benchmark* (PCB) evaluates the ability of a patch descriptor to discriminate pair of patches that are in correspondence (come from the same 3D surface) from non-corresponding ones. 
 
 This task is formulated as a classification problem, where the goal is to distinguish positive (matching) and negative (non-matching) pairs of patches. This is done by comparing the patch descriptors, for example by using the Euclidean distance between them. The resulting dissimilarity score is then (implicitly) thresholded to make a decision. Evaluation uses both the ROC (receiver operating characteristic) curves [1] and the P-R (precision-recall) curves [2].
 
