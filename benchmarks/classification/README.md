@@ -10,7 +10,7 @@ This task is formulated as a classification problem, where the goal is to distin
 
 There are a number of variants of this evaluation, considering different sets of patch pairs. Each benchmark is defined by one of the following `*.benchmark` files:
 
-```
+```bash
 > ls -1 benchmarks/classification/*.benchmark
 train_diffseq_easy.benchmark
 train_diffseq_hard.benchmark
@@ -22,7 +22,7 @@ train_sameseq_hard.benchmark
 
 Each benchmark file is a list of *sets of patch pairs* to include in the evaluation. For example, the file `train_diffseq_easy.benchmark` contains the following text:
 
-```
+```bash
 > cat benchmarks/classification/train_diffseq_easy.benchmark
 train_easy_pos.pairs
 train_diffseq_neg.pairs
@@ -30,7 +30,7 @@ train_diffseq_neg.pairs
 
 This means that the `train_diffseq_easy` benchmark is formed by the union of the two list of patch pairs `train_easy_pos` and `train_diffseq_neg`. The `*.pairs` files are contained in the same directory as the `*.benchmark` files. Their content is a list of labelled patch pairs. For example:
 
-```
+```bash
 > cat benchmarks/classification/train_easy_pos.pairs
 i_smurf.e4.854,i_smurf.e1.854,1
 v_dirtywall.e4.1854,v_dirtywall.ref.1854,1
@@ -84,7 +84,7 @@ You can use the HBench tool in order to validate these files and compute the ROC
 
 ### Entering all classification benchmarks
 
-In order to enter *all* the classification benchmarks, simply write the results files for all possible `*.pairs` files. There are only four of these for each of training and test:
+In order to enter *all* the classification benchmarks, simply write a `*.results` files for all possible `*.pairs` files. There are only four such files (for each of training and test):
 
 ```bash
 > ls -1 benchmarks/classification/*.pairs
@@ -97,10 +97,10 @@ train_sameseq_neg.pairs
 so you need to write (for each of train and test) four results files:
 
 ```
-results/classification/benchmark_killer/train_easy_pos.results
-results/classification/benchmark_killer/train_hard_pos.results
-results/classification/benchmark_killer/train_diffseq_neg.results
-results/classification/benchmark_killer/train_sameseq_neg.results
+results/classification/my_desc/train_easy_pos.results
+results/classification/my_desc/train_hard_pos.results
+results/classification/my_desc/train_diffseq_neg.results
+results/classification/my_desc/train_sameseq_neg.results
 ```
 
 ## Appendix: benchmark contnets
@@ -134,7 +134,7 @@ In practice, each benchmark is obtained by combining list of patches, described 
 
 There are four lists of patch pairs:
 
-```
+```bash
 > ls -1 benchmarks/classification/*.pairs
 train_easy_pos.pairs
 train_hard_pos.pairs
