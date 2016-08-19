@@ -72,13 +72,13 @@ results/matching/my_desc/test_hard_viewpoint.results
 A result file is organized as follows:
 
 ```
-First image pair (reference,target)
+First patch-image pair (reference image, target image)
   For each reference patch, the index of the corresponding nearest target patch
   Corresponding distances
   For each reference patch, the index of the corresponding 2-nd nearest target patch
   Corresponding distances
   ...
-Second image pair (reference,target)
+Second patch-image pair (reference image, target image)
   For each reference patch, the index of the corresponding nearest target patch
   Corresponding distances
   ...
@@ -101,6 +101,8 @@ i_boutique.ref,i_boutique.e2
 ```
 
 > **Remark:** by construction, the dissimilarity value should increase along each column.
+
+The format of the patch-images and their identifiers is discussed [here](../../README.md#reading-patches).
 
 We can define this file more formally as follows. Let `im_a` and `im_b` be the identifiers of two patch-images.  Let `nn(im_a.idx,im_b,n)` be the *index* of the *n*-th nearest neighbour of a patch `im_a.idx` to the patches in image `im_b`. Furthermore, let ``ds(im_a.idx,im_b,n)`` be the corresponding dissimilarity value. Then the file content is as follows:
 

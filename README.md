@@ -55,7 +55,7 @@ More details how to install the MCR can be found [here](http://www.mathworks.com
 Please note that around 2GB of free space is required.
 
 <a id=reading-patches></a>
-### Reading patches
+### Extracting patches from the dataset
 
 Patches are stored in large PNG files, each containing several patch instances. Each such file, identified by a `SEQUENCE` and an `IMNAME` name, is found at
 

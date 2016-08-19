@@ -64,7 +64,7 @@ v_dirtywall.ref.643
 ...
 ```
 
-The first line indicates that reference (query) patches must be compared to the patches contained in the patch-images `i_smurf.ref`, `i_smurf.e1`, ... The other lines indicates that the reference  patches are `v_bricks.ref.85`, `i_dome.ref.1363`, ...
+The first line indicates that reference (query) patches must be compared to the patches contained in the patch-images `i_smurf.ref`, `i_smurf.e1`, ... The other lines indicates that the reference  patches are `v_bricks.ref.85`, `i_dome.ref.1363`, ... The format of such identifiers is discussed [here](../../README.md#reading-patches).
 
 > **Remark:** each reference patch is always contained in one of the specified patch-images.
 

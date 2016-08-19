@@ -44,9 +44,7 @@ Here each line is in the form :
 patch_a,patch_b,label
 ```
 
-where `patch_a` and `patch_b` are patch identifiers and `label` is the corresponding pair label (0 for a negative pair and 1 for a positive pair). In the example above, all the labels are 1 because the list contains only positive pairs.
-
-> **TODO**: add a pointer to the patch id format.
+where `patch_a` and `patch_b` are patch identifiers and `label` is the corresponding pair label (0 for a negative pair and 1 for a positive pair). In the example above, all the labels are 1 because the list contains only positive pairs. The format of the patch-images of the patch-image and patch identifiers is discussed [here](../../README.md#reading-patches).
 
 ## Entering the benchmarks
 
