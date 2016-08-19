@@ -1,8 +1,8 @@
-# Patch classification benchmark
+# Patch Classification Benchmark
 
-The *Patch Classification Benchmark* (PCB) evaluates the ability of a patch descriptor to discriminate pair of patches that are in correspondence (come from the same 3D surface) from non-corresponding ones. 
+The *Patch Classification Benchmark* (PCB) evaluates the ability of a patch descriptor to discriminate pair of patches that are in correspondence (come from the same portion of a 3D surface) from non-corresponding ones. 
 
-This task is formulated as a classification problem, where the goal is to distinguish positive (matching) and negative (non-matching) pairs of patches. This is done by comparing the patch descriptors, for example by using the Euclidean distance between them. The resulting dissimilarity score is then (implicitly) thresholded to make a decision. Evaluation uses both the ROC (receiver operating characteristic) curves [1] and the P-R (precision-recall) curves [2].
+This task is formulated as a classification problem, where the goal is to distinguish positive (matching) and negative (non-matching) pairs of patches. This is done by comparing the patch descriptors, for example by using the Euclidean distance between them. The resulting dissimilarity score is then (implicitly) thresholded to make a decision. Evaluation uses both the ROC (receiver operating characteristic) curves [1] and the PR (precision-recall) curves [2].
 
 [TOC]
 
@@ -18,7 +18,7 @@ train_sameseq_easy.benchmark
 train_sameseq_hard.benchmark
 ```
 
-> **Remark:** These files are from the training set. Soon, we will release four more `test_*` files for the test set.
+> **Remark:** These files are relative to the training set; corresponding files will be released for the test set once the latter is made available.
 
 Each benchmark file is a list of *sets of patch pairs* to include in the evaluation. For example, the file `train_diffseq_easy.benchmark` contains the following text:
 
@@ -28,7 +28,9 @@ train_easy_pos.pairs
 train_diffseq_neg.pairs
 ```
 
-This means that the `train_diffseq_easy` benchmark is formed by the union of the two list of patch pairs `train_easy_pos` and `train_diffseq_neg`. The `*.pairs` files are contained in the same directory as the `*.benchmark` files. Their content is a list of labelled patch pairs. For example:
+This means that the `train_diffseq_easy` benchmark is formed by the union of the two list of patch pairs `train_easy_pos` and `train_diffseq_neg`. 
+
+The `*.pairs` specify the list of patches to compare. These files are contained in the same directory as the `*.benchmark` files. Their content is a list of labelled patch pairs. For example:
 
 ```bash
 > cat benchmarks/classification/train_easy_pos.pairs
@@ -44,26 +46,26 @@ Here each line is in the form :
 patch_a,patch_b,label
 ```
 
-where `patch_a` and `patch_b` are patch identifiers and `label` is the corresponding pair label (0 for a negative pair and 1 for a positive pair). In the example above, all the labels are 1 because the list contains only positive pairs. The format of the patch-images of the patch-image and patch identifiers is discussed [here](../../README.md#reading-patches).
+where `patch_a` and `patch_b` are patch identifiers and `label` is the corresponding pair label (0 for a negative pair and 1 for a positive pair). In the example above, all the labels are 1 because the list contains only positive pairs. The format of the patch-images and of the patch-image and patch identifiers is discussed [here](../../README.md#reading-patches).
 
 ## Entering the benchmarks
 
-Entering the benchmark is conceptually straightforward:
+Entering the benchmark is conceptually straightforward. One should:
 
-1. Identify the list of patch pairs required.
-2. For each patch pair in such lists, compute the patch descriptors and compare them using your preferred method (e.g. L1 or L2 distance).
+1. Identify the list of patch pairs required for a given task.
+2. For each patch pair in such lists, compute the patch descriptors and compare them using the preferred method (e.g. L1 or L2 distance).
 3. Store the result of the comparison in a file.
 
-In more detail, suppose you want to enter the `train_diffseq_easy.benchmark` benchmark. This requires generating results for the lists of patch pairs `train_easy_pos.pairs` and `train_diffseq_neg.pairs`. For each of these files, visit all patch pairs and write the result of the comparison (dissimilarity score) to a corresponding `train_easy_pos.results` and `train_diffseq_neg.results` files.
+In more detail, suppose you want to evaluate the `train_diffseq_easy.benchmark` task. Reading this file, reveals that this task requires comparing the patch pairs specified in the files `train_easy_pos.pairs` and `train_diffseq_neg.pairs`. For each of these files, one should then visit all patch pairs and write the result of the comparison (the dissimilarity score) to corresponding `train_easy_pos.results` and `train_diffseq_neg.results` files.
 
-In order to allow evaluating different descriptors, files are written in descriptor-specific directories. Thus let `my_desc` be the name of your descriptor. To enter this benchmark, you have to write the following files:
+In order to allow evaluating different descriptors, the result files are written in descriptor-specific directories. For example, let `my_desc` be the name of your descriptor. To evaluate the `train_diffseq_easy.benchmark`,  you have to generate the files:
 
 ```
 results/classification/my_desc/train_easy_pos.results
 results/classification/my_desc/train_diffseq_neg.results
 ```
 
-Each file should contain a line for each tested pair with the dissimilarity score and the ground truth label, separated by a comma:
+Each file should contain a line for each tested pair specifying the resulting dissimilarity score and the ground truth label, separated by a comma:
 
 ```bash
 > cat results/classification/my_desc/train_easy_pos.results
@@ -76,9 +78,9 @@ Each file should contain a line for each tested pair with the dissimilarity scor
 
 > **TODO:** Injecting the ground truth information in the result file is a bad idea and there is no need to do it.
 
-### Entering all classification benchmarks
+### Evaluating all classification tasks
 
-In order to enter *all* the classification benchmarks, simply write a `*.results` files for all possible `*.pairs` files. There are only four such files (for each of training and test):
+In order to evaluate *all* the classification tasks at once, simply write a `*.results` file for each `*.pairs` file in `benchmarks/classification/*.pairs`. There are only four such files (for each of training and test):
 
 ```bash
 > ls -1 benchmarks/classification/*.pairs
@@ -101,13 +103,13 @@ results/classification/my_desc/train_sameseq_neg.results
 
 You can generate the results files with MATLAB scripts `classification_compute.m` and compute the PR curves and the AP with `classification_eval.m` in the *HBench* toolbox.
 
-## Appendix: benchmark contnets
+## Benchmark contents
 
 This appendix provide some context on the benchmark defined above.
 
-### Benchmarks
+### Tasks
 
-As seen above, we define four different classification benchmarks:
+As seen above, the benchmark defines four different classification tasks:
 
 1. `train_diffseq_easy.benchmark`
 2. `train_diffseq_hard.benchmark`
@@ -130,7 +132,7 @@ In practice, each benchmark is obtained by combining list of patches, described 
 
 ### Lists of patch pairs
 
-There are four lists of patch pairs:
+The classification tasks are obtained by combining a number of patch pair lists. There are four such lists:
 
 ```bash
 > ls -1 benchmarks/classification/*.pairs
@@ -140,7 +142,7 @@ train_diffseq_neg.pairs
 train_sameseq_neg.pairs
 ```
 
-These lists are defined as follows:
+The content of these lists is as follows:
 
 * `train_easy_pos.pairs` contains positive pairs that are easier
 to classify (smaller affine jitters).
