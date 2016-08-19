@@ -115,7 +115,7 @@ v_dirtywall.ref.643, v_dirtywall.e1.643, v_sunseason.ref.931, v_sunseason.ref.76
 
 You can generate the results files with  `retrieval_compute.m` and compute the PR curves and the mAP with `retrieval_eval.m` in the *HBench* toolbox.
 
-### Ground-truth labels file format
+## Ground-truth labels
 
 For each `*.benchmark` file, there is a corresponding `*.labels` file containing the ground-truth matching patches for each query patch. For example, the ground-truth file for the benchmark `train_easy_40s_00` looks like this:
 

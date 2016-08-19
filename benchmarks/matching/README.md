@@ -134,6 +134,24 @@ s_boring.a,s_boring.b
 
 You can generate the results files with MATLAB scripts `matching_compute.m` and compute the PR curves and the AP with `matching_eval.m` in the *HBench* toolbox.
 
+## Ground-truth labels
+
+For each `*.benchmark` file, there is a corresponding `*.labels` file containing the ground-truth matching patches for each query patch. For example, the ground-truth file for the benchmark `train_easy_illum` looks like this:
+
+```bash
+> cat benchmarks/matching/train_easy_illum.labels 
+i_boutique.ref,i_boutique.e1
+0,1,2,3,4,5,6,...
+0,1,2,3,4,5,6,...
+i_boutique.ref,i_boutique.e2
+0,1,2,3,4,5,6,...
+0,1,2,3,4,5,6,...
+```
+
+> **TODO:** explain this!
+
+This means that ...  Using this information, it is possible to compute the ROC and PR curves and mAP performance for the image matching task.
+
 ## References
 
 [1] K. Mikolajczyk and C. Schmid. A performance evaluation of local descriptors. In IEEE TPAMI 2005.
