@@ -53,13 +53,13 @@ This means that all patches in the patch-image `i_botique.ref` should be matched
 
 ## Entering the benchmarks
 
-Entering the benchmark is conceptually simple:
+Entering the benchmark is conceptually simple. One needs to:
 
-1. Identify all the image pairs to be matched.
-2. Use your descriptor to compare each patch in the reference image (first image in the pair) to each patch in the target mage (second image in the pair). For this step, you can use your preferred distance measure (e.g. L1 or L2) or any other dissimilarity score.
+1. Identify an image pairs to be matched.
+2. Use a descriptor to compare each patch in the reference image (first image in the pair) to each patch in the target mage (second image in the pair). For this step, one can use the preferred distance measure (e.g. L1 or L2) or any other dissimilarity score.
 3. Write the results of such comparisons to a ranked list.
 
-In more detail, for each `*.benchmark` file, you need to write a corresponding `*.results` file. In order to allow comparing different descriptors, each file must be store in a descriptor-specific directory. So, if `my_desc` is the name of your descriptor, you need to write the four files:
+In more detail, for each `*.benchmark` file, one needs to write a corresponding `*.results` file. In order to allow comparing different descriptors, each file must be store in a descriptor-specific directory. So, if `my_desc` is the name of your descriptor, you need to write the four files:
 
 ```
 results/matching/my_desc/test_easy_illum.results
@@ -73,13 +73,13 @@ results/matching/my_desc/test_hard_viewpoint.results
 A result file is organized as follows:
 
 ```
-First patch-image pair (reference image, target image)
+First patch-image pair: reference image, target image
   For each reference patch, the index of the corresponding nearest target patch
   Corresponding distances
   For each reference patch, the index of the corresponding 2-nd nearest target patch
   Corresponding distances
   ...
-Second patch-image pair (reference image, target image)
+Second patch-image pair: reference image, target image
   For each reference patch, the index of the corresponding nearest target patch
   Corresponding distances
   ...
@@ -90,15 +90,15 @@ For example, the file `train_easy_illum.results` may look something like:
 ```bash
 > cat results/my_desc/matching/train_easy_illum.results 
 i_boutique.ref,i_boutique.e1
-  732,          761,          154,          564, ...
+  732,          761,          154,          564,          ...
   7.174843e+00, 1.438751e+01, 6.510703e+00, 1.225562e+01, ...
-  0,            828,          632,          95, ...
+  0,            828,          632,          95,           ...
   1.310076e+01, 1.514586e+01, 8.786040e+00, 1.297130e+01, ...
   ...
 i_boutique.ref,i_boutique.e2
-  0,            80,           400,          3, ...
+  0,            80,           400,          3,            ...
   1.503223e+01, 1.191290e+01, 8.384595e+00, 6.479039e+00, ...
-...
+  ...
 ```
 
 > **Remark:** by construction, the dissimilarity value should increase along each column.
@@ -121,7 +121,7 @@ ds(im_c.0,im_d,1), ds(im_c.1,im_d,1), ..., ds(im_c.P,im_d,1)
 ```
 
 For example, if a sequence `s_boring` contains only two patches,
-and the nearest neighbors of `s_boring.a.0` are `s_boring.b.1` and `s_boring.b.0` with distance 12.3 and 14.2 respectively, and `s_boring.b.0, s_boring.b.1` are the nearest neighboors to `s_boring.a.1`, the results file should look something like:
+and the nearest neighbors of `s_boring.a.0` are `s_boring.b.1` and `s_boring.b.0` with distance 12.3 and 14.2 respectively, and `s_boring.b.0` and  `s_boring.b.1` are the nearest neighboors to `s_boring.a.1` with distances 7.5 and 27.4, the results file should look something like:
 
 ```
 s_boring.a,s_boring.b
