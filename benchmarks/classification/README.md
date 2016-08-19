@@ -4,7 +4,119 @@ The *Patch Classification Benchmark* (PCB) measures the ability of a patch descr
 
 This task is formulated as a classification problem, where the goal is to distinguish positive (matching) and negative (non-matching) pairs of patches. This is done by comparing the patch descriptors, for example by using the Euclidean distance between them. The resulting dissimilarity score is then (implicitly) thresholded to make a decision. Evaluation uses both the ROC (receiver operating characteristic) curves [1] and the P-R (precision-recall) curves [2].
 
-There are two variants of this evaluation, considering different sets of patch pairs.
+[TOC]
+
+## Benchmark definitions
+
+There are a number of variants of this evaluation, considering different sets of patch pairs. Each benchmark is defined by one of the following `*.benchmark` files:
+
+```
+> ls -1 benchmarks/classification/*.benchmark
+train_diffseq_easy.benchmark
+train_diffseq_hard.benchmark
+train_sameseq_easy.benchmark
+train_sameseq_hard.benchmark
+```
+
+> **Remark:** These files are from the training set. Soon, we will release four more `test_*` files for the test set.
+
+Each benchmark file is a list of *sets of patch pairs* to include in the evaluation. For example, the file `train_diffseq_easy.benchmark` contains the following text:
+
+```
+> cat benchmarks/classification/train_diffseq_easy.benchmark
+train_easy_pos.pairs
+train_diffseq_neg.pairs
+```
+
+This means that the `train_diffseq_easy` benchmark is formed by the union of the two list of patch pairs `train_easy_pos` and `train_diffseq_neg`. The `*.pairs` files are contained in the same directory as the `*.benchmark` files. Their content is a list of labelled patch pairs. For example:
+
+```
+> cat benchmarks/classification/train_easy_pos.pairs
+i_smurf.e4.854,i_smurf.e1.854,1
+v_dirtywall.e4.1854,v_dirtywall.ref.1854,1
+i_boutique.e5.721,i_boutique.e2.721,1
+...
+```
+
+Here each line is in the form :
+
+```
+patch_a,patch_b,label
+```
+
+where `patch_a` and `patch_b` are patch identifiers and `label` is the corresponding pair label (0 for a negative pair and 1 for a positive pair). In the example above, all the labels are 1 because the list contains only positive pairs.
+
+> **TODO**: add a pointer to the patch id format.
+
+## Entering the benchmarks
+
+Entering the benchmark is conceptually straightforward:
+
+1. Identify the list of patch pairs required.
+2. For each patch pair in such lists, compute the patch descriptors and compare them using your preferred method (e.g. L1 or L2 distance).
+3. Store the result of the comparison in a file.
+
+In more detail, suppose you want to enter the `train_diffseq_easy.benchmark` benchmark. This requires generating results for the lists of patch pairs `train_easy_pos.pairs` and `train_diffseq_neg.pairs`. For each of these files, visit all patch pairs and write the result of the comparison (dissimilarity score) to a corresponding `train_easy_pos.results` and `train_diffseq_neg.results` files.
+
+In order to allow evaluating different descriptors, files are written in descriptor-specific directories. Thus let `my_desc` be the name of your descriptor. To enter this benchmark, you have to write the following files:
+
+```
+results/classification/my_desc/train_easy_pos.results
+results/classification/my_desc/train_diffseq_neg.results
+```
+
+Each file should contain a line for each tested pair with the dissimilarity score and the ground truth label, separated by a comma:
+
+```bash
+> cat results/classification/my_desc/train_easy_pos.results
+1.2,0
+0.1,1
+3.8,0
+...
+0.5,1
+```
+
+> **TODO:** Injecting the ground truth information in the result file is a bad idea and there is no need to do it.
+
+You can use the HBench tool in order to validate these files and compute the ROC and PR curves.
+
+> **TOOD:** give an example
+
+### Entering all classification benchmarks
+
+In order to enter *all* the classification benchmarks, simply write the results files for all possible `*.pairs` files. There are only four of these for each of training and test:
+
+```bash
+> ls -1 benchmarks/classification/*.pairs
+train_easy_pos.pairs
+train_hard_pos.pairs
+train_diffseq_neg.pairs
+train_sameseq_neg.pairs
+```
+
+so you need to write (for each of train and test) four results files:
+
+```
+results/classification/benchmark_killer/train_easy_pos.results
+results/classification/benchmark_killer/train_hard_pos.results
+results/classification/benchmark_killer/train_diffseq_neg.results
+results/classification/benchmark_killer/train_sameseq_neg.results
+```
+
+## Appendix: benchmark contnets
+
+This appendix provide some context on the benchmark defined above.
+
+### Benchmarks
+
+As seen above, we define four different classification benchmarks:
+
+1. `train_diffseq_easy.benchmark`
+2. `train_diffseq_hard.benchmark`
+3. `train_sameseq_easy.benchmark`
+4. `train_sameseq_hard.benchmark`
+
+> **TODO:** The description below does not match in an obvious way the four files above. Please fix.
 
 1. **Balanced positive and negative pairs.**
 This is based on a balanced dataset with an equal number of positive and negative pairs. This setup is similar to [1].
@@ -16,69 +128,30 @@ pairs, so we also provide a separate list of 1M negative paris that can be
 used together with the 200K positive ones to test the
 performance. Note that in this case ROC curves should not be used for evaluation as they are not appropriate for highly-imbalanced datasets [3].
 
-Evaluating your descriptor using this benchmark is conceptually simple: get a list of patch pairs to compare, use your patch descriptor and preferred distance measure (e.g. L1 or L2) to perform the comparisons, and store the result of the comparisons in a file. The rest of this page describes how to do this.
+In practice, each benchmark is obtained by combining list of patches, described below.
 
-## Pairs files
+### Lists of patch pairs
 
-First, you need to identify a list of patches to compare. For each of train and test, there are four lists of patches with corresponding ground truth labels, stored in as many files. For example, for the `test` set there are the following four files:
+There are four lists of patch pairs:
 
 ```
-test_pos_easy.pairs
-test_pos_hard.pairs
-test_neg_diffseq.pairs
-test_neg_sameseq.pairs
+> ls -1 benchmarks/classification/*.pairs
+train_easy_pos.pairs
+train_hard_pos.pairs
+train_diffseq_neg.pairs
+train_sameseq_neg.pairs
 ```
 
-* `test_pos_easy.pairs` contains positive pairs that are easier
+These lists are defined as follows:
+
+* `train_easy_pos.pairs` contains positive pairs that are easier
 to classify (smaller affine jitters).
-* `test_pos_hard.pairs` contains positive pairs that are harder
+* `train_easy_pos.pairs` contains positive pairs that are harder
 to classify (larger affine jitters).
-* `test_neg_diffseq.pairs` contains negative pairs that are
+* `train_sameseq_neg.pairs` contains negative pairs that are
 sampled from different sequences.
-* `test_neg_sameseq.pairs` contains negative pairs that are sampled from the same sequence. This allows for harder cases such as repeating patterns.
+* `train_diffseq_neg.pairs` contains negative pairs that are sampled from the same sequence. This allows for harder cases such as repeating patterns.
 
-The contents of the files is as follows:
-
-```
-patch_a,patch_b,label
-patch_x,patch_y,label
-...
-```
-
-Where `patch_a` and `patch_b` are patch identifiers and `label` is the corresponding pair label (0 for a negative pair and 1 for a positive pair).
-
-## Generating the result files for evaluation
-
-For each patch pair, use your descriptor to compute the
-feature vector for both patches in the pair. Then use your preferred
-distance measure (e.g. L1 or L2) to get a pair distance or other real dissimilarity score.
-
-Let `desc_name` the name of your descriptor. For each file `pairs_file.pairs` containing a list of patches, write the corresponding scores separated by commas in a text `pairs_file.results`. These files should be stored in a suitable folder hierarchy as follows:
-
-```
-../results/classification/desc_name/pairs_file.results
-```
-
-For example, if your descriptor is called `benchmark_killer`, your results should be written to the following 4 files:
-
-```
-../results/classification/benchmark_killer/test_pos_easy.results
-../results/classification/benchmark_killer/test_pos_hard.results
-../results/classification/benchmark_killer/test_neg_diffseq.results
-../results/classification/benchmark_killer/test_neg_sameseq.results
-```
-
-Each file should contain a line for each tested pair with the dissimilarity score and the ground truth label, separated by a comma:
-
-```
-1.2,0
-0.1,1
-3.8,0
-...
-0.5,1
-```
-
-Use the provided codes in MATLAB to compute the ROC and PR curves.
 
 ## References
 
