@@ -49,8 +49,7 @@ i_boutique.ref,i_boutique.e2
 ...
 ```
 
-This means that all patches in `i_botique.ref` should be matched to all patches in `i_botique.e1`.
-
+This means that all patches in the patch-image `i_botique.ref` should be matched to all patches in the patch-image `i_botique.e1`. The format of the patch-images and their identifiers is discussed [here](../../README.md#reading-patches).
 
 ## Entering the benchmarks
 
@@ -103,8 +102,6 @@ i_boutique.ref,i_boutique.e2
 ```
 
 > **Remark:** by construction, the dissimilarity value should increase along each column.
-
-The format of the patch-images and their identifiers is discussed [here](../../README.md#reading-patches).
 
 We can define this file more formally as follows. Let `im_a` and `im_b` be the identifiers of two patch-images.  Let `nn(im_a.idx,im_b,n)` be the *index* of the *n*-th nearest neighbour of a patch `im_a.idx` to the patches in image `im_b`. Furthermore, let ``ds(im_a.idx,im_b,n)`` be the corresponding dissimilarity value. Then the file content is as follows:
 
