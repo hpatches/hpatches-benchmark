@@ -54,7 +54,6 @@ Download the zip archive, unpack and run the `./install` script.
 More details how to install the MCR can be found [here](http://www.mathworks.com/products/compiler/mcr/).
 Please note that around 2GB of free space is required.
 
-
 <a id=reading-patches></a>
 ### Reading patches
 

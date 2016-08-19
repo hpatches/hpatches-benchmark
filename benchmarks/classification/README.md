@@ -69,9 +69,9 @@ Each file should contain a line for each tested pair with the dissimilarity scor
 
 ```bash
 > cat results/classification/my_desc/train_easy_pos.results
-1.2,0
+1.2,1
 0.1,1
-3.8,0
+3.8,1
 ...
 0.5,1
 ```
