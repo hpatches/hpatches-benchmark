@@ -4,7 +4,7 @@ The *Image Matching Benchmark* (IMB) evaluates the ability of a patch descriptor
 
 This problem is formulated as a ranking task: each reference patch is compared to all target patches by computing the corresponding descriptor dissimilarity scores. The resulting reference-target patch pairs are then entered together with their scores in a patch pair rank list and the quality of the latter is assessed by computing its average precision (AP). Finally, the AP values for a number of reference-target image pairs are averaged to produce the mean average precision (mAP) of the descriptor. 
 
-Two types of scores are considered: the raw dissimilarity scores and the same scores, but renormalized by dividing them, for each reference, by the second nearest neighbor match dissimilarity. This protocol is similar to the nearest neighbor patch classifier evaluation explored in [1].
+Two types of scores are considered: the raw dissimilarity scores and the same scores, but renormalized by dividing them, for each reference patch, by the dissimilarity of the second nearest target patch. This protocol is similar to the nearest neighbor patch classifier evaluation explored in [1].
 
 [TOC]
 
@@ -149,9 +149,9 @@ i_boutique.ref,i_boutique.e2
 0,1,2,3,4,5,6,...
 ```
 
-> **TODO:** explain this!
+Here each image pairs has to lines. The first line is a list of patch indexes in the first image in the pair and the second line is a list of the *corresponding* patch indexes in the second image. In this example, indexes happen to be progressive due to the dataset construction method, but they need not to be in general.
 
-This means that ...  Using this information, it is possible to compute the ROC and PR curves and mAP performance for the image matching task.
+Using this information, it is possible to compute the ROC and PR curves and mAP performance for the image matching task.
 
 ## References
 

@@ -76,8 +76,6 @@ Each file should contain a line for each tested pair specifying the resulting di
 0.5,1
 ```
 
-> **TODO:** Injecting the ground truth information in the result file is a bad idea and there is no need to do it.
-
 ### Evaluating all classification tasks
 
 In order to evaluate *all* the classification tasks at once, simply write a `*.results` file for each `*.pairs` file in `benchmarks/classification/*.pairs`. There are only four such files (for each of training and test):
@@ -111,22 +109,10 @@ This appendix provide some context on the benchmark defined above.
 
 As seen above, the benchmark defines four different classification tasks:
 
-1. `train_diffseq_easy.benchmark`
-2. `train_diffseq_hard.benchmark`
-3. `train_sameseq_easy.benchmark`
-4. `train_sameseq_hard.benchmark`
-
-> **TODO:** The description below does not match in an obvious way the four files above. Please fix.
-
-1. **Balanced positive and negative pairs.**
-This is based on a balanced dataset with an equal number of positive and negative pairs. This setup is similar to [1].
-
-2. **Imbalanced positive and negative pairs.**
-This is based on the idea that the
-number of positive pairs is significantly smaller compared to negative
-pairs, so we also provide a separate list of 1M negative paris that can be
-used together with the 200K positive ones to test the
-performance. Note that in this case ROC curves should not be used for evaluation as they are not appropriate for highly-imbalanced datasets [3].
+1. `train_diffseq_easy.benchmark`. The positive pairs are affected by only small affine distortion and patches in negative pairs are sampled from images from different scenes (different sequences).
+2. `train_diffseq_hard.benchmark`. Same as above, but the positive pairs are affected by more affine distortion.
+3. `train_sameseq_easy.benchmark`. Same as the first, but patches in negative pairs may also come from the same scene. This is in general a harder task, as matching repeating patterns (which often occur in the same scene) is considered incorrect.
+4. `train_sameseq_hard.benchmark`. Same as above, but with more affine distortion in the positive patches.
 
 In practice, each benchmark is obtained by combining list of patches, described below.
 
@@ -150,14 +136,13 @@ to classify (smaller affine jitters).
 to classify (larger affine jitters).
 * `train_sameseq_neg.pairs` contains negative pairs that are
 sampled from different sequences.
-* `train_diffseq_neg.pairs` contains negative pairs that are sampled from the same sequence. This allows for harder cases such as repeating patterns.
-
+* `train_diffseq_neg.pairs` contains negative pairs that are sampled from the same sequence. 
 
 ## References
 
-[1] S. Winder, G. Hua and M. Brown - Picking the best daisy
+[1] S. Winder, G. Hua and M. Brown - Picking the best daisy.
 
 [2] E. Simo-Serra, E. Trulls, L. Ferraz, I. Kokkinos, P. Fua and  F. Moreno-Noguer
-Discriminative learning of deep convolutional feature point descriptors
+Discriminative learning of deep convolutional feature point descriptors.
 
-[3] J. Davis and M. Goadrich. The relationship between PR and ROC curves. In ICML , 2006
+[3] J. Davis and M. Goadrich. The relationship between PR and ROC curves. In ICML, 2006.
