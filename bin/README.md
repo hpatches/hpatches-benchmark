@@ -1,6 +1,6 @@
 # HBenchmarks command line interface
 `bin/hb_run.sh MCRPATH COMMAND DESCNAME BENCHMARKNAME` Is a general call of the HBenchmarks
-   command line interface. The supported commands are:
+   command line interface. The supported opts.alltasks are:
  
 `bin/hb_run.sh MCRPATH checkdesc DESCNAME`  
 Check the validity of the descriptors located in:
@@ -10,7 +10,7 @@ data/descriptors/DESCNAME/<sequence_name>/<patchimage>.csv
 Run evaluation on all benchmark files defined in `./benchmarks/` and
 pack the results to `DESCNAME_results.zip`.
 Descriptors `DESCNAME` **must** be stored in an appropriate folders.
-This commands computes the results only for tasks, where the results
+This opts.alltasks computes the results only for tasks, where the results
 file does not exist. To recompute all the results, call:
 ```
 bin/hb_run.sh MCRPATH pack DESCNAME * override true
@@ -25,6 +25,7 @@ memory.
 `bin/hb_run.sh MCRPATH computedesc DESCNAME`  
 Compute some of the provided baseline descriptors. Supported
 descriptors currently are:
+* `sift`- SIFT descriptor (VLFeat implementation)
 * `meanstd`  - 2D descriptor with mean and standard deviation of a patch
 * `resize`   - resize patch into 4x4 patch and perform meanstd norm.
  
