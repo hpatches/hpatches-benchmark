@@ -24,6 +24,10 @@ that generates the required `*.results` files from descriptors stored in CSV fil
 
 The simplest way to enter the challenge is to compute patch descriptor for all patches in *HPatches* and use the tools in *HBench* to produce the result files that need to be submitted. For now, you can try this on the *HPatches* training set; once the test set is released, you will be able to follow the same procedure to generate the challenge submission files.
 
+> **Remark:** Currently only the training set is released. You can send us your results
+on the training set to verify their validity, but for entering the challenge, please
+send us the results once the test set is released (mid September 2016).
+
 The procedure can be summarized in a few steps:
 
 * **Install HBench.** Download and unpack the [binary distribution](https://dl.dropboxusercontent.com/u/555392/hbench-v0.1.tar.gz) of *HBench*. Let `HBPATH` be the path to the install directory.
@@ -36,8 +40,10 @@ This command checks the validity of descriptors, computes the results and asks f
 details about your submission. More details about the interface can be found [here](#command-line-interface).
 * **Submit the results.** Send the archive `./DESCNAME_results.zip` to the [Dropbox submission folder](https://www.dropbox.com/request/2MJm7vV15XJnl1RzuCzl).
 
-Additionally, you can also use the MATLAB code directly, using the
-provided interface to compute and test baseline descriptors for comparison. You can also clone the [GIT repository](https://github.com/featw/hbench) of the *HBench* tool, but using this requires a MATLAB license.
+Additionally, you can also use the MATLAB code directly, or using the
+provided interface to compute and test baseline descriptors for comparison.
+You can also clone the [GIT repository](https://github.com/featw/hbench) of the
+*HBench* tool, but using this requires a MATLAB license.
 
 <a id=install-mcr></a>
 
@@ -71,7 +77,7 @@ In the benchmark definitions, patches are uniquely identified by labels of the t
 SEQUENCE.IMNAME.PATCH_IDX
 ```
 
-specifying the `SEQUENCE` and `IMNAME` of the patch-image containing the patch and the index `PATCH_INDX` of the patch in that image. Indexes start from zero, such that `i_ski.ref.3` denotes the *fourth* patch in the `data/hpatches/i_ski/ref.png` file.
+specifying the `SEQUENCE` and `IMNAME` of the patch-image containing the patch and the index `PATCH_IDX` of the patch in that image. Indexes start from zero, such that `i_ski.ref.3` denotes the *fourth* patch in the `data/hpatches/i_ski/ref.png` file.
 
 The following pseudo-code shows how to extract the patch `SEQUENCE.IMNAME.PATCH_IDX` from this data:
 
@@ -80,7 +86,7 @@ image = read_image('data/hpatches/SEQUENCE/IMNAME.png');
 patch = image(start_row=PATCH_IDX*65, end_row=(PATCH_IDX+1)*65);
 ```
 
-> Note: Patches with the same index has been extracted from the same location in the scene (plus some additional noise).
+> Note: Patches with the same index in the training set have been extracted from the same location in the scene (plus some additional noise).
 
 <a id=csv-descriptors></a>
 ### Creating the CSV descriptor files
@@ -101,23 +107,25 @@ bin/run_hb.sh MCRPATH checkdesc DESCNAME
 
 #### Command line interface
 
-To run the *HBench* command line interface with the MCR located in the default path, run:
+To run the *HBench* command line interface on Linux with the MCR located in the default path, run:
 
 ```bash
 ./bin/run_hb.sh /usr/local/MATLAB/MATLAB_Runtime/v901 COMMAND DESCNAME BENCHMARK
 ```
 
-If you have MATLAB installed in `/usr/local/MATLAB/R2016a`, you can use that
+If you have MATLAB R2016a installed e.g. in `/usr/local/MATLAB/R2016a`, you can use that
 instead of the MCR:
 
 ```bash
 ./bin/run_hb.sh /usr/local/MATLAB/R2016a COMMAND DESCNAME BENCHMARK
 ```
 You can see the list of all available commands [here](./bin/README.md).
+For older versions of MATLAB (tested with R2014b), you can use the [MATLAB interface](#matlab-interface)
 
+<a id=matlab-interface></a>
 #### MATLAB Interface
 
-If you have MATLAB R2016a installed, you can also easily run the `hb` function directly in MATLAB by running e.g.:
+If you have MATLAB R2014b or newer, you can also easily run the `hb` function directly in MATLAB by running e.g.:
 
 ```matlab
 cd HBPATH
@@ -148,4 +156,3 @@ The challenge consists of three common computer vision tasks. For more details a
 * [Patch Classification Benchmark](./benchmarks/classification/README.md)
 * [Image Matching Benchmkar](./benchmarks/matching/README.md)
 * [Image and Patch Retrieval Benchmark](./benchmarks/retrieval/README.md)
-
