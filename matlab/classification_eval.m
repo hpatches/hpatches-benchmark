@@ -36,7 +36,7 @@ fprintf(isdeployed+1,'Evaluating classif results:\n\tRESPATH=%s\n', ...
   resultspath);
 
 % Read the benchmark file
-[dists, labels] = readres(resultspath);
+[dists, labels] = readres(resultspath, labelspath);
 if opts.balanced
   is_pos = find(labels == 1); is_neg = find(labels == 0, numel(is_pos));
   dists = dists([is_pos, is_neg]); labels = labels([is_pos, is_neg]);
@@ -71,11 +71,16 @@ end
 
 end
 
-function [dists, labels] = readres(path)
-res = dlmread(path, ',');
-assert(size(res, 2) == 2, 'Invalid results file.');
-dists = res(:, 1)'; labels = res(:, 2)';
-assert(all(labels ==0 | labels == 1), 'Invalid labels.');
+function [dists, labels] = readres(resultspath, labelspath)
+res = dlmread(resultspath, ',');
+assert(size(res, 2) == 1, 'Invalid results file.');
+dists = res(:, 1)';
+
+res = dlmread(labelspath, ',');
+assert(size(res, 2) == 1, 'Invalid labels file.');
+labels = res(:, 1)';
+assert(numel(labels) == numel(dists), ...
+  'The results file does not correspond to the labels file.');
 end
 
 
