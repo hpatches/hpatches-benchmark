@@ -56,45 +56,48 @@ Entering the benchmark is conceptually straightforward. One should:
 2. For each patch pair in such lists, compute the patch descriptors and compare them using the preferred method (e.g. L1 or L2 distance).
 3. Store the result of the comparison in a file.
 
-In more detail, suppose you want to evaluate the `train_diffseq_easy.benchmark` task. Reading this file, reveals that this task requires comparing the patch pairs specified in the files `train_easy_pos.pairs` and `train_diffseq_neg.pairs`. For each of these files, one should then visit all patch pairs and write the result of the comparison (the dissimilarity score) to corresponding `train_easy_pos.results` and `train_diffseq_neg.results` files.
+In more detail, suppose you want to evaluate the `train_diffseq_easy.benchmark` task. Reading this file, reveals that this task requires comparing the patch pairs specified in the files `train_easy_pos.pairs` and `train_diffseq_neg.pairs`. For each of these files, in order, one should then visit all patch pairs and write the result of the comparison (the dissimilarity score) to a corresponding `train_diffseq_easy.benchmark`.
 
-In order to allow evaluating different descriptors, the result files are written in descriptor-specific directories. For example, let `my_desc` be the name of your descriptor. To evaluate the `train_diffseq_easy.benchmark`,  you have to generate the files:
+In order to allow evaluating different descriptors, the result files are written in descriptor-specific directories. For example, let `my_desc` be the name of your descriptor. To evaluate the `train_diffseq_easy.benchmark`,  you have to generate the file:
 
 ```
-results/classification/my_desc/train_easy_pos.results
-results/classification/my_desc/train_diffseq_neg.results
+results/classification/my_desc/train_diffseq_easy.results
 ```
 
-Each file should contain a line for each tested pair specifying the resulting dissimilarity score and the ground truth label, separated by a comma:
+Each `*.results` file should contain a line for each tested pair specifying the resulting dissimilarity score:
 
 ```bash
-> cat results/classification/my_desc/train_easy_pos.results
-1.2,1
-0.1,1
-3.8,1
+> cat results/resize/classification/train_diffseq_easy.results 
+57.238895
+27.800259
+20.574526
+32.282665
 ...
-0.5,1
+73.375366
+74.484528
+70.905136
+35.064594
 ```
 
 ### Evaluating all classification tasks
 
-In order to evaluate *all* the classification tasks at once, simply write a `*.results` file for each `*.pairs` file in `benchmarks/classification/*.pairs`. There are only four such files (for each of training and test):
+In order to evaluate *all* the classification tasks at once, simply write a `*.results` file for each `*.benchmark` file in `benchmarks/classification/*.benchmark`. There are only four such files (for each of training and test):
 
 ```bash
-> ls -1 benchmarks/classification/*.pairs
-train_easy_pos.pairs
-train_hard_pos.pairs
-train_diffseq_neg.pairs
-train_sameseq_neg.pairs
+> ls -1 benchmarks/classification/*.benchmark
+train_diffseq_easy.benchmark
+train_diffseq_hard.benchmark
+train_sameseq_easy.benchmark
+train_sameseq_hard.benchmark
 ```
 
 so you need to write (for each of train and test) four results files:
 
 ```
-results/classification/my_desc/train_easy_pos.results
-results/classification/my_desc/train_hard_pos.results
-results/classification/my_desc/train_diffseq_neg.results
-results/classification/my_desc/train_sameseq_neg.results
+results/resize/classification/train_diffseq_easy.results
+results/resize/classification/train_diffseq_hard.results
+results/resize/classification/train_sameseq_easy.results
+results/resize/classification/train_sameseq_hard.results
 ```
 
 ### Generating and validating the result files
