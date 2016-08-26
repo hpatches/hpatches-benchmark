@@ -1,17 +1,17 @@
-function res = hb(cmd, descname, taskname, varargin)
+function hb(cmd, descname, taskname, varargin)
 %HBenchmarks command line interface
 %  `HB COMMAND DESCNAME BENCHMARKNAME` Is a general call of the HBenchmarks
-%  command line interface. The supported opts.alltasks are:
+%  command line interface. The supported commands are:
 %
-%  `HB checkdesc DESCNAME`  
+%  `HB checkdesc DESCNAME`
 %    Check the validity of the descriptors located in:
 %      data/descriptors/DESCNAME/<sequence_name>/<patchimage>.csv
-%   
-%  `HB pack DESCNAME`  
+%
+%  `HB pack DESCNAME`
 %    Run evaluation on all benchmark files defined in `./benchmarks/` and
 %    pack the results to `DESCNAME_results.zip`.
 %    Descriptors `DESCNAME` **must** be stored in an appropriate folders.
-%    This opts.alltasks computes the results only for tasks, where the results
+%    This command computes the results only for tasks, where the results
 %    file does not exist. To recompute all the results, call:
 %    ```
 %    HB pack DESCNAME * override true
@@ -22,15 +22,15 @@ function res = hb(cmd, descname, taskname, varargin)
 %
 %    Please note that the classification benchmark loads the descriptors to
 %    memory.
-%    
-%  `HB computedesc DESCNAME`  
+%
+%  `HB computedesc DESCNAME`
 %    Compute some of the provided baseline descriptors. Supported
 %    descriptors currently are:
 %      * `sift`     - SIFT descriptor (VLFeat implementation)
 %      * `meanstd`  - 2D descriptor with mean and standard deviation of a patch
 %      * `resize`   - resize patch into 4x4 patch and perform meanstd norm.
 %
-%  `HB TASK DESCNAME BENCHMARKNAME`  
+%  `HB TASK DESCNAME BENCHMARKNAME`
 %    Compute results only for a specified .benchmark file stored in:
 %    ```
 %      benchmarks/TASK/BENCHMARKNAME.benchmark
@@ -50,10 +50,10 @@ function res = hb(cmd, descname, taskname, varargin)
 %    Please note that the classification benchmark caches descriptors in
 %    memory.
 %
-%  `HB packdesc DESCNAME`  
+%  `HB packdesc DESCNAME`
 %     Pack all the descriptors DESCNAME to `DESCNAME_descriptors.zip`.
 %
-%  `HB help`  
+%  `HB help`
 %     Print this help string.
 
 % Copyright (C) 2016 Karel Lenc
@@ -64,16 +64,14 @@ function res = hb(cmd, descname, taskname, varargin)
 hb_setup();
 opts.packWildCard = '*';
 opts.override = [];
-opts.alltasks = {'classification', 'retrieval', 'matching'};
 [opts, varargin] = vl_argparse(opts, varargin);
 valid_commands = {'pack', 'checkdesc', 'computedesc', 'classification', ...
-  'matching', 'retrieval', 'packdesc', 'evalall', 'help'};
-res = [];
+  'matching', 'retrieval', 'packdesc', 'help'};
 if nargin == 0
   fprintf(isdeployed+1, 'Nothing to do.\n');
   usage(valid_commands); return;
 end;
-if nargin == 1  && ~strcmp(cmd, 'evalall')
+if nargin == 1
   if strcmp(cmd, 'help')
     fprintf(isdeployed+1, '%s\n', evalc('help hb'));
     return;
@@ -94,72 +92,79 @@ end
 
 % Chech validity of the descritpros
 desc_path = fullfile(hb_path, 'data', 'descriptors', descname);
-if ~ismember(cmd,  {'computedesc', 'evalall'}) && ~exist(desc_path, 'dir')
+if ~ismember(cmd,  {'computedesc'}) && ~exist(desc_path, 'dir')
   error('Unable to find descriptors in `%s`.', desc_path);
 end
 desc_fun = @(a, b) desc_none(a, b, descname);
 
+% Handle the wildcard task names
+if ~isempty(strfind(taskname, '*')) && ...
+    ~ismember(cmd, {'pack', 'checkdesc', 'packdesc', 'computedesc'})
+  task_names = cellfun(@(a)strrep(strrep(a, '_pos', ''), '_neg', ''), ...
+    listtasks(cmd, taskname), 'UniformOutput', false);
+  task_names = sort(unique(task_names));
+  fprintf(isdeployed+1, 'Processing %d tasks: %s\n', numel(task_names), ...
+    strjoin(task_names, ', '));
+  for ti = 1:numel(task_names)
+    hb(cmd, descname, task_names{ti}, 'override', opts.override);
+  end
+  return;
+end
+
 switch cmd
-  case opts.alltasks
-    if ~isempty(strfind(taskname, '*')) % Process the wildcard tasknames
-      task_names = sort(unique(listtasks(cmd, taskname)));
-      for ti = 1:numel(task_names)
-        hb(cmd, descname, task_names{ti}, 'override', opts.override);
-      end
-      return;
-    end
+  case {'classification', 'matching', 'retrieval'}
     bench_file = fullfile(hb_path, 'benchmarks', cmd, [taskname, '.benchmark']);
     if ~exist(bench_file, 'file'), error('Unable to find %s.', bench_file); end;
     res_file = fullfile(hb_path, 'results', descname, cmd, [taskname, '.results']);
     done_file = utls.get_donepath(res_file);
-    if ~exist(done_file, 'file') || ~exist(res_file, 'file') || opts.override 
-      switch cmd
-        case 'classification'
-          classification_compute(bench_file, desc_fun, res_file, ...
-            'cacheName', descname)
-        case 'matching'
-          matching_compute(bench_file, desc_fun, res_file, ...
-            'cacheName', descname);
-        case 'retrieval'
-          retrieval_compute(bench_file, desc_fun, res_file, ...
-            'cacheName', descname);
-      end
-      df = fopen(done_file, 'w'); fclose(df);
-    end
-    
-    lbl_file = fullfile(hb_path, 'benchmarks', cmd, [taskname, '.labels']);
-    if ~exist(lbl_file, 'file'), fprintf('Labels not present.\n');
-      return;
-    end
-    res = table();
-    res.desc = {descname}; res.task = {cmd}; res.benchmark = {taskname}; 
+
     switch cmd
       case 'classification'
-        tres = classification_eval(bench_file, lbl_file, res_file, varargin{:});
-        res.auc = tres.auc*100;
-        res.ap = tres.ap*100;
+        classification_compute(bench_file, desc_fun, res_file, ...
+          'cacheName', descname)
       case 'matching'
-        tres = matching_eval(bench_file, lbl_file, res_file, varargin{:});
-        res.mean_ap = mean([tres(:).ap])*100;
+        matching_compute(bench_file, desc_fun, res_file, ...
+          'cacheName', descname);
       case 'retrieval'
-        tres = retrieval_eval(bench_file, lbl_file, res_file, varargin{:});
-        res.image_retr_map = mean(tres.image_retr_ap(:))*100;
-        res.patch_retr_map = mean(tres.patch_retr_ap(:))*100;
+        retrieval_compute(bench_file, desc_fun, res_file, ...
+          'cacheName', descname);
     end
-    if nargout == 0, display(res); end
+    df = fopen(done_file, 'w'); fclose(df);
+
+    labels_file = fullfile(hb_path, 'benchmarks', cmd, [taskname, '.labels']);
+    if ~exist(labels_file, 'file')
+      fprintf('Labels file does not exist.\n');
+      return;
+    end
+
+    switch cmd
+      case 'classification'
+        res = classification_eval(bench_file, labels_file, res_file, varargin{:});
+        fprintf('%s\tclassification_auc\t%.4f\tclassification_ap\t%.4f\n', ...
+          descname, mean([res(:).auc])*100, mean([res(:).ap])*100);
+      case 'matching'
+        res = matching_eval(bench_file, labels_file, res_file, varargin{:});
+        fprintf('%s\timage_matching_map\t%.4f\n', descname, mean([res(:).ap])*100);
+      case 'retrieval'
+        res = retrieval_eval(bench_file, labels_file, res_file, varargin{:});
+        fprintf('%s\timage_retr_map\t%.4f\tpatch_retr_map\t%.4f\n', ...
+          descname, mean(res.image_retr_ap(:))*100, mean(res.patch_retr_ap(:))*100);
+    end
   case 'pack'
+    % TODO ask for contact details.
     % TODO check if test set available
     hb('checkdesc', descname);
     fprintf('Packing all results for descriptor %s.\n', descname);
     fprintf('Please not that this does not recompute existing results.\n');
-    for ci = 1:numel(opts.alltasks)
-      task_names = listtasks(opts.alltasks{ci}, taskname);
+    commands = {'classification', 'retrieval', 'matching'};
+    for ci = 1:numel(commands)
+      task_names = listtasks(commands{ci}, taskname);
       for ti = 1:numel(task_names)
-        [valid, resfile] = checkresults(opts.alltasks{ci}, descname, task_names{ti});
+        [valid, resfile] = checkresults(commands{ci}, descname, task_names{ti});
         if ~valid || ~isempty(opts.override)
           warning('Invalid results file %s. Recomputing.', resfile);
-          hb(opts.alltasks{ci}, descname, task_names{ti}, ...
-            'override', opts.override);
+          tn = strrep(strrep(task_names{ti}, '_pos', ''), '_neg', '');
+          hb(commands{ci}, descname, tn, 'override', opts.override);
         end
       end
     end
@@ -223,26 +228,6 @@ switch cmd
     fprintf('Computing %s descriptor for %d sequences.\n', descname, ...
       numel(imdb.sequences.name));
     cache_all_desc(imdb, desc_fun, descname);
-  case 'evalall'
-    res = cell(1, numel(opts.alltasks));
-    descnames = utls.listdirs(fullfile(hb_path, 'results', descname));
-    for ci = 1:numel(opts.alltasks)
-      task_names = listtasks(opts.alltasks{ci}, taskname);
-      for ti = 1:numel(task_names)
-        for di = 1:numel(descnames)
-          cres = hb(opts.alltasks{ci}, descnames{di}, task_names{ti}, ...
-            'override', false);
-          if isempty(res{ci})
-            res{ci} = cres;
-          else
-            res{ci} = [res{ci}; cres];
-          end
-        end
-      end
-    end
-    if nargout == 0
-      for ci = 1:numel(res), display(res{ci}); end
-    end
   otherwise
     error('Unknown command.');
 end
@@ -283,6 +268,6 @@ end
 
 function usage(valid_commands)
 fprintf(isdeployed+1, 'Usage: `run_hb.sh COMMAND DESCNAME BENCHMARK`\n');
-fprintf(isdeployed+1, 'Valid opts.alltasks: %s\n', strjoin(valid_commands, ', '));
-fprintf(isdeployed+1, 'See `run_hb.sh help` for help.\n');
+fprintf(isdeployed+1, 'Valid commands: %s\n', strjoin(valid_commands, ', '));
+fprintf(isdeployed+1, 'See `hb_run.sh help` for help.\n');
 end

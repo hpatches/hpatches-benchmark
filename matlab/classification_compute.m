@@ -56,14 +56,14 @@ updt = utls.textprogressbar(numel(pairs));
 fo = fopen(outpath, 'w'); assert(fo > 0, 'Unable to open %s', outpath);
 for ti = 1:numel(pairs);
   singatures = strsplit(pairs{ti}, ',');
-  assert(numel(singatures) == 3, 'Invalid pairs file.');
+  assert(numel(singatures) == 2, 'Invalid pairs file.');
   descA = desc_memcache(imdb, singatures{1}, descfun, opts);
   descB = desc_memcache(imdb, singatures{2}, descfun, opts);
   assert(size(descA, 2) == 1, 'Invalid pairs file.');
   assert(size(descB, 2) == 1, 'Invalid pairs file.');
   
   dist = sum((descA - descB).^2);
-  fprintf(fo, '%.6f,%s\n', dist, singatures{end});
+  fprintf(fo, '%.6f\n', dist);
   updt(ti);
 end
 fclose(fo);
