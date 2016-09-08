@@ -116,20 +116,21 @@ switch cmd
     bench_file = fullfile(hb_path, 'benchmarks', cmd, [taskname, '.benchmark']);
     if ~exist(bench_file, 'file'), error('Unable to find %s.', bench_file); end;
     res_file = fullfile(hb_path, 'results', descname, cmd, [taskname, '.results']);
-    done_file = utls.get_donepath(res_file);
+    scores_file = fullfile(hb_path, 'results', descname, cmd, [taskname, '.scores']);
 
-    switch cmd
-      case 'classification'
-        classification_compute(bench_file, desc_fun, res_file, ...
-          'cacheName', descname)
-      case 'matching'
-        matching_compute(bench_file, desc_fun, res_file, ...
-          'cacheName', descname);
-      case 'retrieval'
-        retrieval_compute(bench_file, desc_fun, res_file, ...
-          'cacheName', descname);
+    if exist(res_file, 'file') ~= 2 || isempty(opts.override)
+      switch cmd
+        case 'classification'
+          classification_compute(bench_file, desc_fun, res_file, ...
+            'cacheName', descname)
+        case 'matching'
+          matching_compute(bench_file, desc_fun, res_file, ...
+            'cacheName', descname);
+        case 'retrieval'
+          retrieval_compute(bench_file, desc_fun, res_file, ...
+            'cacheName', descname);
+      end
     end
-    df = fopen(done_file, 'w'); fclose(df);
 
     labels_file = fullfile(hb_path, 'benchmarks', cmd, [taskname, '.labels']);
     if ~exist(labels_file, 'file')
@@ -140,18 +141,19 @@ switch cmd
     switch cmd
       case 'classification'
         res = classification_eval(bench_file, labels_file, res_file, varargin{:});
-        fprintf('%s\tclassification_auc\t%.4f\tclassification_ap\t%.4f\n', ...
+        resstr = sprintf('%s\tclassification_auc\t%.4f\tclassification_ap\t%.4f\n', ...
           descname, mean([res(:).auc])*100, mean([res(:).ap])*100);
       case 'matching'
         res = matching_eval(bench_file, labels_file, res_file, varargin{:});
-        fprintf('%s\timage_matching_map\t%.4f\n', descname, mean([res(:).ap])*100);
+        resstr = sprintf('%s\timage_matching_map\t%.4f\n', descname, mean([res(:).ap])*100);
       case 'retrieval'
         res = retrieval_eval(bench_file, labels_file, res_file, varargin{:});
-        fprintf('%s\timage_retr_map\t%.4f\tpatch_retr_map\t%.4f\n', ...
+        resstr = sprintf('%s\timage_retr_map\t%.4f\tpatch_retr_map\t%.4f\n', ...
           descname, mean(res.image_retr_ap(:))*100, mean(res.patch_retr_ap(:))*100);
     end
+    fprintf(resstr);
+    sf = fopen(scores_file, 'w'); fprintf(sf, resstr); fclose(sf);
   case 'pack'
-    % TODO ask for contact details.
     % TODO check if test set available
     hb('checkdesc', descname);
     fprintf('Packing all results for descriptor %s.\n', descname);
@@ -245,8 +247,7 @@ end
 function [valid, res_file] = checkresults(cmd, descname, taskname)
 valid = false;
 res_file = fullfile(hb_path, 'results', descname, cmd, [taskname, '.results']);
-done_file = utls.get_donepath(res_file);
-if ~exist(res_file, 'file') || ~exist(done_file, 'file'), return; end;
+if ~exist(res_file, 'file'), return; end;
 finfo = dir(res_file);
 valid = ~finfo.isdir && finfo.bytes > 0;
 end
