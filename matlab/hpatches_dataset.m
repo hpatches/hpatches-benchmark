@@ -49,6 +49,8 @@ imdb.sequences.set = ones(1, numel(sequences));
 imdb.sequences.set(isTestSeq) = 3;
 imdb.sequences.npatches = zeros(1, numel(sequences));
 imdb.sequences.images = cell(1, numel(sequences));
+imdb.sequences.Hs = zeros(3, 3, 6, numel(sequences));
+imdb.sequences.frames = cell(1, numel(sequences));
 imdb.meta.categories = {'illum', 'viewpoint'};
 categories = -ones(1, numel(sequences));
 categories(cellfun(@(x) strcmp(x(1:2), 'i_'), sequences)) = 1;
@@ -76,6 +78,23 @@ for seqidx = 1:numel(sequences)
   imdb.sequences.npatches(seqidx) = npatches;
   imdb.sequences.images{seqidx} = ims;
   imdb.sequences.im2idx{seqidx} = containers.Map(ims, 1:numel(ims));
+  % Load the homographies
+  for imi = 1:6
+    if imi == 1, imdb.sequences.Hs(:,:,imi,seqidx) = eye(3); continue; end;
+    H = nan(3);
+    Hpath = fullfile(imdb.meta.rootDir, sequence, sprintf('H_ref_%d', imi-1));
+    if exist(Hpath, 'file'), H = dlmread(Hpath, ','); end
+    imdb.sequences.Hs(:,:,imi,seqidx) = H;
+  end
+  % Load the frames
+  imdb.sequences.frames{seqidx} = cell(1, 1, numel(ims));
+  for imi = 1:numel(ims)
+    fpath = fullfile(imdb.meta.rootDir, sequence, [ims{imi}, '.frames']);
+    if exist(fpath, 'file')
+      imdb.sequences.frames{seqidx}{imi} = dlmread(fpath, ',')';
+    end
+  end
+  imdb.sequences.frames{seqidx} = cell2mat(imdb.sequences.frames{seqidx});
   updt(seqidx);
 end
 imdb.getPatches = @(signature) getpatches(imdb, signature);
