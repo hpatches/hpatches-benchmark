@@ -103,8 +103,13 @@ for qi = 1:numel(querySignatures)
     warning(['Phew, what a descriptor - query patch not retrieved as the first patch.',...
       'Applying a hotfix...']);
     [qDescFound, qDescPos] = ismember(querySignatures{qi}, resSignatures(qi, :));
-    assert(qDescFound, 'Invalid descriptor. Query descriptor not within top 50.');
-    resSignatures{qi, qDescPos} = resSignatures{qi, 1};
+    if ~qDescFound % Add artifically, issue another warning...
+      warning('Invalid descriptor. Query descriptor not within top 50.');
+    else
+      resSignatures{qi, qDescPos} = resSignatures{qi, 1};
+    end
+    % This does not influence the evaluation score as the PR curve is
+    % computed from the second retrieved point.
     resSignatures{qi, 1} = querySignatures{qi};
   end
   fprintf(fo, '%s\n', strjoin(resSignatures(qi,:), ','));
