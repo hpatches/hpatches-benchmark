@@ -22,11 +22,7 @@ that generates the required `*.results` files from descriptors stored in CSV fil
 
 ### Entering the challenge: quick start
 
-The simplest way to enter the challenge is to compute patch descriptor for all patches in *HPatches* and use the tools in *HBench* to produce the result files that need to be submitted. For now, you can try this on the *HPatches* training set; once the test set is released, you will be able to follow the same procedure to generate the challenge submission files.
-
-> **Remark:** Currently only the training set is released. You can send us your results
-on the training set to verify their validity, but for entering the challenge, please
-send us the results once the test set is released (mid September 2016).
+The simplest way to enter the challenge is to compute patch descriptor for all patches in *HPatches* and use the tools in *HBench* to produce the result files that need to be submitted.
 
 The procedure can be summarized in a few steps:
 
