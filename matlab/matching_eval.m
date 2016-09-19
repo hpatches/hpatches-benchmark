@@ -51,6 +51,8 @@ for ti = 1:numel(benchmarks)
   matchesA = 1:numel(matchesB);
   dists1t2 = utls.parsenumline(results{ri+2});
   dists1t3 = utls.parsenumline(results{ri+4});
+  invalid = isnan(dists1t2) | isinf(dists1t2) | isnan(dists1t3) | isinf(dists1t3);
+  dists1t2(invalid) = inf; dists1t3(invalid) = inf; 
   assert(all(dists1t2 <= dists1t3), 'Invalid results file - 1stNN further than 2ndNN.');
   distsRatio = dists1t3 ./ dists1t2;
   assert(numel(matchesA) == numel(labelsA), 'Invalid results file.');

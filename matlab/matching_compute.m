@@ -46,6 +46,7 @@ for ti = 1:numel(benchmarks);
   % Do the matching
   tr = vl_kdtreebuild(descB);
   [idx, dist] = vl_kdtreequery(tr, descB, descA, 'NumNeighbors', 2);
+  dist(isnan(dist)) = inf;
   
   % Write to a file (values are zero-indexed)
   fprintf(fo, '%s\n', num2line(idx(1, :) - 1)); fprintf(fo, '%s\n', num2line(dist(1, :)));
