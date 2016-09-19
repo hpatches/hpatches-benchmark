@@ -15,3 +15,5 @@ if ~isdeployed && ~exist('vl_argparse', 'file')
   vlf_dir = vlf_dir([vlf_dir.isdir]);
   run(fullfile(hb_path, 'matlab', 'vlfeat', vlf_dir(1).name, 'toolbox', 'vl_setup.m'));
 end
+
+addpath(fullfile(hb_path(), 'matlab'));
