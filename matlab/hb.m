@@ -116,9 +116,9 @@ switch cmd
     bench_file = fullfile(hb_path, 'benchmarks', cmd, [taskname, '.benchmark']);
     if ~exist(bench_file, 'file'), error('Unable to find %s.', bench_file); end;
     res_file = fullfile(hb_path, 'results', descname, cmd, [taskname, '.results']);
-    scores_file = fullfile(hb_path, 'results', descname, cmd, [taskname, '.scores']);
+    scores_file = fullfile(hb_path, 'results', descname, cmd, [taskname, '-scores.csv']);
 
-    if exist(res_file, 'file') ~= 2 || isempty(opts.override)
+    if ~exist(res_file, 'file') || ~isempty(opts.override)
       switch cmd
         case 'classification'
           classification_compute(bench_file, desc_fun, res_file, ...
@@ -138,21 +138,25 @@ switch cmd
       return;
     end
 
+    if exist(scores_file, 'file') == 2 && isempty(opts.override), return; end
+
+    scores = struct('name', descname, 'taskname', taskname);
     switch cmd
       case 'classification'
-        res = classification_eval(bench_file, labels_file, res_file, varargin{:});
-        resstr = sprintf('%s\tclassification_auc\t%.4f\tclassification_ap\t%.4f\n', ...
-          descname, mean([res(:).auc])*100, mean([res(:).ap])*100);
+        out = classification_eval(bench_file, labels_file, res_file, varargin{:});
+        scores.classif_auc = mean([out(:).auc])*100;
+        scores.classif_ap = mean([out(:).ap])*100;
       case 'matching'
-        res = matching_eval(bench_file, labels_file, res_file, varargin{:});
-        resstr = sprintf('%s\timage_matching_map\t%.4f\n', descname, mean([res(:).ap])*100);
+        out = matching_eval(bench_file, labels_file, res_file, varargin{:});
+        scores.matching_map = mean([out(:).ap])*100;
       case 'retrieval'
-        res = retrieval_eval(bench_file, labels_file, res_file, varargin{:});
-        resstr = sprintf('%s\timage_retr_map\t%.4f\tpatch_retr_map\t%.4f\n', ...
-          descname, mean(res.image_retr_ap(:))*100, mean(res.patch_retr_ap(:))*100);
+        out = retrieval_eval(bench_file, labels_file, res_file, varargin{:});
+        scores.retrieval_im_map = mean(out.image_retr_ap(:))*100;
+        scores.retrieval_patch_map = mean(out.patch_retr_ap(:))*100;
     end
-    fprintf(resstr);
-    sf = fopen(scores_file, 'w'); fprintf(sf, resstr); fclose(sf);
+    scores = struct2table(scores, 'AsArray', true);
+    display(scores);
+    writetable(scores, scores_file, 'QuoteStrings', true, 'FileType','text');
   case 'pack'
     % TODO check if test set available
     hb('checkdesc', descname);
