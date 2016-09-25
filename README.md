@@ -150,5 +150,5 @@ Currently implemented descriptors are `sift`, `meanstd` and `resize`.
 The challenge consists of three common computer vision tasks. For more details about the challenges, see the following links:
 
 * [Patch Classification Benchmark](./benchmarks/classification/README.md)
-* [Image Matching Benchmkar](./benchmarks/matching/README.md)
+* [Image Matching Benchmark](./benchmarks/matching/README.md)
 * [Image and Patch Retrieval Benchmark](./benchmarks/retrieval/README.md)
