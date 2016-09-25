@@ -5,6 +5,9 @@ This toolbox supports the descriptor matching challenge that will be presented a
 [Local Features: State of the Art, Open Problems and Performance Evaluation](http://www.iis.ee.ic.ac.uk/ComputerVision/DescrWorkshop/index.html)
 workshop at ECCV 2016. It implements the *HPatches* evaluation protocol and allows to produce the result files required to enter the challenge.
 
+For the command line interface, either
+[download Binary Distribution](https://dl.dropboxusercontent.com/u/555392/hbench-v0.1.tar.gz) or run `getbin.sh`.
+
 [TOC]
 
 ## Overview
@@ -26,7 +29,7 @@ The simplest way to enter the challenge is to compute patch descriptor for all p
 
 The procedure can be summarized in a few steps:
 
-* **Install HBench.** Download and unpack the [binary distribution](https://dl.dropboxusercontent.com/u/555392/hbench-v0.1.tar.gz) of *HBench*. Let `HBPATH` be the path to the install directory.
+* **Install HBench.** Download and unpack the [binary distribution](https://dl.dropboxusercontent.com/u/555392/hbench-v0.1.tar.gz) of *HBench*. If you have cloned the GIT repository, you can also run `./getbin.sh`. Let `HBPATH` be the path to the install directory.
 * **Install HPatches.** Download the [HPatches](https://github.com/featw/hpatches) dataset. You can download the dataset directly or by running the script `HBPATH/bin/run_hb.sh MCRPATH` available in the *binary* distribution of HBench (see above). Make sure that the HPatches data is unpacked in the subfolder `HBPATH/data/hpatches` of the HBench install (this can be a symlink).
 * **Install the required MATLAB components.** Install either MATLAB R2016a or the free MATLAB redistributable environment [MCR R2016a](http://www.mathworks.com/products/compiler/mcr/) (see [below](#install-mcr) for details). Let `MCRPATH` be the path to either the MATLAB or MCR install. .
 * **Compute the patch descriptors.** The HPatches dataset is organized in patch-images in `HBPATH/data/hpatches/SEQUENCE/IMNAME.png` (see [below](#reading-patches) for the format). For each patch-image compute the descriptor `DESCNAME` (where `DESCNAME` is an arbitrary descriptor name such as `SIFT`) and store it in a numeric [CSV file](#csv-descriptors)
