@@ -36,7 +36,7 @@ if doCache
 end
 
 if doCache && exist(cachePath, 'file')
-  descriptors = single(dlmread(cachePath, ';')');
+  descriptors = single(dlmread(cachePath)');
 else
   patches = imdb.getPatches(signature);
   patches = reshape(patches, size(patches, 1), size(patches, 2), []);

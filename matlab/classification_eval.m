@@ -72,11 +72,11 @@ end
 end
 
 function [dists, labels] = readres(resultspath, labelspath)
-res = dlmread(resultspath, ',');
+res = dlmread(resultspath);
 assert(size(res, 2) == 1, 'Invalid results file.');
 dists = res(:, 1)';
 
-res = dlmread(labelspath, ',');
+res = dlmread(labelspath);
 assert(size(res, 2) == 1, 'Invalid labels file.');
 labels = res(:, 1)';
 assert(numel(labels) == numel(dists), ...
