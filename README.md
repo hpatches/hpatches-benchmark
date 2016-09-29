@@ -10,7 +10,19 @@ For the command line interface, either
 
 > Note: If you are experiencing issues with the binary distribution (`bin/run_hb.sh`), please download the latest version with `./getbin.sh` first.
 
-[TOC]
+## Table of Contents
+
+  * [Overview](#overview)
+    * [Entering the challenge: quick start](#entering-the-challenge-quick-start)
+    * [Install MCR](#install-mcr)
+    * [Extracting patches from the dataset](#extracting-patches-from-the-dataset)
+    * [Creating the CSV descriptor files](#creating-the-csv-descriptor-files)
+    * [Running the <em>HBench</em> tool](#running-the-hbench-tool)
+      * [Command line interface](#command-line-interface)
+      * [MATLAB Interface](#matlab-interface)
+      * [Computing the baseline descriptors for comparison](#computing-the-baseline-descriptors-for-comparison)
+  * [Benchmark definitions](#benchmark-definitions)
+
 
 ## Overview
 
