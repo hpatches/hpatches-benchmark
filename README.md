@@ -8,6 +8,8 @@ workshop at ECCV 2016. It implements the *HPatches* evaluation protocol and allo
 For the command line interface, either
 [download Binary Distribution](https://dl.dropboxusercontent.com/u/555392/hbench-v0.1.tar.gz) or run `getbin.sh`.
 
+> Note: If you are experiencing issues with the binary distribution (`bin/run_hb.sh`), please download the latest version with `./getbin.sh` first.
+
 [TOC]
 
 ## Overview
