@@ -64,9 +64,10 @@ function hb(cmd, descname, taskname, varargin)
 hb_setup();
 opts.packWildCard = '*';
 opts.override = [];
+opts.evalOnly = true;
 [opts, varargin] = vl_argparse(opts, varargin);
 valid_commands = {'pack', 'checkdesc', 'computedesc', 'classification', ...
-  'matching', 'retrieval', 'packdesc', 'help'};
+  'matching', 'retrieval', 'packdesc', 'evalall', 'help'};
 if nargin == 0
   fprintf(isdeployed+1, 'Nothing to do.\n');
   usage(valid_commands); return;
@@ -92,14 +93,19 @@ end
 
 % Chech validity of the descritpros
 desc_path = fullfile(hb_path, 'data', 'descriptors', descname);
-if ~ismember(cmd,  {'computedesc'}) && ~exist(desc_path, 'dir')
+res_path = fullfile(hb_path, 'results', descname);
+if ~ismember(cmd,  {'computedesc', 'evalall'}) && ~exist(desc_path, 'dir') ...
+    && ~opts.evalOnly
   error('Unable to find descriptors in `%s`.', desc_path);
+end
+if opts.evalOnly && ~exist(res_path, 'dir')
+  error('Unable to find results in `%s`.', res_path);
 end
 desc_fun = @(a, b) desc_none(a, b, descname);
 
 % Handle the wildcard task names
 if ~isempty(strfind(taskname, '*')) && ...
-    ~ismember(cmd, {'pack', 'checkdesc', 'packdesc', 'computedesc'})
+    ~ismember(cmd, {'pack', 'checkdesc', 'packdesc', 'computedesc', 'evalall'})
   task_names = cellfun(@(a)strrep(strrep(a, '_pos', ''), '_neg', ''), ...
     listtasks(cmd, taskname), 'UniformOutput', false);
   task_names = sort(unique(task_names));
@@ -115,10 +121,13 @@ switch cmd
   case {'classification', 'matching', 'retrieval'}
     bench_file = fullfile(hb_path, 'benchmarks', cmd, [taskname, '.benchmark']);
     if ~exist(bench_file, 'file'), error('Unable to find %s.', bench_file); end;
-    res_file = fullfile(hb_path, 'results', descname, cmd, [taskname, '.results']);
-    scores_file = fullfile(hb_path, 'results', descname, cmd, [taskname, '-scores.csv']);
+    res_file = fullfile(res_path, cmd, [taskname, '.results']);
+    scores_file = fullfile(res_path, cmd, [taskname, '-scores.csv']);
 
     if ~exist(res_file, 'file') || ~isempty(opts.override)
+      if opts.evalOnly
+        error('Unable to find results file: %s.\n', res_file);
+      end
       switch cmd
         case 'classification'
           classification_compute(bench_file, desc_fun, res_file, ...
@@ -157,30 +166,29 @@ switch cmd
     scores = struct2table(scores, 'AsArray', true);
     display(scores);
     writetable(scores, scores_file, 'QuoteStrings', true, 'FileType','text');
-  case 'pack'
-    % TODO check if test set available
-    hb('checkdesc', descname);
-    fprintf('Packing all results for descriptor %s.\n', descname);
-    fprintf('Please not that this does not recompute existing results.\n');
+  case {'pack', 'evalall'}
+    evalOnly = strcmp(cmd, 'evalall');
+    if ~evalOnly, hb('checkdesc', descname); end;
     commands = {'classification', 'retrieval', 'matching'};
     for ci = 1:numel(commands)
       task_names = listtasks(commands{ci}, taskname);
       for ti = 1:numel(task_names)
-        [valid, resfile] = checkresults(commands{ci}, descname, task_names{ti});
-        if ~valid || ~isempty(opts.override)
-          warning('Invalid results file %s. Recomputing.', resfile);
-          tn = strrep(strrep(task_names{ti}, '_pos', ''), '_neg', '');
-          hb(commands{ci}, descname, tn, 'override', opts.override);
-        end
+        tn = strrep(strrep(task_names{ti}, '_pos', ''), '_neg', '');
+        hb(commands{ci}, descname, tn, 'override', opts.override, ...
+          'evalOnly', evalOnly);
       end
     end
-    getdescinfo(descname);
-    zipFile = fullfile(hb_path, [descname, '_results.zip']);
-    fprintf('Packing the results to %s.\n', zipFile);
-    zip(zipFile, fullfile(hb_path, 'results', descname));
-    submitLink = utls.readfile(fullfile(hb_path, 'results', 'submit.url'));
-    fprintf('\nDone. Please submit the file:\n\t%s\nto:\n\t%s\n', ...
-      zipFile, submitLink{1});
+    if strcmp(cmd, 'pack')
+      fprintf('Packing all results for descriptor %s.\n', descname);
+      fprintf('Please note that this does not recompute existing results.\n');
+      getdescinfo(descname);
+      zipFile = fullfile(hb_path, [descname, '_results.zip']);
+      fprintf('Packing the results to %s.\n', zipFile);
+      zip(zipFile, res_path);
+      submitLink = utls.readfile(fullfile(hb_path, 'results', 'submit.url'));
+      fprintf('\nDone. Please submit the file:\n\t%s\nto:\n\t%s\n', ...
+        zipFile, submitLink{1});
+    end
   case 'packdesc'
     hb('checkdesc', descname);
     getdescinfo(descname);
@@ -246,14 +254,6 @@ function task_names = listtasks(cmd, taskname)
   for ti = 1:numel(task_names)
     [~, task_names{ti}] = fileparts(task_names{ti});
   end
-end
-
-function [valid, res_file] = checkresults(cmd, descname, taskname)
-valid = false;
-res_file = fullfile(hb_path, 'results', descname, cmd, [taskname, '.results']);
-if ~exist(res_file, 'file'), return; end;
-finfo = dir(res_file);
-valid = ~finfo.isdir && finfo.bytes > 0;
 end
 
 function getdescinfo(descname)
