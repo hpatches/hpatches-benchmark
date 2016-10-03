@@ -64,7 +64,7 @@ function hb(cmd, descname, taskname, varargin)
 hb_setup();
 opts.packWildCard = '*';
 opts.override = [];
-opts.evalOnly = true;
+opts.evalOnly = false;
 [opts, varargin] = vl_argparse(opts, varargin);
 valid_commands = {'pack', 'checkdesc', 'computedesc', 'classification', ...
   'matching', 'retrieval', 'packdesc', 'evalall', 'help'};
