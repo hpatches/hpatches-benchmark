@@ -269,6 +269,9 @@ if ~exist(descInfoFile, 'file') ||...
   fprintf('Submission info wrote to %s. Edit this file for changes.\n', ...
     descInfoFile);
 end
+vl_xmkdir(fullfile(hb_path, 'results', descname));
+descInfoFile_res = fullfile(hb_path, 'results', descname, 'info.txt');
+copyfile(descInfoFile, descInfoFile_res);
 end
 
 function usage(valid_commands)
