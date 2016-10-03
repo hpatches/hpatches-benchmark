@@ -8,6 +8,7 @@ function hb_setup()
 % the terms of the BSD license (see the COPYING file).
 
 if ~isdeployed && ~exist('vl_argparse', 'file')
+  dbstop if error;
   % Set up vlfeat
   utls.provision(fullfile(hb_path, 'matlab', 'vlfeat.url'), ...
     fullfile(hb_path, 'matlab', 'vlfeat'));
