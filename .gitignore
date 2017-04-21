@@ -8,3 +8,11 @@ bin/*.txt
 bin/*.sh
 *~
 *.zip
+descrs/**
+tmp/**
+hpatch-release/**
+results/**
+.#*
+*.pyc
+data/descriptors/**
+data/hpatches-release/**
