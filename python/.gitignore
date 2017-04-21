@@ -1,0 +1,12 @@
+descrs/**
+tmp/**
+hpatch-release/**
+results/**
+.#*
+*.pyc
+hpatches-release.tar.gz
+hpatch-release.tar.gz
+tfeat-margin-star.tar.gz
+sift.tar.gz
+data/descriptors/**
+data/hpatches-release/**
