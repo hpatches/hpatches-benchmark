@@ -1,0 +1,15 @@
+descriptor,normstr
+binboost,wzca_ceig0_40_pl0_50_l2n
+brief,wzca_ceig0_40_pl0_50_l2n
+deepdesc,wzca_pl0_50_l2n
+meanstd,wzca_ceig0_05_pl0_50
+orb,wzca_ceig0_40_pl0_50_l2n
+resize,l2n
+rootsift,wzca_ceig0_25_pl0_50_l2n
+siam,wzca_ceig0_10_pl0_50_l2n
+siam2stream,wzca_ceig0_15_pl0_50_l2n
+sift,wzca_ceig0_25_pl0_50_l2n
+tfeat-margin,wzca_ceig0_30_pl0_50_l2n
+tfeat-margin-star,wzca_ceig0_40_pl0_50_l2n
+tfeat-ratio,wzca_ceig0_15_pl0_50_l2n
+tfeat-ratio-star,wzca_ceig0_15_pl0_50_l2n
