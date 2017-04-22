@@ -86,7 +86,7 @@ end
 function [descs, seqi] = getdesc(obj, sequences, geom_noise, images, idxs)
 assert(numel(sequences) == numel(images));
 assert(numel(sequences) == numel(idxs));
-assert(all(idxs > 0));
+assert(all(idxs > 0), 'Indexes must be >0');
 assert(ischar(geom_noise));
 sequences = reshape(sequences, 1, []);
 images = reshape(images, 1, []);
