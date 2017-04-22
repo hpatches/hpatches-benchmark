@@ -10,10 +10,11 @@ opts.debug = false;
 opts.queryims = 1;
 opts.pos_ims = [2,3,4,5,6]; % Removequery by default
 opts.neg_ims = 1;
-opts.num_neg = inf;
+opts.num_neg = 2000;
 opts.topn = inf;
 opts.numqueries = inf;
 opts.testap = false;
+opts.numtype = 'single';
 [opts, varargin] = vl_argparse(opts, varargin);
 
 queries = readtable(queryfile);
@@ -37,22 +38,34 @@ pos_dists = squeeze(sum(bsxfun(@minus, pos_desc, query_desc).^2, 1))';
 t = vl_kdtreebuild(neg_desc);
 [neg_idxs, neg_dists] = vl_kdtreequery(t, neg_desc, query_desc, ...
   'numneighbors', min(opts.topn, size(neg_desc, 2)), varargin{:});
-neg_si = neg_si(neg_idxs);
+neg_si = single(neg_si(neg_idxs));
 
-neg_labels = -ones(size(neg_dists));
-ignored = bsxfun(@eq, neg_si, query_si);
+neg_labels = -ones(size(neg_dists), opts.numtype);
+ignored = bsxfun(@eq, neg_si, single(query_si));
 neg_labels(ignored) = 0;
+clear ignored;
 
-all_labels = [ones(size(pos_dists)); neg_labels];
-all_scores = [-pos_dists; -neg_dists];
-all_idxs = [repmat((1:numel(opts.pos_ims))', 1, size(pos_dists, 2)); double(neg_idxs)];
-all_si = [repmat(query_si, numel(opts.pos_ims), 1); neg_si];
+all_labels = [ones(size(pos_dists), opts.numtype); neg_labels];
+all_scores = [single(-pos_dists); -neg_dists];
+clear neg_dists neg_labels;
+if opts.debug
+  all_idxs = [repmat((1:numel(opts.pos_ims))', 1, size(pos_dists, 2)); ...
+    double(neg_idxs)];
+  all_si = [repmat(query_si, numel(opts.pos_ims), 1); neg_si];
+else
+  clear neg_si neg_idxs;
+end
 
 [all_scores, idxs] = sort(all_scores, 1, 'descend');
-idxs = bsxfun(@plus, idxs, (0:(size(idxs, 2)-1))*size(idxs, 1));
+idxs = bsxfun(@plus, idxs, cast((0:(size(idxs, 2)-1))*size(idxs, 1), ...
+  opts.numtype));
 all_labels = all_labels(idxs);
-all_idxs = all_idxs(idxs);
-all_si = all_si(idxs);
+if opts.debug
+  all_idxs = all_idxs(idxs);
+  all_si = all_si(idxs);
+else
+  clear all_scores idxs;
+end
 
 tp = [zeros(1, queries_num); cumsum(all_labels > 0, 1)] ;
 fp = [zeros(1, queries_num); cumsum(all_labels < 0, 1)] ;

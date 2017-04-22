@@ -14,6 +14,11 @@ function res = retrieval( des, varargin )
 %  If the scores file already exists, skips the computation. Use
 %  `'override', true` to change this behaviour.
 %
+%  For reproducing the article results run with:
+%      RETRIEVAL(DESCRIPTOR, 'num_neg', inf, ...)
+%  Otherwise computes the scores only with the top-2000 negative descriptors.
+%  This is to reduce the memory demands.
+%
 %  Additionally accepts the following 'OptionName', OptionValue arguments:
 %
 %  'scoresroot' :: '<HBROOT>/matlab/results/default/'
