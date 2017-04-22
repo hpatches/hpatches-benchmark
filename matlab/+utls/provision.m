@@ -1,5 +1,5 @@
-function downloaded = provision( url_file, tgt_dir )
-
+function downloaded = provision( url_file, tgt_dir, override )
+if nargin < 3, override = false; end;
 downloaded = false;
 if ~exist(url_file, 'file')
   error('Unable to find the URL file %s.', url_file);
@@ -8,9 +8,12 @@ end;
 done_file = fullfile(tgt_dir, ['.', url_file_nm, '.done']);
 if exist(tgt_dir, 'dir')
   if ~exist(done_file, 'file')
-    res = input('Target directory %s already exist. Continue? [Y/N] Y ', 'str');
-    if ismember(lower(res), {'n', 'no'})
-      create_done();
+    if ~override
+      res = input('Target directory %s already exist. Continue? [Y/N] Y ', ...
+        's');
+    end
+    if override || ismember(lower(res), {'n', 'no'})
+      create_done(done_file);
       return;
     end
   end
@@ -23,12 +26,12 @@ for ui = 1:numel(url)
   p_untar(url{ui}, tgt_dir);
 end
 downloaded = true;
-create_done();
+create_done(done_file);
 end
 
 function create_done(done_file)
 f = fopen(done_file, 'w'); fclose(f);
-fprintf('To reprovision, delete %s.\n', donw_file);
+fprintf('To reprovision, delete %s.\n', done_file);
 end
 
 function p_untar(url, tgt_dir)

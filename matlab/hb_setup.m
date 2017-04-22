@@ -15,7 +15,7 @@ if ~isdeployed && (exist('hb', 'file') || ~exist('vl_argparse', 'file'))
   
   % Provision VLFeat
   utls.provision(fullfile(hb_path, 'matlab', 'data', 'vlfeat.url'), ...
-    fullfile(hb_path, 'matlab', 'vlfeat'));
+    fullfile(hb_path, 'matlab', 'vlfeat'), true);
   vlf_dir = dir(fullfile(hb_path, 'matlab', 'vlfeat', 'vlfeat*'));
   vlf_dir = vlf_dir([vlf_dir.isdir]);
   run(fullfile(hb_path, 'matlab', 'vlfeat', vlf_dir(1).name, 'toolbox', 'vl_setup.m'));
