@@ -1,5 +1,5 @@
 import cv2
-import numpy as np 
+import numpy as np
 from glob import glob
 from joblib import Parallel, delayed
 import multiprocessing
@@ -57,7 +57,7 @@ def load_descrs(path,dist='L2',descr_type='',sep=','):
     except:
         print("%r does not seem like a valid HPatches descriptor root folder." % (path))
     seqs_l = Parallel(n_jobs=multiprocessing.cpu_count())\
-                              (delayed(hpatch_descr)(f,name,descr_type,sep) for f in t)
+                              (delayed(hpatch_descr)(f,descr_type,sep) for f in t)
     seqs = dict((l.name, l) for l in seqs_l)
     seqs['distance'] = dist
     seqs['dim'] = seqs_l[0].dim
@@ -103,7 +103,7 @@ def compute_pcapl(descr,split):
 class hpatch_descr:
     """Class for loading an HPatches descriptor result .csv file"""
     itr = tps
-    def __init__(self,base,name,descr_type='',sep=','):
+    def __init__(self,base,descr_type='',sep=','):
         self.base = base
         self.name = base.split("/")[-1]
 

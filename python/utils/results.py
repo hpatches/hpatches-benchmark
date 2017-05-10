@@ -1,4 +1,4 @@
-from misc import *
+from utils.misc import *
 import dill
 import pprint
 from tabulate import tabulate as tb
@@ -8,18 +8,18 @@ ft = {'e':'Easy','h':'Hard','t':'Tough'}
 
 def results_verification(desc,splt):
     v = {'balanced':'auc','imbalanced':'ap'}
-    res = dill.load( open( "results/"+desc+"_verification_"+splt['name']+".p"))
+    res = dill.load( open( "results/"+desc+"_verification_"+splt['name']+".p", "rb"))
     for r in v:
         print("%s - %s variant (%s) " % (blue(desc.upper()),r.capitalize(),v[r]))
         heads = ["Noise","Inter","Intra"]
         results = []
         for t in ['e','h','t']:
             results.append([ft[t], res[t]['inter'][r][v[r]],res[t]['intra'][r][v[r]]])
-        print tb(results,headers=heads)
+        print(tb(results,headers=heads))
 
-            
+
 def results_matching(desc,splt):
-    res = dill.load( open( "results/"+desc+"_matching_"+splt['name']+".p"))
+    res = dill.load( open( "results/"+desc+"_matching_"+splt['name']+".p", "rb"))
     mAP = {'e':0,'h':0,'t':0}
     k_mAP = 0
     heads = [ft['e'],ft['h'],ft['t'],'mean']
@@ -33,12 +33,12 @@ def results_matching(desc,splt):
 
     results = [mAP['e']/k_mAP,mAP['h']/k_mAP,mAP['t']/k_mAP]
     results.append(sum(results)/float(len(results)))
-    print tb([results],headers=heads)
+    print(tb([results],headers=heads))
     print("\n")
-   
-    
+
+
 def results_retrieval(desc,splt):
-    res = dill.load( open( "results/"+desc+"_retrieval_"+splt['name']+".p"))
+    res = dill.load( open( "results/"+desc+"_retrieval_"+splt['name']+".p", "rb"))
     print("%s - mAP 10K queries " % (blue(desc.upper())))
     n_q= float(len(res.keys()))
     heads = ['']
@@ -62,8 +62,8 @@ def results_retrieval(desc,splt):
         results.append([ft[k]]+r)
 
     res = np.array(results)[:,1:].astype(np.float32)
-    results.append(['mean']+list(np.mean(res,axis=0)))    
-    print tb(results,headers=heads)
+    results.append(['mean']+list(np.mean(res,axis=0)))
+    print(tb(results,headers=heads))
 
 results_methods = {'verification': results_verification,\
            'matching': results_matching,\

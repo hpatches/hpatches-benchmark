@@ -24,7 +24,7 @@ from utils.docopt import docopt
 import os
 import time
 import dill
-    
+
 if __name__ == '__main__':
     opts = docopt(__doc__, version='HPatches 1.0')
     path = os.path.join(opts['--descr-dir'],opts['--descr-name'])
