@@ -20,7 +20,7 @@ import os.path
 import time
 import json
 from utils.docopt import docopt
-    
+
 if __name__ == '__main__':
     opts = docopt(__doc__, version='HPatches 1.0')
     descrs = opts['--descr-name']

@@ -1,15 +1,15 @@
-from scipy import spatial 
-import numpy as np 
+from scipy import spatial
+import numpy as np
 from glob import glob
 from joblib import Parallel, delayed
 import multiprocessing
 import pandas as pd
-import metrics
+import utils.metrics as metrics
 from collections import defaultdict
 import time
 from tqdm import tqdm
-from hpatch import *
-from misc import *
+from utils.hpatch import *
+from utils.misc import *
 
 id2t = {0:{'e':'ref','h':'ref','t':'ref'}, \
         1:{'e':'e1','h':'h1','t':'t1'}, \
@@ -73,9 +73,9 @@ def eval_verification(descr,split):
     print('>> Evaluating %s task' % green('verification'))
 
     start = time.time()
-    pos = pd.read_csv('utils/tasks/verif_pos_split-'+split['name']+'.csv').as_matrix()
-    neg_intra = pd.read_csv('utils/tasks/verif_neg_intra_split-'+split['name']+'.csv').as_matrix()
-    neg_inter = pd.read_csv('utils/tasks/verif_neg_inter_split-'+split['name']+'.csv').as_matrix()
+    pos = pd.read_csv('../tasks/verif_pos_split-'+split['name']+'.csv').as_matrix()
+    neg_intra = pd.read_csv('../tasks/verif_neg_intra_split-'+split['name']+'.csv').as_matrix()
+    neg_inter = pd.read_csv('../tasks/verif_neg_inter_split-'+split['name']+'.csv').as_matrix()
 
     d_pos = get_verif_dists(descr,pos,1)
     d_neg_intra = get_verif_dists(descr,neg_intra,2)
@@ -130,7 +130,7 @@ def gen_verif(seqs,split,N_pos=1e6,N_neg=1e6):
                        't1': pd.Series(s_type[:,0], dtype=int) ,\
                        't2': pd.Series(s_type[:,1], dtype=int)})
     df = df[['s1','t1','idx1','s2','t2','idx2']] # updated order for matlab comp.
-    df.to_csv('utils/tasks/verif_pos_split-'+split['name']+'.csv',index=False)
+    df.to_csv('../tasks/verif_pos_split-'+split['name']+'.csv',index=False)
 
     # intra-sequence negatives
     df = pd.DataFrame({'s1': pd.Series(s, dtype=object),\
@@ -140,7 +140,7 @@ def gen_verif(seqs,split,N_pos=1e6,N_neg=1e6):
                        't1': pd.Series(s_type[:,0], dtype=int) ,\
                        't2': pd.Series(s_type[:,1], dtype=int)})
     df = df[['s1','t1','idx1','s2','t2','idx2']] # updated order for matlab comp.
-    df.to_csv('utils/tasks/verif_neg_intra_split-'+split['name']+'.csv',index=False)
+    df.to_csv('../tasks/verif_neg_intra_split-'+split['name']+'.csv',index=False)
 
     # inter-sequence negatives
     s_inter = np.random.choice(split['test'], int(N_neg))
@@ -153,7 +153,7 @@ def gen_verif(seqs,split,N_pos=1e6,N_neg=1e6):
                        't1': pd.Series(s_type[:,0], dtype=int) ,\
                        't2': pd.Series(s_type[:,1], dtype=int)})
     df = df[['s1','t1','idx1','s2','t2','idx2']] # updated order for matlab comp.
-    df.to_csv('utils/tasks/verif_neg_inter_split-'+split['name']+'.csv',index=False)
+    df.to_csv('../tasks/verif_neg_inter_split-'+split['name']+'.csv',index=False)
 
 
 
@@ -213,8 +213,8 @@ def eval_retrieval(descr,split): #WIP
     print('>> Evaluating %s task' % green('retrieval'))
     start = time.time()
 
-    q = pd.read_csv('utils/tasks/retr_queries_split-'+split['name']+'.csv').as_matrix()
-    d = pd.read_csv('utils/tasks/retr_distractors_split-'+split['name']+'.csv').as_matrix()
+    q = pd.read_csv('../tasks/retr_queries_split-'+split['name']+'.csv').as_matrix()
+    d = pd.read_csv('../tasks/retr_distractors_split-'+split['name']+'.csv').as_matrix()
 
     # q_std = np.std(q, axis=0)
     # d_std = np.std(d, axis=0)
@@ -323,8 +323,8 @@ def gen_retrieval(seqs,split,N_queries=0.5*1e4,N_distractors=2*1e4):
     # print(df_q.shape,df_d.shape)
     df_d = df_d.head(N_distractors)
 
-    df_q.to_csv('utils/tasks/retr_queries_split-'+split['name']+'.csv',index=False)
-    df_d.to_csv('utils/tasks/retr_distractors_split-'+split['name']+'.csv',index=False)                
+    df_q.to_csv('../tasks/retr_queries_split-'+split['name']+'.csv',index=False)
+    df_d.to_csv('../tasks/retr_distractors_split-'+split['name']+'.csv',index=False)                
 
 
 methods = {'verification': eval_verification,\
