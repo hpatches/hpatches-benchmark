@@ -13,7 +13,7 @@ outpath = fullfile(hb_path, 'matlab', 'results', 'article');
 vl_xmkdir(outpath);
 addpath(fullfile(hb_path, '../matlab2tikz/src/'));
 
-sequences = utls.listdirs(fullfile(hb_path, 'data', 'hpatches_v1.1'));
+sequences = utls.listdirs(fullfile(hb_path, 'data', 'hpatches-release'));
 illum_seq = cellfun(@(a) strcmp(a(1:2), 'i_'), sequences);
 viewp_seq = cellfun(@(a) strcmp(a(1:2), 'v_'), sequences);
 
