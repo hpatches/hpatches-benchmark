@@ -1,6 +1,5 @@
 results
 data/descriptors
-vlfeat
 bin/hb
 bin/hb_run.sh
 bin/*.log
