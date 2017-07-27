@@ -1,3 +1,5 @@
+% Recompute the best normalisation for all descriptors.
+
 hb_setup();
 
 res = rproc.read('scoresroot', ...
