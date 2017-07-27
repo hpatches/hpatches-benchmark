@@ -7,13 +7,32 @@ function [obj, varargin] = memdesc(descname, varargin)
 %  and returns an object with methods to access the descriptor data from
 %  memory.
 %
-%
 %  By default, creates a cache of the CSV descriptors in:
 %
 %     `<HB_ROOT>/data/descritpors/DESCNAME/descs.mat`
 %
 %  for faster loading. Call  MEMDESC(... 'matccache', false) to override
 %  this behaviour and load the CSV descriptors.
+%
+%  Additionally accepts these options:
+%
+%  'dtype' :: 'single'
+%     Data storage type class. Casted using 'cast' function.
+%
+%  'matcahce' :: true
+%     Buffer the descriptors in `desc.mat` file as it leads to faster
+%     loading time. Enabled by default.
+%
+%  'norm' :: false
+%     Apply normalisation using `desc.normdesc`, passes over the unused
+%     optional arguments.
+%
+%  'nanval' :: 0
+%     Replace nan values in descriptor with the given value, zero by
+%     default. Use NaN to keep the original descriptors.
+%
+%  See also:
+%    desc.normdesc
 
 % Copyright (C) 2017 Karel Lenc
 % All rights reserved.
@@ -23,6 +42,7 @@ function [obj, varargin] = memdesc(descname, varargin)
 opts.dtype = 'single';
 opts.matcache = true;
 opts.norm = false;
+opts.nanval = 0;
 [opts, varargin] = vl_argparse(opts, varargin);
 if ischar(opts.norm), opts.norm = str2num(opts.norm); end;
 
@@ -38,6 +58,7 @@ if ~exist(cachepath, 'file') || ~opts.matcache
 else
   fprintf('Loading cached descriptor from %s.\n', cachepath);
   obj = load(cachepath);
+  obj.path = path;
 end
 
 if opts.norm
@@ -71,7 +92,9 @@ obj.sequence = cell(1, numel(obj.sequences));
 for si = 1:numel(obj.sequences)
   name = obj.sequences{si};
   for imi = 1:numel(obj.images)
-    obj.data{1, si, imi} = cast(gdesc(name, obj.images{imi}), opts.dtype);
+    d = cast(gdesc(name, obj.images{imi}), opts.dtype);
+    d(isnan(d)) = opts.nanval;
+    obj.data{1, si, imi} = d;
     stepi = stepi+1; status(stepi);
   end
   obj.sequence{1, si} = si*ones(1, size(obj.data{1, si, imi}, 2));
