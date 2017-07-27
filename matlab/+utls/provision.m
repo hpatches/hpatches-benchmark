@@ -24,14 +24,14 @@ end
 function unpack(url, tgt_dir)
 [~,~,ext] = fileparts(url);
 fprintf(isdeployed+1, ...
-  'Downloading %s -> %s, this may take a while...\n',...
+  'Downloading %s -> %s, \n\tthis may take a while...\n',...
   url, tgt_dir);
 switch ext
-  case '.tar'
+  case {'.tar', '.gz'}
     untar(url, tgt_dir);
   case '.zip'
     unzip(url, tgt_dir);
   otherwise
-    error('Unknown archive %s.', ext);
+    error('Unknown archive %s', ext);
 end
 end
