@@ -14,7 +14,7 @@
                                 ],
                                 [
                 {"name":"ItemType", "kind":"required", "type":"choices={'computedesc'}"},
-                {"name":"desctype", "kind":"optional", "type":[["char", "choices={'sift', 'meanstd', 'resize'}"]]}
+                {"name":"desctype", "kind":"optional", "type":[["char", "choices=utls.listfiles(fullfile(hb_path, 'matlab', '+desc', '+feats'), true)"]]}
                                 ],
                                 [
                 {"name":"ItemType", "kind":"required", "type":"choices={'all'}"},
