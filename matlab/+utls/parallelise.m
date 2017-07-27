@@ -13,6 +13,7 @@ idxs = cell2mat(idxs(end:-1:1));
 if isempty(getenv('SGE_TASK_FIRST')), setenv('SGE_TASK_FIRST', '1'); end;
 if ~isempty(getenv('SGE_TASK_ID')) && ~isempty(getenv('SGE_TASK_LAST')) ...
     && ~isempty(getenv('SGE_TASK_FIRST'))
+  [~, hostname] = system('hostname');
   task_last = str2double(getenv('SGE_TASK_LAST'));
   task_first = str2double(getenv('SGE_TASK_FIRST'));
   % Make sure it's one-indexed
@@ -20,10 +21,10 @@ if ~isempty(getenv('SGE_TASK_ID')) && ~isempty(getenv('SGE_TASK_LAST')) ...
   num_tasks = task_last - task_first + 1;
   task_sz = ceil(size(idxs, 1) / num_tasks);
   tasks_sel = (task_id - 1)*task_sz + 1 : min(size(idxs, 1), task_id*task_sz);
-  fprintf('SGE JOB: %d:%d:%d [%d tasks %d/worker] : Sel [%d ... %d]\n', ...
+  fprintf('SGE JOB: %d:%d:%d [%d tasks %d/worker] : Sel [%d ... %d] @%s\n', ...
     task_first, task_id, task_last, ...
     size(idxs, 1), task_sz, ...
-    min(tasks_sel), max(tasks_sel));
+    min(tasks_sel), max(tasks_sel), hostname);
   idxs = idxs(tasks_sel, :);
 end
 

@@ -8,11 +8,14 @@ function hb_setup()
 % the terms of the BSD license (see the COPYING file).
 
 if ~isdeployed && (exist('hb', 'file') || ~exist('vl_argparse', 'file'))
-  warning('off', 'MATLAB:maxNumCompThreads:Deprecated');
-  if maxNumCompThreads > 1, maxNumCompThreads(1); end;
-  setenv('OMP_NUM_THREADS','1');
-  setenv('MKL_NUM_THREADS','1');
+  if ~isempty(getenv('SGE_TASK_ID'))
+    % In parallel environments use only a single thread
+    warning('off', 'MATLAB:maxNumCompThreads:Deprecated');
+    if maxNumCompThreads > 1, maxNumCompThreads(1); end;
+    setenv('OMP_NUM_THREADS','1');
+    setenv('MKL_NUM_THREADS','1');
+  end
   
+  addpath(fullfile(hb_path(), 'matlab'));  
   run(fullfile(hb_path, 'matlab', 'lib', 'vlfeat', 'vlfeat_setup.m'));
-  addpath(fullfile(hb_path(), 'matlab'));
 end

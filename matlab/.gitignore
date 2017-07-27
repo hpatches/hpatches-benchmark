@@ -6,3 +6,4 @@ bin/*.sh
 *.zip
 res
 jobs
+sge*
