@@ -14,15 +14,14 @@ dataset, one in `python` and one in `matlab`.
 | ------------- |:-------------:|
 |  [details](python/readme.md) | [details](matlab/README.md) |
 
-
-### Benchmark Tasks
+### Benchmark tasks
 
 Details about the benchmarking tasks can he found
 [here](docs/tasks.md).  
 For a more in-depth description, please see the CVPR
 2017 paper [[1]](#refs).
 
-### Benchmark Data
+### Getting the dataset
 
 The data required for the benchmarks are saved in the `./data` folder,
 and are shared between the two implementations.
@@ -46,6 +45,29 @@ sh download.sh descr sift  # downloads the pre-computed descriptors for sift
 ```
 
 The `HPatches` dataset is saved on `./data/hpatches-release` and the pre-computed descriptor files are saved on `./data/descriptors`.
+
+
+### Dataset description
+
+After download, the folder `../data/hpatches-release` contains all the
+patches from the 116 sequences. The sequence folders are named with
+the following convention
+
+* `i_X`: patches extracted from image sequences with illumination changes
+* `v_X`: patches extracted from image sequences with viewpoint changes
+
+For each image sequence, we provide a set of reference patches
+`ref.png`. For the remaining 5 images in the sequence, we provide
+three patch sets `eK.png` and `hK.png` and `tK.png`, containing the
+corresponding patches from `ref.png` as found in the `K-th` image with
+increasing amounts of geometric noise (`e`<`h`<`t`).
+
+![patches](./python/utils/imgs/patches.png "patches") 
+
+Please see the [patch extraction method details](./python/utils/docs/extraction.md) for more
+information about the extraction process. 
+
+
 
 ### References
 <a name="refs"></a>

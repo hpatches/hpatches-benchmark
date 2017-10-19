@@ -1,6 +1,6 @@
 #!/bin/bash
 
-base_url="http://www.iis.ee.ic.ac.uk/~vbalnt/hpatches"
+base_url="http://icvl.ee.ic.ac.uk/vbalnt/hpatches"
 hpatches_url="$base_url/hpatches-release.tar.gz"
 descrs_url="$base_url/descriptors"
 descrs_list="$base_url/descriptors/descrs.txt"
@@ -46,9 +46,4 @@ elif [ $1 = "descr" ]; then
 	    rm "./data/descriptors/$2.tar.gz"
 	fi
     fi
-else
-    echo "Usage: "
-    echo "sh download.sh hpatches  || downloads the patches dataset" 
-    echo "sh download.sh descr X   || downloads computed result files for descr X"
-    exit 1    
 fi

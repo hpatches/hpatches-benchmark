@@ -1,5 +1,5 @@
 ![logo](./utils/imgs/hpatch.png "logo") 
-## Python benchmark
+## Python implementation of the HPatches benchmark protocols
 
 This repository contains the `python` code for evaluating feature
 descriptors on the `HPatches` dataset. For more information on the
@@ -17,25 +17,10 @@ sudo apt-get install libopencv-dev python-opencv
 For other `Linux` distributions or `macOS` please see the
 [guide](utils/docs/prerequisites.md).
 
-### Dataset description
-
-After download, the folder `../data/hpatches-release` contains all the
-patches from the 116 sequences. The sequence folders are named with
-the following convention
-
-* `i_X`: patches extracted from image sequences with illumination changes
-* `v_X`: patches extracted from image sequences with viewpoint changes
-
-For each image sequence, we provide a set of reference patches
-`ref.png`. For the remaining 5 images in the sequence, we provide
-three patch sets `eK.png` and `hK.png` and `tK.png`, containing the
-corresponding patches from `ref.png` as found in the `K-th` image with
-increasing amounts of geometric noise (`e`<`h`<`t`).
-
-![patches](./utils/imgs/patches.png "patches") 
-
-Please see the [patch extraction method details](utils/docs/extraction.md) for more
-information about the extraction process. 
+### Downloading the HPatches dataset
+The rest of this document assumes you have already downloaded the
+HPatches dataset. For information on how to get it, please check
+[the guide](../readme.md).  
 
 ### Loading/visualising the dataset
 An example of how to load a sequence and visualise the patches can be
