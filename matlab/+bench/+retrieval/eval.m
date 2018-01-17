@@ -15,12 +15,22 @@ opts.topn = inf;
 opts.numqueries = inf;
 opts.testap = false;
 opts.numtype = 'single';
+opts.filterSeq = {};
 [opts, varargin] = vl_argparse(opts, varargin);
 
 queries = readtable(queryfile);
+if ~isempty(opts.filterSeq)
+  validSeq = ismember(queries.s, opts.filterSeq);
+  queries(~validSeq, :) = [];
+end
 queries = queries(1:min(opts.numqueries, size(queries, 1)), :);
 queries_num = size(queries, 1);
-neg = readtable(distfile); neg_num = size(neg, 1);
+neg = readtable(distfile);
+if ~isempty(opts.filterSeq)
+  validSeq = ismember(neg.s, opts.filterSeq);
+  neg(~validSeq, :) = [];
+end
+neg_num = size(neg, 1);
 [query_desc, query_si] = descs.getdesc(descs, queries.s, geom_noise, ...
   ones(1, queries_num), queries.idx + 1);
 pos_desc = getimsdesc(descs, queries.s, geom_noise, opts.pos_ims, queries.idx);

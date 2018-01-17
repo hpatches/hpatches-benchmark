@@ -17,5 +17,5 @@ if ~isdeployed && (exist('hb', 'file') || ~exist('vl_argparse', 'file'))
   end
   
   addpath(fullfile(hb_path(), 'matlab'));  
-  run(fullfile(hb_path, 'matlab', 'lib', 'vlfeat', 'vlfeat_setup.m'));
+  utls.setup_vlfeat();
 end

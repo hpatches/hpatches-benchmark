@@ -49,6 +49,8 @@ opts.scorespath = fullfile(opts.scoresroot, des.name, 'retrieval.csv');
 opts.split = {'a', 'b', 'c', 'illum', 'view', 'full'};
 opts.geom_noise = {'easy', 'hard', 'tough'};
 opts.methods = struct('name', {'removequery'}, 'args', {{}});
+opts.filterSeq = {};
+opts.addProps = {};
 opts.override = false;
 opts.verbose = false;
 [opts, varargin] = vl_argparse(opts, varargin);
@@ -82,11 +84,14 @@ for gni = 1:numel(opts.geom_noise)
     for mi = 1:numel(opts.methods)
       method = opts.methods(mi);
       res_s = bench.retrieval.eval(des, gnoise, queries, distractors, ...
-        method.args{:}, varargin{:});
+        method.args{:}, 'filterSeq', opts.filterSeq);
       res{stepi} = struct(...
         'descriptor', des.name, 'split', split, ...
         'geom_noise', gnoise, 'method', method.name, ...
-        'mauc', mean(res_s.auc), 'map', mean(res_s.ap));
+        'mauc', mean(res_s.auc), 'map', mean(res_s.ap), opts.addProps{:});
+      if ~isempty(opts.filterSeq)
+        res{stepi}.filterSeq = strjoin(opts.filterSeq, ':');
+      end
       status(stepi); stepi = stepi+1;
     end
   end

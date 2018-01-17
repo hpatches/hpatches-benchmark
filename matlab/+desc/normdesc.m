@@ -44,6 +44,7 @@ function [desc, varargin] = normdesc(desc, varargin)
 % This file is part of the VLFeat library and is made available under
 % the terms of the BSD license (see the COPYING file).
 opts.norm_split = 'a';
+opts.normSplitsDb = utls.splitsdb();
 
 opts.whiten = '';
 opts.clipeigen = 0;
@@ -87,9 +88,9 @@ function opts = normstr2args(opts)
 if isempty(opts.normstring), return; end;
 normstr = opts.normstring;
 args = {};
-if ~isempty(strfind(normstr, 'l2n')), args = [args, {'l2norm', true}]; end;
-if ~isempty(strfind(normstr, 'wzca')), args = [args, {'whiten', 'zca'}]; end;
-if ~isempty(strfind(normstr, 'wpca')), args = [args, {'whiten', 'pca'}]; end;
+if contains(normstr, 'l2n'), args = [args, {'l2norm', true}]; end;
+if contains(normstr, 'wzca'), args = [args, {'whiten', 'zca'}]; end;
+if contains(normstr, 'wpca'), args = [args, {'whiten', 'pca'}]; end;
 match = regexp(normstr, 'pl(?<val>[0-9][_.][0-9]{1,})', 'names');
 if ~isempty(match)
   args = [args, {'pl', str2double(strrep(match.val, '_', '.'))}];
@@ -106,7 +107,7 @@ opts = vl_argparse(opts, args);
 end
 
 function dict = norm_computedict(desc, opts)
-splits = utls.parse_json(fullfile(hb_path, 'matlab', 'data', 'splits.json'));
+splits = opts.normSplitsDb;
 dsz = size(desc.data);
 [~, seq_sel] = ismember(splits.(opts.norm_split).train, desc.sequences);
 desc_sel = ismember(desc.sequence, seq_sel);

@@ -58,7 +58,11 @@ if ~ischar(cmd), usage(cmds); return; end
 if strcmp(cmd, 'commands'), res = cmds; return; end;
 
 if isfield(cmds, cmd) && ~isempty(cmds.(cmd).fun)
-  cmds.(cmd).fun(varargin{:});
+  if nargout > 0
+    res = cmds.(cmd).fun(varargin{:});
+  else
+    cmds.(cmd).fun(varargin{:});
+  end
 else
   error('Invalid command. Run hb help for list of valid commands');
 end

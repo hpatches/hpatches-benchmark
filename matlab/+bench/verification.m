@@ -49,20 +49,22 @@ opts.negs = {'inter', 'intra'};
 opts.geom_noise = {'easy', 'hard', 'tough'};
 opts.methods = struct('name', {'balanced', 'imbalanced'}, ...
   'args', {{}, {'posneg_ratio', 0.2}});
+opts.filterSeq = {};
+opts.addProps = {};
 opts.override = false;
 opts.verbose = false;
-[opts, ~] = vl_argparse(opts, varargin);
+[opts, varargin] = vl_argparse(opts, varargin);
 
 if opts.verbose, display(opts); end;
-if ~iscell(opts.split), opts.split = {opts.split}; end;
-if ~iscell(opts.negs), opts.negs = {opts.negs}; end;
-if ~iscell(opts.geom_noise), opts.geom_noise  = {opts.geom_noise}; end;
+if ~iscell(opts.split), opts.split = {opts.split}; end
+if ~iscell(opts.negs), opts.negs = {opts.negs}; end
+if ~iscell(opts.geom_noise), opts.geom_noise  = {opts.geom_noise}; end
 vl_xmkdir(fileparts(opts.scorespath));
 if ~opts.override && exist(opts.scorespath, 'file')
   res = readtable(opts.scorespath);
   fprintf('Results loaded from %s.\n', opts.scorespath);
   return;
-end;
+end
 
 pospairs = @(split) fullfile(opts.taskspath, ...
   sprintf('verif_pos_split-%s.csv', split));
@@ -79,17 +81,24 @@ for gni = 1:numel(opts.geom_noise)
   gnoise = opts.geom_noise{gni};
   for si = 1:numel(opts.split)
     split = opts.split{si};
-    pos_dists = bench.verification.compute(pospairs(split), descs_n, gnoise);
+    pos_dists = bench.verification.compute(pospairs(split), descs_n, gnoise, ...
+      'filterSeq', opts.filterSeq);
     for ni = 1:numel(opts.negs)
       neg = opts.negs{ni};
-      neg_dists = bench.verification.compute(negpairs(split, neg), descs_n, gnoise);
+      neg_dists = bench.verification.compute(negpairs(split, neg), descs_n, ...
+        gnoise, 'filterSeq', opts.filterSeq);
       for mi = 1:numel(opts.methods)
         method = opts.methods(mi);
-        res_s = bench.verification.eval(pos_dists, neg_dists, method.args{:});
+        res_s = bench.verification.eval(pos_dists, neg_dists, method.args{:}, varargin{:});
         res{end+1} = struct(...
           'descriptor', descs_n.name, 'split', split, 'negs', neg, ...
           'geom_noise', gnoise, 'method', method.name, ...
-          'pr_auc', res_s.pr_auc, 'pr_ap', res_s.pr_ap, 'roc_auc', res_s.roc_auc);
+          'pr_auc', res_s.pr_auc, 'pr_ap', res_s.pr_ap, ...
+          'roc_auc', res_s.roc_auc, ...
+          'numpos', res_s.numpos, 'numneg', res_s.numneg, opts.addProps{:});
+        if ~isempty(opts.filterSeq)
+          res{end}.filterSeq = strjoin(opts.filterSeq, ':');
+        end
       end
       status(stepi); stepi = stepi+1;
     end

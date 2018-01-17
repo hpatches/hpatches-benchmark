@@ -7,9 +7,14 @@ function dists = compute( pairspath, descs, geom_noise, varargin )
 % the terms of the BSD license (see the COPYING file).
 
 opts.metric = 'L2';
+opts.filterSeq = {};
 [opts, ~] = vl_argparse(opts, varargin);
 
 pairs = readtable(pairspath);
+if ~isempty(opts.filterSeq)
+  validSeq = ismember(pairs.s1, opts.filterSeq) & ismember(pairs.s1, opts.filterSeq);
+  pairs(~validSeq, :) = [];
+end
 
 descsA = descs.getdesc(descs, pairs.s1, geom_noise, pairs.t1 + 1, pairs.idx1 + 1);
 descsB = descs.getdesc(descs, pairs.s2, geom_noise, pairs.t2 + 1, pairs.idx2 + 1);

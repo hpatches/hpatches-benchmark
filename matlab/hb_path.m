@@ -1,4 +1,4 @@
-function dpath = hb_path()
+function dpath = hb_path(type)
 %HB_PATH Return the root path of HBenchmarks
 
 % Copyright (C) 2016 Karel Lenc
@@ -21,4 +21,11 @@ if isdeployed
 else
   funpath = fileparts(mfilename('fullpath'));
   dpath = fullfile(fileparts(funpath));
+end
+
+if nargin > 0
+  switch type
+    case 'vendor'
+      dpath = fullfile(dpath, 'matlab', 'vendor');
+  end
 end
