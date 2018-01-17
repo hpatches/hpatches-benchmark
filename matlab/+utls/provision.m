@@ -1,17 +1,17 @@
-function downloaded = provision( url_file, tgt_dir, override )
-if nargin < 3, override = false; end;
+function downloaded = provision( url, tgt_dir, varargin )
+p = inputParser;
+addParameter(p, 'doneName', '.download.done', @isstr);
+addParameter(p, 'override', false, @islogical);
+addParameter(p, 'forceExt', '', @isstr);
+parse(p, varargin{:}); opts = p.Results;
+
+if exist(url, 'file'), url = fileread(url); end;
+url = strtrim(url);
 downloaded = false;
-if ~exist(url_file, 'file')
-  error('Unable to find the URL file %s.', url_file);
-end;
-[~, url_file_nm] = fileparts(url_file);
-done_file = fullfile(tgt_dir, ['.', url_file_nm, '.done']);
+done_file = fullfile(tgt_dir, opts.doneName);
 if ~exist(tgt_dir, 'dir'), mkdir(tgt_dir); end
-if exist(done_file, 'file') && ~override, return; end;
-url = utls.readfile(url_file);
-for ui = 1:numel(url)
-  unpack(url{ui}, tgt_dir);
-end
+if exist(done_file, 'file') && ~opts.override, return; end;
+unpack(url, tgt_dir, opts);
 downloaded = true;
 create_done(done_file);
 end
@@ -21,10 +21,11 @@ f = fopen(done_file, 'w'); fclose(f);
 fprintf('To reprovision, delete %s.\n', done_file);
 end
 
-function unpack(url, tgt_dir)
+function unpack(url, tgt_dir, opts)
 [~,~,ext] = fileparts(url);
+if opts.forceExt, ext = opts.forceExt; end;
 fprintf(isdeployed+1, ...
-  'Downloading %s -> %s, \n\tthis may take a while...\n',...
+  'Downloading %s -> %s, this may take a while...\n',...
   url, tgt_dir);
 switch ext
   case {'.tar', '.gz'}

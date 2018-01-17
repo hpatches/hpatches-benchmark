@@ -17,7 +17,18 @@ function desc = kde( patches, varargin )
 % the terms of the BSD license (see the COPYING file).
 
 % Setup the descriptor
-run(fullfile(hb_path, 'matlab', 'lib', 'kde', 'kde_setup,m'));
+
+opts.url = 'https://github.com/abursuc/kde/archive/master.zip';
+opts.rootDir = fullfile(hb_path('vendor'), 'kde');
+[opts, varargin] = vl_argparse(opts, varargin);
+opts.binDir = fullfile(opts.rootDir, 'kde-master');
+[opts, varargin] = vl_argparse(opts, varargin);
+
+if ~exist('kde.m', 'file')
+  utls.provision(opts.url, opts.rootDir, 'forceExt', '.zip');
+  addpath(fullfile(opts.binDir, 'kde'));
+  addpath(fullfile(opts.binDir, 'helpers'));
+end
 
 s = size(patches, 1); % patch size
 opts.kapparho = 8; % kappa for kernel on rho (radius in polar coordinates)

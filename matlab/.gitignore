@@ -7,3 +7,4 @@ bin/*.sh
 res
 jobs
 sge*
+vendor
