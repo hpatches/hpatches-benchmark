@@ -47,6 +47,7 @@ opts.impairs = [1 2; 1 3; 1 4; 1 5; 1 6];
 opts.filterSeq = {};
 opts.addProps = {};
 opts.override = false;
+opts.loadOnly = false;
 opts.verbose = false;
 [opts, ~] = vl_argparse(opts, varargin);
 
@@ -57,6 +58,9 @@ vl_xmkdir(fileparts(opts.scorespath));
 if ~opts.override && exist(opts.scorespath, 'file')
   res = readtable(opts.scorespath);
   fprintf('Results loaded from %s.\n', opts.scorespath);
+  return;
+elseif opts.loadOnly
+  res = [];
   return;
 end
 

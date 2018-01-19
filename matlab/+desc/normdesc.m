@@ -55,21 +55,20 @@ opts.pl = 0.5;
 opts.l2norm = true;
 
 opts.normstring = '';
-
 [opts, varargin] = vl_argparse(opts, varargin); 
 % Parse the norm string
 opts = normstr2args(opts);
 normstr = getnormstr(opts);
 
-if ~isempty(desc)
+if isfield(desc, 'data')
   fprintf('Normalising the %s features (%s).\n', desc.name, normstr);
   dict = norm_computedict(desc, opts);
   dsz = size(desc.data);
   data = reshape(desc.data, dsz(1), []);
   data = norm_project(data, dict, opts);
   desc.data = reshape(data, dsz);
-  desc.name = [desc.name, normstr];
 end
+desc.name = [desc.name, normstr];
 desc.opts = opts;
 end
 

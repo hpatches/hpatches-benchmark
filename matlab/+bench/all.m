@@ -9,6 +9,13 @@ function all(varargin)
 % This file is part of the VLFeat library and is made available under
 % the terms of the BSD license (see the COPYING file).
 
+% Test whether all results exist (avoid loading the descriptor)
+[desn, v] = desc.memdesc(varargin{:}, 'noLoad', true);
+resv = bench.verification(desn, v{:}, 'loadOnly', true);
+resm = bench.matching(desn, v{:}, 'loadOnly', true);
+resr = bench.retrieval(desn, v{:}, 'loadOnly', true);
+if ~isempty(resv) && ~isempty(resm) && ~isempty(resr), return; end
+
 [des, varargin] = desc.memdesc(varargin{:});
 bench.verification(des, varargin{:});
 bench.matching(des, varargin{:});

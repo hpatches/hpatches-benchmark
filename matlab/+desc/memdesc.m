@@ -43,8 +43,18 @@ opts.dtype = 'single';
 opts.matcache = true;
 opts.norm = false;
 opts.nanval = 0;
+opts.noLoad = false;
 [opts, varargin] = vl_argparse(opts, varargin);
 if ischar(opts.norm), opts.norm = str2num(opts.norm); end;
+
+% Just construct descriptor name
+if opts.noLoad
+  obj.name = descname;
+  if opts.norm
+    [obj, varargin] = desc.normdesc(obj, varargin{:});
+  end
+  return;
+end
 
 path = fullfile(hb_path, 'data', 'descriptors', descname);
 cachepath = fullfile(path, 'desc.mat');
