@@ -51,8 +51,8 @@ opts.clipeigen = 0;
 opts.epsilon = 1e-6;
 opts.dimReduction = inf;
 
-opts.pl = 0.5;
-opts.l2norm = true;
+opts.pl = 1;
+opts.l2norm = false;
 
 opts.normstring = '';
 [opts, varargin] = vl_argparse(opts, varargin); 
@@ -93,15 +93,15 @@ if contains(normstr, 'wpca'), args = [args, {'whiten', 'pca'}]; end;
 match = regexp(normstr, 'pl(?<val>[0-9][_.][0-9]{1,})', 'names');
 if ~isempty(match)
   args = [args, {'pl', str2double(strrep(match.val, '_', '.'))}];
-end;
+end
 match = regexp(normstr, 'ceig(?<val>[0-9][_.][0-9]{1,})', 'names');
 if ~isempty(match)
   args = [args, {'clipeigen', str2double(strrep(match.val, '_', '.'))}];
-end;
+end
 match = regexp(normstr, 'nsplit_(?<val>[a-z]{1,})', 'names');
 if ~isempty(match)
   args = [args, {'norm_split', match.val}];
-end;
+end
 opts = vl_argparse(opts, args); 
 end
 

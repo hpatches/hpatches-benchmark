@@ -9,9 +9,9 @@ res.matching = cell(1, numel(dirs));
 res.retrieval = cell(1, numel(dirs));
 
 for resi = 1:numel(dirs)
-  res.verification{resi} = readtable(fullfile(scoresroot, dirs{resi}, 'verification.csv'));
-  res.matching{resi} = readtable(fullfile(scoresroot, dirs{resi}, 'matching.csv'));
-  res.retrieval{resi} = readtable(fullfile(scoresroot, dirs{resi}, 'retrieval.csv'));
+  res.verification{resi} = readtable(fullfile(scoresroot, dirs{resi}, 'verification.csv'), 'Delimiter', ',');
+  res.matching{resi} = readtable(fullfile(scoresroot, dirs{resi}, 'matching.csv'), 'Delimiter', ',');
+  res.retrieval{resi} = readtable(fullfile(scoresroot, dirs{resi}, 'retrieval.csv'), 'Delimiter', ',');
 end
 res.verification = vertcat(res.verification{:});
 res.matching = vertcat(res.matching{:});
