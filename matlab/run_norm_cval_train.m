@@ -1,17 +1,18 @@
 % Test roughly different versions of normalisations on a single split
-
+hb_setup;
 descs = {'resize', 'sift', 'binboost'  'brief'  'deepdesc', ...
   'meanstd'  'orb'  ...
   'rootsift'  'siam'  'siam2stream',  'tfeat-margin'  ...
   'tfeat-margin-star'  'tfeat-ratio'  'tfeat-ratio-star', ...
-  'kde', 'mkd', 'wrln'};
+  'kde', 'mkd', 'wlrn'};
 splitsDb = utls.splitsdb('addValSplits', {'a', 'b', 'c'});
 exp_args = { 'split', 'full',...
   'scoresroot', fullfile(hb_path, 'matlab', 'scores', 'scores_norm_cval_small'), ...
   'geom_noise', {'easy', 'hard', 'tough'}, 'verbose', true, 'normSplitsDb', splitsDb};
 norm_splits = {'a', 'b', 'c'};
 
-descs = {'meanstd'}; exp_args = [exp_args, {'scoresroot', fullfile(hb_path, 'matlab', 'scores', 'scores_norm_cval_subset')}];
+%descs = {'meanstd'}; exp_args = [exp_args, {'scoresroot', fullfile(hb_path, 'matlab', 'scores', 'scores_norm_cval_subset')}];
+%descs = {'wlrn'}
 
 methods = {};
 % Power law / l2norm
@@ -45,7 +46,7 @@ for di = 1:numel(descs)
   end
 end
 fprintf('%d tasks.\n', numel(args));
-%%
+%% 
 
 sel = utls.parallelise(1:numel(args));
 for ai = 1:size(sel, 1)

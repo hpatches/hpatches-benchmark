@@ -5,8 +5,8 @@ descs = {'resize', 'sift', 'binboost'  'brief'  'deepdesc', ...
   'meanstd'  'orb'  ...
   'rootsift'  'siam'  'siam2stream',  'tfeat-margin'  ...
   'tfeat-margin-star'  'tfeat-ratio'  'tfeat-ratio-star', ...
-  'kde', 'mkd', 'wrln'};
-descs = {'meanstd'};
+  'kde', 'mkd', 'wlrn'};
+%descs = {'meanstd'};
 global_args = {'num_neg', inf, 'numtype', 'double', ...
   'scoresroot', fullfile(hb_path, 'matlab', 'scores', 'scores_all_cval')};
 splits = {'a', 'b', 'c'};
@@ -31,6 +31,6 @@ fprintf('%d tasks.\n', numel(args));
 
 %%
 sel = utls.parallelise(1:numel(args));
-for ai = 1:size(sel, 1)
+parfor ai = 1:size(sel, 1)
   hb('all', args{sel(ai)}{:});
 end

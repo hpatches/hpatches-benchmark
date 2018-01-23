@@ -11,9 +11,9 @@ function all(varargin)
 
 % Test whether all results exist (avoid loading the descriptor)
 [desn, v] = desc.memdesc(varargin{:}, 'noLoad', true);
-resv = bench.verification(desn, v{:}, 'loadOnly', true);
-resm = bench.matching(desn, v{:}, 'loadOnly', true);
-resr = bench.retrieval(desn, v{:}, 'loadOnly', true);
+resv = bench.verification(desn, v{:}, 'loadOnly', true, 'verbose', false);
+resm = bench.matching(desn, v{:}, 'loadOnly', true, 'verbose', false);
+resr = bench.retrieval(desn, v{:}, 'loadOnly', true, 'verbose', false);
 if ~isempty(resv) && ~isempty(resm) && ~isempty(resr), return; end
 
 [des, varargin] = desc.memdesc(varargin{:});

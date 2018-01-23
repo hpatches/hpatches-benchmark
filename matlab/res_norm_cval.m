@@ -2,8 +2,8 @@
 
 hb_setup();
 
-res = rproc.read('scoresroot', ...
-  fullfile(hb_path, 'matlab', 'scores', 'scores_norm_cval_subset'));
+%res = rproc.read('scoresroot', ...
+%  fullfile(hb_path, 'matlab', 'scores', 'scores_norm_cval_subset'));
 
 %%
 
