@@ -5,7 +5,9 @@ descs = {'resize', 'sift', 'binboost'  'brief'  'deepdesc', ...
   'meanstd'  'orb'  ...
   'rootsift'  'siam'  'siam2stream',  'tfeat-margin'  ...
   'tfeat-margin-star'  'tfeat-ratio'  'tfeat-ratio-star', ...
-  'kde', 'mkd', 'wlrn'};
+  'kde', 'mkd', 'wlrn', ...
+  'HardNetLib', 'HardNetLib', ...
+  ''};
 %descs = {'meanstd'};
 global_args = {'num_neg', inf, 'numtype', 'double', ...
   'scoresroot', fullfile(hb_path, 'matlab', 'scores', 'scores_all_cval')};
@@ -18,7 +20,11 @@ norms.Properties.RowNames = norms.descriptor;
 args = {};
 for di = 1:numel(descs)
   % Add original descriptor
-  args{end+1} = [descs(di), global_args, {'split', splits}];
+  if contains(descs{di}, '-train-')
+    args{end+1} = [descs(di), global_args, {'split', descs{di}(end)}];
+  else
+    args{end+1} = [descs(di), global_args, {'split', splits}];
+  end
   % Add best norm descriptor, diff norm per split
   for spi = 1:numel(splits)
     desc_name = [descs{di}, '-train-', splits{spi}];

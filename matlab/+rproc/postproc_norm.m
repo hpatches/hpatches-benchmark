@@ -1,5 +1,6 @@
 function table = postproc_norm(table, varargin)
 opts.embedNormSplit = false;
+opts.renameNorm = false;
 opts = vl_argparse(opts, varargin);
 
 nrows = size(table, 1);
@@ -13,6 +14,9 @@ for nri = 1:nrows
     norm = descriptor(pos+9:end);
     if isempty(norm), norm = 'none'; end
     descriptor = descriptor(1:pos-2);
+    if opts.renameNorm
+      descriptor = [descriptor '-norm'];
+    end
   end
   if opts.embedNormSplit
     table.descriptor(nri) = {[descriptor '-train-' split]};

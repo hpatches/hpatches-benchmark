@@ -1,10 +1,11 @@
-function out = pick(res, tasks, names, cname, varargin)
+function [out_mean, out_std] = pick(res, tasks, names, cname, varargin)
 opts.normname = [];
 opts = vl_argparse(opts, varargin);
 
 if ~iscell(names), names = {names}; end;
 
-out = zeros(numel(tasks), numel(names));
+out_mean = zeros(numel(tasks), numel(names));
+out_std = zeros(numel(tasks), numel(names));
 for ti = 1:numel(tasks)
   filter = tasks(ti).filter;
   tsel = utls.filtertable(res, filter);
@@ -15,10 +16,11 @@ for ti = 1:numel(tasks)
         | ismember(strrep(res.norm_type, '.', '_'), opts.normname{ni}));
     end
     sel = find(tsel & nsel);
-    if numel(sel) ~= 1
+    if numel(sel) == 0
       error('%s Not found.', names{ni});
     end
-    out(ti, ni) = res.(cname)(sel);
+    out_mean(ti, ni) = mean(res.(cname)(sel));
+    out_std(ti, ni) = std(res.(cname)(sel));
   end
 end
 
