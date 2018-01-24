@@ -56,7 +56,7 @@ fprintf('%d tasks.\n', numel(args));
 %% 
 
 sel = utls.parallelise(1:numel(args));
-for ai = 1:size(sel, 1)
+parfor ai = 1:size(sel, 1)
   hb(args{sel(ai)}{:});
 end
 %%
