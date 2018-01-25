@@ -27,7 +27,11 @@ for di = 1:numel(descs)
   end
   % Add best norm descriptor, diff norm per split
   for spi = 1:numel(splits)
-    desc_name = [descs{di}, '-train-', splits{spi}];
+    if contains(descs{di}, '-train-')
+      desc_name = descs{di};
+    else
+      desc_name = [descs{di}, '-train-', splits{spi}];
+    end
     args{end+1} = [{descs{di}, 'norm', true, 'norm_split', splits{spi}, ...
       'normstring', norms{desc_name, 'normstr'}{1}}, ...
       'split', splits{spi}, global_args];
