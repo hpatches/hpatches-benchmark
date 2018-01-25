@@ -29,6 +29,8 @@ for di = 1:numel(descs)
   for spi = 1:numel(splits)
     if contains(descs{di}, '-train-')
       desc_name = descs{di};
+      det_split = descs{di}(end);
+      if ~strcmp(det_split, splits{spi}), continue; end
     else
       desc_name = [descs{di}, '-train-', splits{spi}];
     end
