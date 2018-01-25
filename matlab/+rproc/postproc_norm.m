@@ -4,6 +4,8 @@ opts.renameNorm = false;
 opts = vl_argparse(opts, varargin);
 
 nrows = size(table, 1);
+status = utls.textprogressbar(nrows, 'updatestep', 1, ...
+  'startmsg', 'Processing results');
 for nri = 1:nrows
   split = 'none';
   norm = 'none';
@@ -19,12 +21,17 @@ for nri = 1:nrows
     end
   end
   if opts.embedNormSplit
-    table.descriptor(nri) = {[descriptor '-train-' split]};
+    if contains(descriptor, ['-train-' split])
+      table.descriptor(nri) = {descriptor};
+    else
+      table.descriptor(nri) = {[descriptor '-train-' split]};
+    end
   else
     table.descriptor(nri) = {descriptor};
     table.norm_split(nri) = {split};
   end
   table.norm_type(nri) = {norm};
+  status(nri);
 end
 
 end
