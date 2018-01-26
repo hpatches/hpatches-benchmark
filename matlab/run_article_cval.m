@@ -7,7 +7,9 @@ descs = {'resize', 'sift', 'binboost'  'brief'  'deepdesc', ...
   'tfeat-margin-star'  'tfeat-ratio'  'tfeat-ratio-star', ...
   'kde', 'mkd', 'wlrn', 'tfeat-n-lib', 'l2net', 'tnet', ...
   'HardNetLib', 'HardNetLib+', ...
-  'tfeat-n-train-a', 'tfeat-n-train-b', 'tfeat-n-train-c'};
+  'tfeat-n-train-a', 'tfeat-n-train-b', 'tfeat-n-train-c', ...
+  'hpa', 'hpb', 'hpc', 'hp_il', 'hp_view'};
+nonorm = {'hpa', 'hpb', 'hpc', 'hp_il', 'hp_view'};
 %descs = {'meanstd'};
 global_args = {'num_neg', inf, 'numtype', 'double', ...
   'scoresroot', fullfile(hb_path, 'matlab', 'scores', 'scores_all_cval')};
@@ -21,9 +23,14 @@ args = {};
 for di = 1:numel(descs)
   % Add original descriptor
   if contains(descs{di}, '-train-')
+    % Those are already defined three times
     args{end+1} = [descs(di), global_args, {'split', descs{di}(end)}];
   else
     args{end+1} = [descs(di), global_args, {'split', splits}];
+  end
+  if ismember(descs{di}, nonorm)
+    fprintf('Skipping norm for %s\n', descs{di});
+    continue;
   end
   % Add best norm descriptor, diff norm per split
   for spi = 1:numel(splits)
