@@ -64,11 +64,12 @@ if ~exist(cachepath, 'file') || ~opts.matcache
   if opts.matcache
     fprintf('Saving CSV descriptors to MAT file %s.\n', cachepath);
     save(cachepath, '-v7.3', '-struct', 'obj');
-  end;
+  end
 else
   fprintf('Loading cached descriptor from %s.\n', cachepath);
   obj = load(cachepath);
   obj.path = path;
+  obj.name = descname;
 end
 
 if opts.norm
