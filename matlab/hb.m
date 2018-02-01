@@ -42,6 +42,7 @@ hb_setup();
 cmds = struct();
 cmds.all = struct('fun', @bench.all, 'help', '');
 cmds.verification = struct('fun', @bench.verification, 'help', '');
+cmds.verification_pt = struct('fun', @bench.verification_pt, 'help', '');
 cmds.matching = struct('fun', @bench.matching, 'help', '');
 cmds.retrieval = struct('fun', @bench.retrieval, 'help', '');
 cmds.computedesc = struct('fun', @desc.compute, 'help', '');

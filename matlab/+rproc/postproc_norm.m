@@ -10,17 +10,21 @@ for nri = 1:nrows
   split = 'none';
   norm = 'none';
   descriptor = table{nri, 'descriptor'}{1};
-  pos = strfind(descriptor, 'nsplit');
-  if ~isempty(pos)
-    split = descriptor(pos+7);
-    norm = descriptor(pos+9:end);
-    if isempty(norm), norm = 'none'; end
-    descriptor = descriptor(1:pos-2);
+  if contains(descriptor, 'nsplit')
+    parts = strsplit(descriptor, '_');
+    split = parts{3};
+    if numel(parts) > 3
+      norm = strjoin(parts(4:end), '_');
+    else
+      norm = 'none';
+    end
+    descriptor = parts{1};
     if opts.renameNorm
       descriptor = [descriptor '-norm'];
     end
   end
   if opts.embedNormSplit
+    table.norm_split(nri) = {split};
     if contains(descriptor, ['-train-' split])
       table.descriptor(nri) = {descriptor};
     else

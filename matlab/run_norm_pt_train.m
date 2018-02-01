@@ -6,14 +6,12 @@ descs = {'resize', 'sift', 'binboost'  'brief'  'deepdesc', ...
   'tfeat-margin-star'  'tfeat-ratio'  'tfeat-ratio-star', ...
   'kde', 'mkd', 'wlrn', ...
   'HardNetLib', 'HardNetLib+', 'tfeat-n-lib', 'l2net', 'tnet'};
-splitsDb = utls.splitsdb('addValSplits', {'a', 'b', 'c'});
-exp_args = { 'split', 'full',...
-  'scoresroot', fullfile(hb_path, 'matlab', 'scores', 'scores_norm_cval_small'), ...
-  'geom_noise', {'easy', 'hard', 'tough'}, 'verbose', true, 'normSplitsDb', splitsDb};
-norm_splits = {'a', 'b', 'c'};
+exp_args = { 'scoresroot', fullfile(hb_path, 'matlab', 'scores', 'scores_norm_pt_small'), ...
+  'verbose', true};
+norm_sequences = {'liberty', 'yosemite', 'notredame'};
 
 %descs = {'meanstd'}; exp_args = [exp_args, {'scoresroot', fullfile(hb_path, 'matlab', 'scores', 'scores_norm_cval_subset')}];
-%descs = {'wlrn'}
+descs = {'meanstd'};
 
 methods = {};
 % Power law / l2norm
@@ -38,16 +36,10 @@ args = {};
 for di = 1:numel(descs)
   descname = descs{di};
   for nmi = 1:numel(methods)
-    for spi = 1:numel(norm_splits)
-      split = norm_splits{spi};
-      if contains(descs{di}, '-train-')
-        det_split = descs{di}(end);
-        % Evaluate detector only on their splits
-        if ~strcmp(det_split, split), continue; end
-      end
-      args{end+1} = [{'all', descname, 'norm', 'true'}, exp_args, ...
-        methods{nmi}, {'norm_split', split, 'split', 'full', ...
-        'filterSeq', splitsDb.(split).val, 'addProps', {'valsplit', split}}];
+    for spi = 1:numel(norm_sequences)
+      ns = norm_sequences{spi};
+      args{end+1} = [{'verification_pt', descname, 'norm', 'true'}, exp_args, ...
+        methods{nmi}, {'normSequences', ns}];
     end
   end
 end
@@ -55,7 +47,7 @@ fprintf('%d tasks.\n', numel(args));
 %% 
 
 sel = utls.parallelise(1:numel(args));
-parfor ai = 1:size(sel, 1)
+for ai = 1:size(sel, 1)
   hb(args{sel(ai)}{:});
 end
 %%

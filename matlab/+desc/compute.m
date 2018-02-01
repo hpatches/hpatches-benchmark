@@ -34,14 +34,29 @@ function compute(desc_fun, varargin)
 % the terms of the BSD license (see the COPYING file).
 p = inputParser();
 p.addRequired('desc_fun', @(a) ischar(a) || isa(a,'function_handle'));
-p.addParameter('datasetPath', fullfile(hb_path, 'data', 'hpatches-release'), ...
-  @(a) exist(a, 'dir'));
+p.addParameter('dataset', 'hpatches');
+p.addParameter('datasetPath', '', @(a) exist(a, 'dir'));
+p.addParameter('destDir', '', @(a) exist(a, 'dir'));
+p.addParameter('imageExt', '', @ischar);
+p.addParameter('loadPatches', '', @(a) isa(a,'function_handle'));
 p.addParameter('name', '', @ischar);
-p.addParameter('imageExt', '*.png', @ischar);
 p.addParameter('descPackage', 'desc.feats.', @ischar);
 p.addParameter('parallel', false, @islogical);
 p.parse(desc_fun, varargin{:});
 opts = p.Results();
+
+switch opts.dataset % Default values
+  case 'hpatches'
+    opts.datasetPath = hb_path('hp');
+    opts.imageExt = '*.png';
+    opts.loadPatches = @desc.load_hpatches;
+    opts.destDir = hb_path('hp-desc');
+  case 'phototourism'
+    opts.datasetPath = hb_path('pt');
+    opts.imageExt = '*.bmp';
+    opts.loadPatches = @desc.load_phototourism;
+    opts.destDir = hb_path('pt-desc');
+end
 
 datasetPath = opts.datasetPath;
 if ischar(desc_fun)
@@ -53,20 +68,20 @@ if isempty(desc_name)
   desc_name = strrep(func2str(desc_fun), opts.descPackage, '');
 end
 
-dest_dir = fullfile(hb_path, 'data', 'descriptors', desc_name);
+dest_dir = fullfile(opts.destDir, desc_name);
 if ~exist(dest_dir, 'dir'), mkdir(dest_dir); end
 
 sequences = utls.listdirs(datasetPath);
 fprintf('Computing descriptor %s (@%s) for %d sequences.\n', ...
   desc_name, func2str(desc_fun), numel(sequences));
-status = utls.textprogressbar(numel(sequences), 'startmsg', ...
-  sprintf('Computing %s ', desc_name), 'updatestep', 1);
 if opts.parallel
   parfor si = 1:numel(sequences)
     seq_name = sequences{si};
     compute_seq(datasetPath, dest_dir, desc_fun, seq_name, opts);
   end
 else
+  status = utls.textprogressbar(numel(sequences), 'startmsg', ...
+  sprintf('Computing %s ', desc_name), 'updatestep', 1);
   for si = 1:numel(sequences)
     compute_seq(datasetPath, dest_dir, desc_fun, sequences{si}, opts);
     status(si);
@@ -85,7 +100,7 @@ function compute_seq(datasetPath, dest_dir, desc_fun, seq_name, opts)
     [~, imname, imext] = fileparts(imgs(imi).name);
     impath = fullfile(seq_dir, [imname, imext]);
     desc_path = fullfile(dest_dir_seq, [imname, '.csv']);
-    patches = desc.load_hpatches(impath);
+    patches = opts.loadPatches(impath);
     des = desc_fun(patches);
     dlmwrite(desc_path, des', ';');
   end
