@@ -39,6 +39,7 @@ p.addParameter('datasetPath', fullfile(hb_path, 'data', 'hpatches-release'), ...
 p.addParameter('name', '', @ischar);
 p.addParameter('imageExt', '*.png', @ischar);
 p.addParameter('descPackage', 'desc.feats.', @ischar);
+p.addParameter('parallel', false, @islogical);
 p.parse(desc_fun, varargin{:});
 opts = p.Results();
 
@@ -53,18 +54,32 @@ if isempty(desc_name)
 end
 
 dest_dir = fullfile(hb_path, 'data', 'descriptors', desc_name);
-if ~exist(dest_dir, 'dir'), mkdir(dest_dir); end;
+if ~exist(dest_dir, 'dir'), mkdir(dest_dir); end
 
 sequences = utls.listdirs(datasetPath);
 fprintf('Computing descriptor %s (@%s) for %d sequences.\n', ...
   desc_name, func2str(desc_fun), numel(sequences));
 status = utls.textprogressbar(numel(sequences), 'startmsg', ...
   sprintf('Computing %s ', desc_name), 'updatestep', 1);
-for si = 1:numel(sequences)
-  seq_name = sequences{si};
+if opts.parallel
+  parfor si = 1:numel(sequences)
+    seq_name = sequences{si};
+    compute_seq(datasetPath, dest_dir, desc_fun, seq_name, opts);
+  end
+else
+  for si = 1:numel(sequences)
+    compute_seq(datasetPath, dest_dir, desc_fun, sequences{si}, opts);
+    status(si);
+  end
+end
+
+end
+
+
+function compute_seq(datasetPath, dest_dir, desc_fun, seq_name, opts)
   seq_dir = fullfile(datasetPath, seq_name);
   dest_dir_seq = fullfile(dest_dir, seq_name);
-  if ~exist(dest_dir_seq, 'dir'), mkdir(dest_dir_seq); end;
+  if ~exist(dest_dir_seq, 'dir'), mkdir(dest_dir_seq); end
   imgs = dir(fullfile(seq_dir, opts.imageExt));
   for imi = 1:numel(imgs)
     [~, imname, imext] = fileparts(imgs(imi).name);
@@ -74,7 +89,4 @@ for si = 1:numel(sequences)
     des = desc_fun(patches);
     dlmwrite(desc_path, des', ';');
   end
-  status(si);
-end
-
 end

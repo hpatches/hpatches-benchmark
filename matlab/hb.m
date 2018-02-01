@@ -71,7 +71,7 @@ end
 
 function usage(cmds, cmd)
 name = 'hb';
-if isdeployed(), name = 'run_hb.sh'; end;
+if isdeployed(), name = 'run_hb.sh'; end
 if nargin == 1
   fprintf('Usage: `%s COMMAND ...\n', name);
   help('hb');
