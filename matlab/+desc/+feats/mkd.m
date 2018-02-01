@@ -37,6 +37,8 @@ desc = [];
 for pi = 1:size(patches, 4)
   if size(patches, 1) ~= cmkd.s || size(patches, 2) ~= cmkd.s
     patch = imresize(im2double(patches(:,:,:,pi)), [cmkd.s, cmkd.s]);
+  else
+    patch = patches(:,:,:,pi);
   end
   if size(patch, 3) == 3, patch = rgb2gray(patch); end
   I = im2single(patch);
