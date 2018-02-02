@@ -1,4 +1,4 @@
-function desc = kde( patches, varargin )
+function [desc, info] = kde( patches, varargin )
 %KDE Wrapper of the Kernel Local Descriptor
 %  DESC = KDE(PATCHES) Computes the descriptors of given PATCHES.
 %  Patches are a 4D tensor with patches along 4th dimension.
@@ -48,14 +48,17 @@ ctheta = embcoef(opts.kappatheta, opts.ntheta);
 [epos, phi] = embfixedpos(cphi, crho, s);
 pre.epos = epos; pre.phi = phi;
 desc = [];
+ptime = 0;
 for pi = 1:size(patches, 4)
   I = single(patches(:, :, :, pi));
+  stime = tic;
   d = kde(I, pre, ctheta);
+  ptime = ptime + toc(stime);
   if isempty(desc)
     desc = zeros(numel(d), size(patches, 4), 'single');
   end
   desc(:, pi) = d;
 end
-
+info.time = ptime;
 end
 

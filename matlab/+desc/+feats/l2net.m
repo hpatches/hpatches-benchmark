@@ -1,4 +1,4 @@
-function desc = l2net( patches, varargin )
+function [desc, info] = l2net( patches, varargin )
 %L2NET MATLAB wrapper of L2 net.
 %
 %  Additionally accepts various optional arguments of the algorihm.
@@ -38,8 +38,15 @@ if size(patches, 1) ~= 64 || size(patches, 2) ~= 64
   patches = imresize(patches, [64, 64]);
 end
 
-desc = cal_L2Net_des(opts.modelsDir, opts.trainSet, opts.flagCS, ...
-  opts.flagAug, patches, opts.batchSize, opts.flagGpu);
+info = struct();
+if nargout('cal_L2Net_des') == 2
+  [desc, ptime] = cal_L2Net_des(opts.modelsDir, opts.trainSet, opts.flagCS, ...
+    opts.flagAug, single(patches), opts.batchSize, opts.flagGpu);
+  info.time = ptime;
+else
+  desc = cal_L2Net_des(opts.modelsDir, opts.trainSet, opts.flagCS, ...
+    opts.flagAug, single(patches), opts.batchSize, opts.flagGpu);
+end
 
 if opts.binary
   desc(desc>0) = 1;

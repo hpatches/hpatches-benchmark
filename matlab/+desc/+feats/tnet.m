@@ -1,4 +1,4 @@
-function desc = tnet( patches, varargin )
+function [desc, info] = tnet( patches, varargin )
 %L2NET MATLAB wrapper of L2 net.
 %
 %  Additionally accepts various optional arguments of the algorihm.
@@ -45,14 +45,18 @@ end
 dim = length(ndata.net.layers{end-1}.weights{2});
 desc = zeros(N,dim);
 tot_batch = ceil(N/opts.batchSize);
+ptime = 0;
 for i = 1:tot_batch
   im = patches(:,:,1,(i-1)*opts.batchSize+1:min(i*opts.batchSize,N));
   if opts.flagGpu
     im = gpuArray(im);
   end
+  stime = tic;
   res = vl_simplenn(ndata.net,im,[]);  
+  ptime = ptime + toc(stime);
   desc((i-1)*opts.batchSize+1:min(i*opts.batchSize,N),:) = gather(squeeze(res(end).x))';
 end
+info.time = ptime;
 desc = desc';
 end
 
