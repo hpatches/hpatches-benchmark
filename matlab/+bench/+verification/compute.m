@@ -21,7 +21,7 @@ descsB = descs.getdesc(descs, pairs.s2, geom_noise, pairs.t2 + 1, pairs.idx2 + 1
 
 switch opts.metric
   case 'L1'
-    dists = sum(abs(descA - descB), 1);
+    dists = sum(abs(descsA - descsB), 1);
   case 'L2'
     dists = sum((descsA - descsB).^2, 1);
   otherwise

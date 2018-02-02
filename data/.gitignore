@@ -2,6 +2,9 @@ descrs/**
 tmp/**
 hpatch-release/**
 results/**
+descriptors
+descriptors-pt
+phototourism
 .#*
 *.pyc
 hpatch-release.tar.gz

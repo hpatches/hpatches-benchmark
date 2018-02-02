@@ -42,6 +42,7 @@ hb_setup();
 cmds = struct();
 cmds.all = struct('fun', @bench.all, 'help', '');
 cmds.verification = struct('fun', @bench.verification, 'help', '');
+cmds.verification_pt = struct('fun', @bench.verification_pt, 'help', '');
 cmds.matching = struct('fun', @bench.matching, 'help', '');
 cmds.retrieval = struct('fun', @bench.retrieval, 'help', '');
 cmds.computedesc = struct('fun', @desc.compute, 'help', '');
@@ -71,7 +72,7 @@ end
 
 function usage(cmds, cmd)
 name = 'hb';
-if isdeployed(), name = 'run_hb.sh'; end;
+if isdeployed(), name = 'run_hb.sh'; end
 if nargin == 1
   fprintf('Usage: `%s COMMAND ...\n', name);
   help('hb');

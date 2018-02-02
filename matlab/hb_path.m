@@ -27,5 +27,13 @@ if nargin > 0
   switch type
     case 'vendor'
       dpath = fullfile(dpath, 'matlab', 'vendor');
+    case {'hpatches', 'hp'}
+      dpath = fullfile(dpath, 'data', 'hpatches-release');
+    case {'hpatches-desc', 'hp-desc'}
+      dpath = fullfile(dpath, 'data', 'descriptors');
+    case {'phototourism', 'pt'}
+      dpath = fullfile(dpath, 'data', 'phototourism');
+    case {'phototourism-desc', 'pt-desc'}
+      dpath = fullfile(dpath, 'data', 'descriptors-pt');
   end
 end

@@ -43,9 +43,18 @@ function [desc, varargin] = normdesc(desc, varargin)
 %
 % This file is part of the VLFeat library and is made available under
 % the terms of the BSD license (see the COPYING file).
-opts.norm_split = 'a';
-opts.normSplitsDb = utls.splitsdb();
-
+switch desc.dataset
+  case 'hpatches'
+    opts.norm_split = 'a';
+    opts.normSplitsDb = utls.splitsdb();
+    [opts, varargin] = vl_argparse(opts, varargin);
+    opts.normSequences = opts.normSplitsDb.(opts.norm_split).train;
+  case 'phototourism'
+    opts.normSequences = {'liberty'};
+    [opts, varargin] = vl_argparse(opts, varargin);
+    if ~iscell(opts.normSequences), opts.normSequences = {opts.normSequences}; end
+    opts.norm_split = strjoin(opts.normSequences, '-');
+end
 opts.whiten = '';
 opts.clipeigen = 0;
 opts.epsilon = 1e-6;
@@ -55,7 +64,7 @@ opts.pl = 1;
 opts.l2norm = false;
 
 opts.normstring = '';
-[opts, varargin] = vl_argparse(opts, varargin); 
+[opts, varargin] = vl_argparse(opts, varargin);
 % Parse the norm string
 opts = normstr2args(opts);
 normstr = getnormstr(opts);
@@ -102,13 +111,12 @@ match = regexp(normstr, 'nsplit_(?<val>[a-z]{1,})', 'names');
 if ~isempty(match)
   args = [args, {'norm_split', match.val}];
 end
-opts = vl_argparse(opts, args); 
+opts = vl_argparse(opts, args);
 end
 
 function dict = norm_computedict(desc, opts)
-splits = opts.normSplitsDb;
 dsz = size(desc.data);
-[~, seq_sel] = ismember(splits.(opts.norm_split).train, desc.sequences);
+[~, seq_sel] = ismember(opts.normSequences, desc.sequences);
 desc_sel = ismember(desc.sequence, seq_sel);
 assert(~isempty(desc_sel), 'Invalid selection.');
 
