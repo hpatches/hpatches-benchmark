@@ -15,6 +15,7 @@ Options:
 
 For more visit: https://github.com/hpatches/
 """
+from utils.tasks import tskdir
 from utils.results import *
 import os.path
 import time
