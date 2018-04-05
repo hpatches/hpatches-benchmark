@@ -25,7 +25,7 @@ if __name__ == '__main__':
     opts = docopt(__doc__, version='HPatches 1.0')
     descrs = opts['--descr-name']
 
-    with open('../tasks/splits/splits.json') as f:    
+    with open(os.path.join(tskdir, "splits", "splits.json")) as f:    
         splits = json.load(f)
     splt = splits[opts['--split']]
 
@@ -36,4 +36,4 @@ if __name__ == '__main__':
             if opts['--pcapl']!='no':
                 results_methods[t](desc+'_pcapl',splt)
             print
-        print 
+        print

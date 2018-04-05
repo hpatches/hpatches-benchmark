@@ -8,6 +8,7 @@ import utils.metrics as metrics
 from collections import defaultdict
 import time
 from tqdm import tqdm
+import os.path
 from utils.hpatch import *
 from utils.misc import *
 
@@ -19,6 +20,9 @@ id2t = {0:{'e':'ref','h':'ref','t':'ref'}, \
         5:{'e':'e5','h':'h5','t':'t5'} }
 
 tp = ['e','h','t']
+
+moddir = os.path.dirname(os.path.abspath(__file__))
+tskdir = os.path.normpath(os.path.join(moddir, "..", "..", "tasks"))
 
 def seqs_lengths(seqs):
     ''' Helper method to return length for all seqs'''
@@ -39,7 +43,7 @@ def dist_matrix(D1,D2,distance):
         D = spatial.distance.cdist(desc1*masks1, desc2*masks2,'cityblock')
     else:
         raise ValueError('Unknown distance - valid options are |L2|L1|masked_L1|')
-    return D                                           
+    return D
 
 #####################
 # Verification task #
@@ -68,28 +72,28 @@ def get_verif_dists(descr,pairs,op):
             d[t][idx] = dist
         idx+=1
     return d
-                        
+
 def eval_verification(descr,split):
     print('>> Evaluating %s task' % green('verification'))
 
     start = time.time()
-    pos = pd.read_csv('../tasks/verif_pos_split-'+split['name']+'.csv').as_matrix()
-    neg_intra = pd.read_csv('../tasks/verif_neg_intra_split-'+split['name']+'.csv').as_matrix()
-    neg_inter = pd.read_csv('../tasks/verif_neg_inter_split-'+split['name']+'.csv').as_matrix()
+    pos = pd.read_csv(os.path.join(tskdir, 'verif_pos_split-'+split['name']+'.csv')).as_matrix()
+    neg_intra = pd.read_csv(os.path.join(tskdir, 'verif_neg_intra_split-'+split['name']+'.csv')).as_matrix()
+    neg_inter = pd.read_csv(os.path.join(tskdir, 'verif_neg_inter_split-'+split['name']+'.csv')).as_matrix()
 
     d_pos = get_verif_dists(descr,pos,1)
     d_neg_intra = get_verif_dists(descr,neg_intra,2)
     d_neg_inter = get_verif_dists(descr,neg_inter,3)
 
     results = defaultdict(lambda: defaultdict(lambda:defaultdict(dict)))
-    
+
     for t in tp:
         l = np.vstack((np.zeros_like(d_pos[t]),np.ones_like(d_pos[t])))
         d_intra = np.vstack((d_neg_intra[t],d_pos[t]))
         d_inter = np.vstack((d_neg_inter[t],d_pos[t]))
 
         # get results for the balanced protocol: 1M Positives - 1M Negatives
-        fpr,tpr,auc = metrics.roc(-d_intra,l)        
+        fpr,tpr,auc = metrics.roc(-d_intra,l)
         results[t]['intra']['balanced']['fpr'] = fpr
         results[t]['intra']['balanced']['tpr'] = tpr
         results[t]['intra']['balanced']['auc'] = auc
@@ -99,13 +103,13 @@ def eval_verification(descr,split):
         results[t]['inter']['balanced']['tpr'] = tpr
         results[t]['inter']['balanced']['auc'] = auc
 
-        # get results for the imbalanced protocol: 0.2M Positives - 1M Negatives        
+        # get results for the imbalanced protocol: 0.2M Positives - 1M Negatives
         N_imb = d_pos[t].shape[0] + int(d_pos[t].shape[0]*0.2) # 1M + 0.2*1M
         pr,rc,ap = metrics.pr(-d_intra[0:N_imb],l[0:N_imb])
         results[t]['intra']['imbalanced']['pr'] = pr
         results[t]['intra']['imbalanced']['rc'] = rc
         results[t]['intra']['imbalanced']['ap'] = ap
-        
+
         pr,rc,ap = metrics.pr(-d_inter[0:N_imb],l[0:N_imb])
         results[t]['inter']['imbalanced']['pr'] = pr
         results[t]['inter']['imbalanced']['rc'] = rc
@@ -113,10 +117,10 @@ def eval_verification(descr,split):
     end = time.time()
     print(">> %s task finished in %.0f secs  " % (green('Verification'),end-start))
     return results
-        
+
 def gen_verif(seqs,split,N_pos=1e6,N_neg=1e6):
     np.random.seed(42)
-    
+
     # positives
     s = np.random.choice(split['test'], int(N_pos))
     seq2len = seqs_lengths(seqs)
@@ -130,7 +134,7 @@ def gen_verif(seqs,split,N_pos=1e6,N_neg=1e6):
                        't1': pd.Series(s_type[:,0], dtype=int) ,\
                        't2': pd.Series(s_type[:,1], dtype=int)})
     df = df[['s1','t1','idx1','s2','t2','idx2']] # updated order for matlab comp.
-    df.to_csv('../tasks/verif_pos_split-'+split['name']+'.csv',index=False)
+    df.to_csv(os.path.join(tskdir, 'verif_pos_split-'+split['name']+'.csv'),index=False)
 
     # intra-sequence negatives
     df = pd.DataFrame({'s1': pd.Series(s, dtype=object),\
@@ -140,7 +144,7 @@ def gen_verif(seqs,split,N_pos=1e6,N_neg=1e6):
                        't1': pd.Series(s_type[:,0], dtype=int) ,\
                        't2': pd.Series(s_type[:,1], dtype=int)})
     df = df[['s1','t1','idx1','s2','t2','idx2']] # updated order for matlab comp.
-    df.to_csv('../tasks/verif_neg_intra_split-'+split['name']+'.csv',index=False)
+    df.to_csv(os.path.join(tskdir, 'verif_neg_intra_split-'+split['name']+'.csv'),index=False)
 
     # inter-sequence negatives
     s_inter = np.random.choice(split['test'], int(N_neg))
@@ -153,7 +157,7 @@ def gen_verif(seqs,split,N_pos=1e6,N_neg=1e6):
                        't1': pd.Series(s_type[:,0], dtype=int) ,\
                        't2': pd.Series(s_type[:,1], dtype=int)})
     df = df[['s1','t1','idx1','s2','t2','idx2']] # updated order for matlab comp.
-    df.to_csv('../tasks/verif_neg_inter_split-'+split['name']+'.csv',index=False)
+    df.to_csv(os.path.join(tskdir, 'verif_neg_inter_split-'+split['name']+'.csv'),index=False)
 
 
 
@@ -178,12 +182,12 @@ def eval_matching(descr,split):
                 results[seq][t][i]['sr'] = np.count_nonzero(m_l) / float(m_l.shape[0])
                 m_d = D[gt_l,idx]
                 pr,rc,ap = metrics.pr(-m_d,m_l,numpos=m_l.shape[0])
-                results[seq][t][i]['ap'] = ap                
+                results[seq][t][i]['ap'] = ap
                 results[seq][t][i]['pr'] = pr
                 results[seq][t][i]['rc'] = rc
                 # print(t,i,ap,results[seq][t][i]['sr'])
     end = time.time()
-    print(">> %s task finished in %.0f secs  " % (green('Matching'),end-start))            
+    print(">> %s task finished in %.0f secs  " % (green('Matching'),end-start))
     return results
 
 
@@ -213,8 +217,8 @@ def eval_retrieval(descr,split): #WIP
     print('>> Evaluating %s task' % green('retrieval'))
     start = time.time()
 
-    q = pd.read_csv('../tasks/retr_queries_split-'+split['name']+'.csv').as_matrix()
-    d = pd.read_csv('../tasks/retr_distractors_split-'+split['name']+'.csv').as_matrix()
+    q = pd.read_csv(os.path.join(tskdir, 'retr_queries_split-'+split['name']+'.csv')).as_matrix()
+    d = pd.read_csv(os.path.join(tskdir, 'retr_distractors_split-'+split['name']+'.csv')).as_matrix()
 
     # q_std = np.std(q, axis=0)
     # d_std = np.std(d, axis=0)
@@ -223,19 +227,19 @@ def eval_retrieval(descr,split): #WIP
 
     desc_q = descr_from_idx(descr,q).astype(np.float32)
     desc_d = descr_from_idx(descr,d).astype(np.float32)
-    
+
     # distactor masking per sequence
     m = dict((seq, d[:,0]!=seq) for seq in split['test'])
-    
+
     print(">> Please wait, computing distance matrix...")
     D = dist_matrix(desc_q,desc_d,descr['distance'])
     print(">> Distance matrix done.")
-        
+
     results = defaultdict(lambda: defaultdict(lambda:defaultdict(dict)))
     N_distractors = desc_d.shape[0]
     # at_ranks = [int(x*N_distractors) for x in [0.25,0.5,0.75,1]]
     at_ranks = [100,500,1000,5000,10000,15000,20000]
-                
+
     pbar = tqdm(range(desc_q.shape[0]))
     pbar.set_description("Processing retrieval task")
     for i in pbar:
@@ -267,7 +271,7 @@ def eval_retrieval(descr,split): #WIP
 def gen_retrieval(seqs,split,N_queries=0.5*1e4,N_distractors=2*1e4):
     np.random.seed(42)
     seq2len = seqs_lengths(seqs)
-    
+
     s_q = np.random.choice(split['test'], int(N_queries*4))
     s_q_N = [seq2len[k] for k in s_q]
     s_q_idx = [np.random.randint(k) for k in s_q_N]
@@ -307,7 +311,7 @@ def gen_retrieval(seqs,split,N_queries=0.5*1e4,N_distractors=2*1e4):
     df_d = pd.DataFrame({'s': pd.Series(d_[:,0], dtype=object),\
                        'idx': pd.Series(d_[:,1], dtype=int)})
     df_d = df_d[['s','idx']] # updated order for matlab comp.
-    
+
 
     print(df_q.shape,df_d.shape)
     df_q = df_q.drop_duplicates()
@@ -323,8 +327,8 @@ def gen_retrieval(seqs,split,N_queries=0.5*1e4,N_distractors=2*1e4):
     # print(df_q.shape,df_d.shape)
     df_d = df_d.head(N_distractors)
 
-    df_q.to_csv('../tasks/retr_queries_split-'+split['name']+'.csv',index=False)
-    df_d.to_csv('../tasks/retr_distractors_split-'+split['name']+'.csv',index=False)                
+    df_q.to_csv(os.path.join(tskdir, 'retr_queries_split-'+split['name']+'.csv'),index=False)
+    df_d.to_csv(os.path.join(tskdir, 'retr_distractors_split-'+split['name']+'.csv'),index=False)
 
 
 methods = {'verification': eval_verification,\

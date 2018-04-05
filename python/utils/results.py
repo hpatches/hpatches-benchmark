@@ -1,6 +1,7 @@
 from utils.misc import *
 import dill
 import pprint
+from os import path
 from tabulate import tabulate as tb
 import numpy as np
 
@@ -8,7 +9,7 @@ ft = {'e':'Easy','h':'Hard','t':'Tough'}
 
 def results_verification(desc,splt):
     v = {'balanced':'auc','imbalanced':'ap'}
-    res = dill.load( open( "results/"+desc+"_verification_"+splt['name']+".p", "rb"))
+    res = dill.load(open(path.join("results", desc+"_verification_"+splt['name']+".p"), "rb"))
     for r in v:
         print("%s - %s variant (%s) " % (blue(desc.upper()),r.capitalize(),v[r]))
         heads = ["Noise","Inter","Intra"]
@@ -19,7 +20,7 @@ def results_verification(desc,splt):
 
 
 def results_matching(desc,splt):
-    res = dill.load( open( "results/"+desc+"_matching_"+splt['name']+".p", "rb"))
+    res = dill.load(open(path.join("results", desc+"_matching_"+splt['name']+".p"), "rb"))
     mAP = {'e':0,'h':0,'t':0}
     k_mAP = 0
     heads = [ft['e'],ft['h'],ft['t'],'mean']
@@ -38,7 +39,7 @@ def results_matching(desc,splt):
 
 
 def results_retrieval(desc,splt):
-    res = dill.load( open( "results/"+desc+"_retrieval_"+splt['name']+".p", "rb"))
+    res = dill.load(open(path.join("results", desc+"_retrieval_"+splt['name']+".p"), "rb"))
     print("%s - mAP 10K queries " % (blue(desc.upper())))
     n_q= float(len(res.keys()))
     heads = ['']
@@ -65,6 +66,8 @@ def results_retrieval(desc,splt):
     results.append(['mean']+list(np.mean(res,axis=0)))
     print(tb(results,headers=heads))
 
-results_methods = {'verification': results_verification,\
-           'matching': results_matching,\
-           'retrieval': results_retrieval}
+results_methods = {
+    'verification': results_verification,
+    'matching': results_matching,
+    'retrieval': results_retrieval
+}
