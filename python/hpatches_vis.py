@@ -36,7 +36,7 @@ tp = tps
 ids = range(1,55)
 
 # load a sample sequence
-seq = hpatch_sequence(os.path.join(datadir, "hpatches-release", "v_calder")
+seq = hpatch_sequence(os.path.join(datadir, "hpatches-release", "v_calder"))
 vis = vis_patches(seq,tp,ids)
 
 # show
