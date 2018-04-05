@@ -3,7 +3,7 @@
 Usage:
   hpatches_eval.py (-h | --help)
   hpatches_eval.py --version
-  hpatches_eval.py --descr-name=<> --task=<>... [--descr-dir=<>] [--split=<>] [--dist=<>] [--delimiter=<>] [--pcapl=<>]
+  hpatches_eval.py --descr-name=<> --task=<>... [--descr-dir=<>] [--results-dir=<>] [--split=<>] [--dist=<>] [--delimiter=<>] [--pcapl=<>]
 
 Options:
   -h --help         Show this screen.
