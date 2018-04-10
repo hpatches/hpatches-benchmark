@@ -1,10 +1,11 @@
 from utils.hpatch import *
-import cv2 
+import cv2
+import os.path
 
 
-# all types of patches 
-tps = ['ref','e1','e3','e5','h1','h3','h5',\
-       't1','t3','t5']
+# all types of patches
+tps = ['ref','e1','e3','e5','h1','h3','h5','t1','t3','t5']
+datadir = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", "data"))
 
 def vis_patches(seq,tp,ids):
     """Visualises a set of types and indices for a sequence"""
@@ -14,7 +15,7 @@ def vis_patches(seq,tp,ids):
     vis_tmp = np.empty((0,55))
     for t in tp:
         tp_patch = 255*np.ones((65,55))
-        cv2.putText(tp_patch,t,(5,25),cv2.FONT_HERSHEY_DUPLEX , 1,0,1)                       
+        cv2.putText(tp_patch,t,(5,25),cv2.FONT_HERSHEY_DUPLEX , 1,0,1)
         vis_tmp = np.vstack((vis_tmp,tp_patch))
     vis = np.hstack((vis,vis_tmp))
     # add the actual patches
@@ -35,10 +36,10 @@ tp = tps
 ids = range(1,55)
 
 # load a sample sequence
-seq = hpatch_sequence('../data/hpatches-release/v_calder/')
+seq = hpatch_sequence(os.path.join(datadir, "hpatches-release", "v_calder"))
 vis = vis_patches(seq,tp,ids)
 
-# show 
+# show
 # cv2.imshow("HPatches example", vis/255)
 # cv2.waitKey(0)
 

@@ -10,7 +10,7 @@ import time
 import scipy
 import copy
 
-# all types of patches 
+# all types of patches
 tps = ['ref','e1','e2','e3','e4','e5','h1','h2','h3','h4','h5',\
        't1','t2','t3','t4','t5']
 
@@ -22,7 +22,7 @@ def vis_patches(seq,tp,ids):
     vis_tmp = np.empty((35, 0))
     for t in tp:
         tp_patch = 255*np.ones((35,65))
-        cv2.putText(tp_patch,t,(5,25),cv2.FONT_HERSHEY_DUPLEX , 1,0,1)                       
+        cv2.putText(tp_patch,t,(5,25),cv2.FONT_HERSHEY_DUPLEX , 1,0,1)
         vis_tmp = np.hstack((vis_tmp,tp_patch))
     vis = np.vstack((vis,vis_tmp))
     # add the actual patches
@@ -43,8 +43,8 @@ def get_im(seq,t):#rename this as a general method
 
 def load_splits(f_splits):
     """Loads the json encoded splits"""
-    with open(f_splits) as f:    
-        splits = json.load(f)   
+    with open(f_splits) as f:
+        splits = json.load(f)
     return splits
 
 def load_descrs(path,dist='L2',descr_type='',sep=','):
@@ -62,7 +62,7 @@ def load_descrs(path,dist='L2',descr_type='',sep=','):
     seqs['distance'] = dist
     seqs['dim'] = seqs_l[0].dim
     print('>> Descriptor files loaded.')
-    return seqs	
+    return seqs
 
 
 ###############
@@ -75,7 +75,7 @@ def compute_pcapl(descr,split):
     for seq in split['train']:
         X = np.vstack((X,get_im(descr[seq],'ref')))
     X -= np.mean(X, axis=0)
-    
+
     Xcov = np.dot(X.T,X)
     Xcov = (Xcov + Xcov.T) / (2 * X.shape[0]);
     d, V = np.linalg.eigh(Xcov)
@@ -105,7 +105,7 @@ class hpatch_descr:
     itr = tps
     def __init__(self,base,descr_type='',sep=','):
         self.base = base
-        self.name = base.split("/")[-1]
+        self.name = base.split(os.path.sep)[-1]
 
         for t in self.itr:
             descr_path = os.path.join(base, t+'.csv')
@@ -124,7 +124,7 @@ class hpatch_sequence:
     """Class for loading an HPatches sequence from a sequence folder"""
     itr = tps
     def __init__(self,base):
-        name = base.split('/')
+        name = base.split(os.path.sep)
         self.name = name[-1]
         self.base = base
         for t in self.itr:
@@ -132,4 +132,3 @@ class hpatch_sequence:
             im = cv2.imread(im_path,0)
             self.N = im.shape[0]/65
             setattr(self, t, np.split(im, self.N))
-            
