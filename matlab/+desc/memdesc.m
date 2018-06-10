@@ -189,38 +189,53 @@ end
 
 function obj = load_desc_pt(descname, path, opts)
 obj.path = path;
-obj.sequences = utls.listdirs(path);
+obj.sequences = {'liberty'  'notredame'  'yosemite'};
 obj.name = descname;
 obj.patchIds = cell(1, numel(obj.sequences));
 obj.ndescs = zeros(1, numel(obj.sequences));
-
-obj.imageNames = cellfun(@(seq) utls.listfiles(fullfile(path, seq, '*.csv'), true), ...
-  obj.sequences, 'Uni', false);
-obj.numImages = cellfun(@numel, obj.imageNames);
-
-numAllImages = sum(obj.numImages);
-status = utls.textprogressbar(numAllImages, 'startmsg', sprintf('Loading %s CSVs', descname));
-stepi = 1;
-gdesc = @(sequence, image) dlmread(fullfile(path, sequence, [image, '.csv']))';
 obj.data = cell(1, numel(obj.sequences));
 obj.sequence = cell(1, numel(obj.sequences));
 obj.tdpIds = cell(1, numel(obj.sequences));
 obj.refImId = cell(1, numel(obj.sequences));
+
+% Load metadata
 for si = 1:numel(obj.sequences)
   name = obj.sequences{si};
-  obj.data{si} = cell(1, obj.numImages(si));
-  for imi = 1:obj.numImages(si)
-    d = cast(gdesc(name, obj.imageNames{si}{imi}), opts.dtype);
-    d(isnan(d)) = opts.nanval;
-    obj.data{si}{imi} = d;
-    stepi = stepi+1; status(stepi);
-  end
-  obj.data{si} = cell2mat(obj.data{si});
-  obj.sequence{si} = si*ones(1, size(obj.data{si}, 2));
   obj.tdpIds{si} = csvread(fullfile(hb_path('pt'), name, 'info.txt'));
   obj.tdpIds{si} = obj.tdpIds{si}(:, 1)' + 1;
   obj.refImId{si} = csvread(fullfile(hb_path('pt'), name, 'interest.txt'));
   obj.refImId{si} = obj.refImId{si}(:, 1)' + 1;
+end
+
+if isdir(fullfile(path, obj.sequences{1}))
+  obj.imageNames = cellfun(@(seq) utls.listfiles(fullfile(path, seq, '*.csv'), true), ...
+    obj.sequences, 'Uni', false);
+  obj.numImages = cellfun(@numel, obj.imageNames);
+  numAllImages = sum(obj.numImages);
+  stepi = 1;
+  status = utls.textprogressbar(numAllImages, 'startmsg', sprintf('Loading %s CSVs', descname));
+  gdesc = @(sequence, image) dlmread(fullfile(path, sequence, [image, '.csv']))';
+  for si = 1:numel(obj.sequences)
+    name = obj.sequences{si};
+    obj.data{si} = cell(1, obj.numImages(si));
+    for imi = 1:obj.numImages(si)
+      d = cast(gdesc(name, obj.imageNames{si}{imi}), opts.dtype);
+      d(isnan(d)) = opts.nanval;
+      obj.data{si}{imi} = d;
+      stepi = stepi+1; status(stepi);
+    end
+    obj.data{si} = cell2mat(obj.data{si});
+    obj.sequence{si} = si*ones(1, size(obj.data{si}, 2));
+  end
+else
+  % Data stored in a single txt file
+  for si = 1:numel(obj.sequences)
+    name = obj.sequences{si};
+    txt_path = fullfile(path, [name, '.txt']);
+    fprintf('Loading %s\n', txt_path);
+    obj.data{si} = dlmread(txt_path, '\t')';
+    obj.sequence{si} = si*ones(1, size(obj.data{si}, 2));
+  end
 end
 obj.ndescs = cellfun(@(a) size(a, 2), obj.data);
 obj.data = cell2mat(obj.data);
@@ -231,7 +246,7 @@ obj.refImId = cell2mat(obj.refImId);
 end
 
 
-function [descs, sequences] = getdesc_pt(obj, sequences, idxs)
+function [descs, sequences] = getdesc_pt(obj, sequences, idxs, varargin)
 if ischar(sequences), [~, sequences] = ismember(sequences, obj.sequences); end
 if numel(sequences) == 1, sequences = sequences*ones(1, numel(idxs)); end
 assert(numel(sequences) == numel(idxs));
