@@ -42,6 +42,7 @@ p.addParameter('loadPatches', '', @(a) isa(a,'function_handle'));
 p.addParameter('name', '', @ischar);
 p.addParameter('descPackage', 'desc.feats.', @ischar);
 p.addParameter('parallel', false, @islogical);
+p.addParameter('override', false, @islogical);
 p.parse(desc_fun, varargin{:});
 opts = p.Results();
 
@@ -100,6 +101,7 @@ function compute_seq(datasetPath, dest_dir, desc_fun, seq_name, opts)
     [~, imname, imext] = fileparts(imgs(imi).name);
     impath = fullfile(seq_dir, [imname, imext]);
     desc_path = fullfile(dest_dir_seq, [imname, '.csv']);
+    if exist(desc_path, 'file') && ~opts.override, continue; end
     patches = opts.loadPatches(impath);
     des = desc_fun(patches);
     dlmwrite(desc_path, des', ';');

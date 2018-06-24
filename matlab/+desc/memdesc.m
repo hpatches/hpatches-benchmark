@@ -48,15 +48,6 @@ opts.dataset = 'hpatches';
 [opts, varargin] = vl_argparse(opts, varargin);
 if ischar(opts.norm), opts.norm = str2num(opts.norm); end
 
-% Just construct descriptor name
-if opts.noLoad
-  obj.name = descname;
-  if opts.norm
-    [obj, varargin] = desc.normdesc(obj, varargin{:});
-  end
-  return;
-end
-
 switch opts.dataset
   case {'hpatches', 'hp'}
     path = hb_path('hp-desc');
@@ -71,6 +62,16 @@ switch opts.dataset
 end
 path = fullfile(path, descname);
 cachepath = fullfile(path, 'desc.mat');
+
+% Just construct descriptor name
+if opts.noLoad
+  obj.name = descname;
+  obj.dataset = dset;
+  if opts.norm
+    [obj, varargin] = desc.normdesc(obj, varargin{:});
+  end
+  return;
+end
 
 if ~exist(cachepath, 'file') || ~opts.matcache
   obj = loadDesc(descname, path, opts);
