@@ -6,9 +6,11 @@ descs = {'sift', 'binboost'  'brief'  'deepdesc'  'meanstd'  'orb'  'resize'  ..
   'tfeat-margin-star'  'tfeat-ratio'  'tfeat-ratio-star', ...
   'kde'};
 %descs = {'kde'};
-descs = {'resize', 'sift', 'deepdesc', 'meanstd', 'rootsift', 'tfeat', 'kde', 'mkd', 'l2net', 'tnet', 'HardNetLib+'}
+% TODO recompute the resize descriptors = HP is for 6x6 bins, pt computed
+% for 4x4 bins
+descs = {'sift', 'deepdesc', 'meanstd', 'rootsift', 'tfeat', 'kde', 'mkd', 'l2net', 'tnet', 'HardNetLib+'}
 global_args = {'split', 'full', 'num_neg', inf, 'numtype', 'double', ...
-  'scoresroot', fullfile(hb_path, 'matlab', 'scores', 'scores_all_pt')};
+  'scoresroot', fullfile(hb_path, 'matlab', 'scores', 'scores_all_pt'), 'override', true};
 
 norm_splits = {'liberty'};
 norms_path = fullfile(hb_path, 'matlab', 'data', 'best_normalizations_pt.csv');
@@ -17,7 +19,7 @@ norms.Properties.RowNames = norms.descriptor;
 
 args = {};
 for di = 1:numel(descs)
-  args{end+1} = [descs(di), global_args];
+  %args{end+1} = [descs(di), global_args];
   for ni = 1:numel(norm_splits)
     args{end+1} = [{descs{di}, 'norm', true, 'norm_split', norm_splits{ni}, ...
       'normstring', norms{[descs{di},'-train-',norm_splits{ni}], 'normstr'}{1}}, global_args];

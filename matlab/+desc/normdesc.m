@@ -1,4 +1,4 @@
-function [desc, varargin] = normdesc(desc, varargin)
+function [dsc, varargin] = normdesc(dsc, varargin)
 %NORMDESC Descriptor normalisation
 %  NORMDESC is a helper wrapper used for descriptor normalisation. By
 %  default performs square root followed by L2 normalisation. NORMDESC
@@ -43,7 +43,7 @@ function [desc, varargin] = normdesc(desc, varargin)
 %
 % This file is part of the VLFeat library and is made available under
 % the terms of the BSD license (see the COPYING file).
-switch desc.dataset
+switch dsc.dataset
   case 'hpatches'
     opts.norm_split = 'a';
     opts.normSplitsDb = utls.splitsdb();
@@ -51,11 +51,12 @@ switch desc.dataset
     if isfield(opts.normSplitsDb, opts.norm_split)
       opts.normSequences = opts.normSplitsDb.(opts.norm_split).train;
     else
-      warning('Norm sequences used for train not found. Assuming PT used.');
+      warning('Norm sequences used for train not found. Assuming PT used and loading PT descriptors.');
       opts.normSequences = {'liberty'};
       [opts, varargin] = vl_argparse(opts, varargin);
       if ~iscell(opts.normSequences), opts.normSequences = {opts.normSequences}; end
       opts.norm_split = strjoin(opts.normSequences, '-');
+      opts.desc_for_norm = desc.memdesc(dsc.name, 'dataset', 'pt');
     end
   case 'phototourism'
     opts.normSequences = {'liberty'};
@@ -77,16 +78,16 @@ opts.normstring = '';
 opts = normstr2args(opts);
 normstr = getnormstr(opts);
 
-if isfield(desc, 'data')
-  fprintf('Normalising the %s features (%s).\n', desc.name, normstr);
-  dict = norm_computedict(desc, opts);
-  dsz = size(desc.data);
-  data = reshape(desc.data, dsz(1), []);
+if isfield(dsc, 'data')
+  fprintf('Normalising the %s features (%s).\n', dsc.name, normstr);
+  dict = norm_computedict(dsc, opts);
+  dsz = size(dsc.data);
+  data = reshape(dsc.data, dsz(1), []);
   data = norm_project(data, dict, opts);
-  desc.data = reshape(data, dsz);
+  dsc.data = reshape(data, dsz);
 end
-desc.name = [desc.name, normstr];
-desc.opts = opts;
+dsc.name = [dsc.name, normstr];
+dsc.opts = opts;
 end
 
 function name = getnormstr(opts)
@@ -123,11 +124,15 @@ opts = vl_argparse(opts, args);
 end
 
 function dict = norm_computedict(desc, opts)
+if isfield(opts, 'desc_for_norm')
+  desc = opts.desc_for_norm;
+end
+
 dsz = size(desc.data);
 assert(numel(opts.normSequences)>0);
 [~, seq_sel] = ismember(opts.normSequences, desc.sequences);
 desc_sel = ismember(desc.sequence, seq_sel);
-assert(~isempty(desc_sel), 'Invalid selection.');
+assert(sum(desc_sel) ~= 0, 'Invalid selection.');
 
 data = reshape(desc.data(:, desc_sel, :), dsz(1), []);
 dict = struct();
