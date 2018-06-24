@@ -23,9 +23,9 @@ l2net-train-c,wzca_ceig0_25_pl0_50_l2n
 meanstd-train-a,wzca_ceig0_05_pl0_50
 meanstd-train-b,wzca_ceig0_05_pl0_50
 meanstd-train-c,wzca_ceig0_05_pl0_50
-mkd-train-a,wzca_ceig0_40_pl0_50_l2n
-mkd-train-b,wzca_ceig0_40_pl0_50_l2n
-mkd-train-c,wzca_ceig0_40_pl0_50_l2n
+mkd-train-a,wzca_ceig0_20_pl0_50_l2n
+mkd-train-b,wzca_ceig0_15_pl0_50_l2n
+mkd-train-c,wzca_ceig0_15_pl0_50_l2n
 orb-train-a,wzca_ceig0_40_pl0_50_l2n
 orb-train-b,wzca_ceig0_40_pl0_50_l2n
 orb-train-c,wzca_ceig0_40_pl0_50_l2n

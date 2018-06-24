@@ -48,7 +48,15 @@ switch desc.dataset
     opts.norm_split = 'a';
     opts.normSplitsDb = utls.splitsdb();
     [opts, varargin] = vl_argparse(opts, varargin);
-    opts.normSequences = opts.normSplitsDb.(opts.norm_split).train;
+    if isfield(opts.normSplitsDb, opts.norm_split)
+      opts.normSequences = opts.normSplitsDb.(opts.norm_split).train;
+    else
+      warning('Norm sequences used for train not found. Assuming PT used.');
+      opts.normSequences = {'liberty'};
+      [opts, varargin] = vl_argparse(opts, varargin);
+      if ~iscell(opts.normSequences), opts.normSequences = {opts.normSequences}; end
+      opts.norm_split = strjoin(opts.normSequences, '-');
+    end
   case 'phototourism'
     opts.normSequences = {'liberty'};
     [opts, varargin] = vl_argparse(opts, varargin);
@@ -116,6 +124,7 @@ end
 
 function dict = norm_computedict(desc, opts)
 dsz = size(desc.data);
+assert(numel(opts.normSequences)>0);
 [~, seq_sel] = ismember(opts.normSequences, desc.sequences);
 desc_sel = ismember(desc.sequence, seq_sel);
 assert(~isempty(desc_sel), 'Invalid selection.');
