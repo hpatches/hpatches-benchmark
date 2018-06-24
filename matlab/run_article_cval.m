@@ -9,7 +9,7 @@ descs = {'resize', 'sift', 'binboost'  'brief'  'deepdesc', ...
   'HardNetLib', 'HardNetLib+'};
 global_args = {'num_neg', inf, 'numtype', 'double', ...
   'scoresroot', fullfile(hb_path, 'matlab', 'scores', 'scores_all_cval')};
-splits = {'a', 'b', 'c'};
+splits = {'a', 'b', 'c', 'full'};
 %%
 norms_path = fullfile(hb_path, 'matlab', 'data', 'best_normalizations_cval.csv');
 norms = readtable(norms_path, 'delimiter', ',');
