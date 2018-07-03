@@ -3,13 +3,19 @@
 
 descs = {};
 
-descs{end+1} = struct('name', 'hp-train-a', 'split', {{'a', 'b', 'c'}}); 
-descs{end+1} = struct('name', 'hp-train-illum', 'split', {{'a', 'b', 'c'}}); 
-descs{end+1} = struct('name', 'hp-train-view', 'split', {{'a', 'b', 'c'}}); 
+descs{end+1} = struct('name', 'hp-train-a', 'split', {{'a'}}); 
+descs{end+1} = struct('name', 'hp-train-b', 'split', {{'b'}}); 
+descs{end+1} = struct('name', 'hp-train-c', 'split', {{'c'}}); 
 
-descs{end+1} = struct('name', 'tfeat-n-train-a', 'split', {{'a', 'b', 'c'}}); 
-descs{end+1} = struct('name', 'tfeat-n-train-illum', 'split', {{'a', 'b', 'c'}}); 
-descs{end+1} = struct('name', 'tfeat-n-train-view', 'split', {{'a', 'b', 'c'}}); 
+%descs{end+1} = struct('name', 'hp-train-illum', 'split', {{'a', 'b', 'c'}}); 
+%descs{end+1} = struct('name', 'hp-train-view', 'split', {{'a', 'b', 'c'}}); 
+
+descs{end+1} = struct('name', 'tfeat-n-train-a', 'split', {{'a'}}); 
+descs{end+1} = struct('name', 'tfeat-n-train-b', 'split', {{'b'}}); 
+descs{end+1} = struct('name', 'tfeat-n-train-c', 'split', {{'c'}}); 
+
+%descs{end+1} = struct('name', 'tfeat-n-train-illum', 'split', {{'a', 'b', 'c'}}); 
+%descs{end+1} = struct('name', 'tfeat-n-train-view', 'split', {{'a', 'b', 'c'}}); 
 descs = cell2mat(descs);
 
 global_args = {'num_neg', inf, 'numtype', 'double', ...
