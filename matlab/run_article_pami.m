@@ -9,7 +9,7 @@ descs = {'resize', 'sift', 'binboost'  'brief'  'deepdesc', ...
   'HardNetLib', 'HardNetLib+'};
 global_args = {'num_neg', inf, 'numtype', 'double', 'split', 'full', ...
   'scoresroot', fullfile(hb_path, 'matlab', 'scores', 'scores_pami'), ...
-  'override', true};
+  'override', false};
 splits = {'a'};
 %%
 norms_path = fullfile(hb_path, 'matlab', 'data', 'best_normalizations_cval.csv');
@@ -19,7 +19,7 @@ norms.Properties.RowNames = norms.descriptor;
 args = {};
 for di = 1:numel(descs)
   % Add original descriptor
-  args{end+1} = [descs(di), global_args, {'split', splits}];
+  args{end+1} = [descs(di), global_args];
   % Add best norm descriptor, diff norm per split
   for spi = 1:numel(splits)
     desc_name = [descs{di}, '-train-', splits{spi}];
@@ -31,6 +31,6 @@ fprintf('%d tasks.\n', numel(args));
 
 %%
 sel = utls.parallelise(1:numel(args));
-parfor ai = 1:size(sel, 1)
+for ai = 1:size(sel, 1)
   hb('all', args{sel(ai)}{:});
 end
