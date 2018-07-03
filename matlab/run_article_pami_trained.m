@@ -3,13 +3,13 @@
 
 descs = {};
 
-descs{end+1} = struct('name', 'hp-train-a', 'split', {{'full'}}); 
-descs{end+1} = struct('name', 'hp-train-illum', 'split', {{'full'}}); 
-descs{end+1} = struct('name', 'hp-train-view', 'split', {{'full'}}); 
+descs{end+1} = struct('name', 'hp-train-a', 'split', {{'a', 'b', 'c'}}); 
+descs{end+1} = struct('name', 'hp-train-illum', 'split', {{'a', 'b', 'c'}}); 
+descs{end+1} = struct('name', 'hp-train-view', 'split', {{'a', 'b', 'c'}}); 
 
-descs{end+1} = struct('name', 'tfeat-n-train-a', 'split', {{'full'}}); 
-descs{end+1} = struct('name', 'tfeat-n-train-illum', 'split', {{'full'}}); 
-descs{end+1} = struct('name', 'tfeat-n-train-view', 'split', {{'full'}}); 
+descs{end+1} = struct('name', 'tfeat-n-train-a', 'split', {{'a', 'b', 'c'}}); 
+descs{end+1} = struct('name', 'tfeat-n-train-illum', 'split', {{'a', 'b', 'c'}}); 
+descs{end+1} = struct('name', 'tfeat-n-train-view', 'split', {{'a', 'b', 'c'}}); 
 descs = cell2mat(descs);
 
 global_args = {'num_neg', inf, 'numtype', 'double', ...
