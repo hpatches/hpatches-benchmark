@@ -74,3 +74,9 @@ information about the extraction process.
 
 [1] *HPatches: A benchmark and evaluation of handcrafted and learned local descriptors*, Vassileios Balntas*, Karel Lenc*, Andrea Vedaldi and Krystian Mikolajczyk, CVPR 2017.
 *Authors contributed equally.
+
+
+
+> *You might also be interested in the [3D reconstruction](https://github.com/ahojnnes/local-feature-evaluation) benchmark by Schönberger et al. also presented at CVPR 2017.*
+
+
