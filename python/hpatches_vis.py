@@ -1,47 +1,52 @@
-from utils.hpatch import *
+import numpy as np
 import cv2
 import os.path
-
+from utils.hpatch import hpatch_sequence, get_patch
 
 # all types of patches
-tps = ['ref','e1','e3','e5','h1','h3','h5','t1','t3','t5']
-datadir = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", "data"))
+tps = ['ref', 'e1', 'e3', 'e5', 'h1', 'h3', 'h5', 't1', 't3', 't5']
+datadir = os.path.normpath(
+    os.path.join(os.path.dirname(__file__), "..", "data"))
 
-def vis_patches(seq,tp,ids):
+
+def vis_patches(seq, tp, ids):
     """Visualises a set of types and indices for a sequence"""
-    h = len(tp)*65
+    h = len(tp) * 65
     vis = np.empty((h, 0))
     # add the first column with the patch type names
-    vis_tmp = np.empty((0,55))
+    vis_tmp = np.empty((0, 55))
     for t in tp:
-        tp_patch = 255*np.ones((65,55))
-        cv2.putText(tp_patch,t,(5,25),cv2.FONT_HERSHEY_DUPLEX , 1,0,1)
-        vis_tmp = np.vstack((vis_tmp,tp_patch))
-    vis = np.hstack((vis,vis_tmp))
+        tp_patch = 255 * np.ones((65, 55))
+        cv2.putText(tp_patch, t, (5, 25), cv2.FONT_HERSHEY_DUPLEX, 1, 0, 1)
+        vis_tmp = np.vstack((vis_tmp, tp_patch))
+    vis = np.hstack((vis, vis_tmp))
     # add the actual patches
     for idx in ids:
-        vis_tmp = np.empty((0,65))
+        vis_tmp = np.empty((0, 65))
         for t in tp:
-            vis_tmp = np.vstack((vis_tmp,get_patch(seq,t,idx)))
-        vis = np.hstack((vis,vis_tmp))
+            vis_tmp = np.vstack((vis_tmp, get_patch(seq, t, idx)))
+        vis = np.hstack((vis, vis_tmp))
     return vis
 
 
 # select a subset of types of patches to visualise
 # tp = ['ref','e5','h5','t5']
-#or visualise all - tps holds all possible types
+# or visualise all - tps holds all possible types
 tp = tps
 
 # list of patch indices to visualise
-ids = range(1,55)
+ids = range(1, 55)
 
 # load a sample sequence
-seq = hpatch_sequence(os.path.join(datadir, "hpatches-release", "v_calder"))
-vis = vis_patches(seq,tp,ids)
+seq_name = "v_calder"
+seq = hpatch_sequence(os.path.join(datadir, "hpatches-release", seq_name))
+vis = vis_patches(seq, tp, ids)
 
 # show
 # cv2.imshow("HPatches example", vis/255)
 # cv2.waitKey(0)
 
 # or save
-cv2.imwrite("patches.png", vis)
+vis_fname = "patches.png"
+cv2.imwrite(vis_fname, vis)
+print("Patches image for {} saved at {}.".format(seq_name, vis_fname))

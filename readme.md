@@ -1,5 +1,5 @@
-![logo](https://hpatches.github.io/assets/hpatches-logo.png "logo") 
-## Homography patches dataset 
+![logo](https://hpatches.github.io/assets/hpatches-logo.png "logo")
+## Homography patches dataset
 
 This repository contains the code for evaluating feature descriptors
 on the `HPatches` dataset. For more information on the methods and the
@@ -17,7 +17,7 @@ dataset, one in `python` and one in `matlab`.
 ### Benchmark tasks
 
 Details about the benchmarking tasks can he found
-[here](docs/tasks.md).  
+[here](docs/tasks.md).
 For a more in-depth description, please see the CVPR
 2017 paper [[1]](#refs).
 
@@ -34,12 +34,12 @@ sh download.sh hpatches
 ```
 To download the pre-computed files of a baseline descriptor `X` on the
 `HPatches` dataset, run the provided `download.sh` script with the
-`descr X` argument.  
+`descr X` argument.
 
 To see a list of all the currently available descriptor file results,
 run scipt with only the `descr` argument.
 
-``` bash sh 
+``` bash sh
 sh download.sh descr       # prints all the currently available baseline pre-computed descriptors
 sh download.sh descr sift  # downloads the pre-computed descriptors for sift
 ```
@@ -62,7 +62,7 @@ three patch sets `eK.png` and `hK.png` and `tK.png`, containing the
 corresponding patches from `ref.png` as found in the `K-th` image with
 increasing amounts of geometric noise (`e`<`h`<`t`).
 
-![patches](./python/utils/imgs/patches.png "patches") 
+![patches](./python/utils/imgs/patches.png "patches")
 
 Please see the [patch extraction method details](./python/utils/docs/extraction.md) for more
 information about the extraction process. 
@@ -78,5 +78,3 @@ information about the extraction process.
 
 
 > *You might also be interested in the [3D reconstruction](https://github.com/ahojnnes/local-feature-evaluation) benchmark by Schönberger et al. also presented at CVPR 2017.*
-
-

@@ -16,3 +16,4 @@ results/**
 *.pyc
 data/descriptors/**
 data/hpatches-release/**
+wget-log

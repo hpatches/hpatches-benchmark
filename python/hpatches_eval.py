@@ -24,7 +24,6 @@ from utils.tasks import *
 from utils.misc import *
 from utils.docopt import docopt
 import os
-import time
 import dill
 
 if __name__ == '__main__':

@@ -1,4 +1,4 @@
-![logo](./utils/imgs/hpatch.png "logo") 
+![logo](https://hpatches.github.io/assets/hpatches-logo.png "logo")
 ## Python implementation of the HPatches benchmark protocols
 
 This repository contains the `python` code for evaluating feature
@@ -9,7 +9,7 @@ methods and the evaluation protocols please check [[1]](#refs).
 
 To install the required packages on Ubuntu, run the following commands:
 
-``` sh 
+``` sh
 pip install -r utils/requirements.txt --user
 sudo apt-get install libopencv-dev python-opencv
 ```
@@ -20,7 +20,7 @@ For other `Linux` distributions or `macOS` please see the
 ### Downloading the HPatches dataset
 The rest of this document assumes you have already downloaded the
 HPatches dataset. For information on how to get it, please check
-[the guide](../readme.md).  
+[the guide](../readme.md).
 
 ### Loading/visualising the dataset
 An example of how to load a sequence and visualise the patches can be
@@ -55,7 +55,7 @@ gets the `verification` results for the `sift` descriptor.
 You can perform several tasks at once by repeating the `--task` argument:
 
 ```sh
-python hpatch_eval.py --descr-dir=descrs/sift/ --task=verification --task=matching --delimiter=";"
+python hpatches_eval.py --descr-dir=descrs/sift/ --task=verification --task=matching --delimiter=";"
 ```
 
 There are also several optional arguments (e.g. delimiter for the
@@ -63,10 +63,10 @@ There are also several optional arguments (e.g. delimiter for the
 a more detailed explanation, run the following:
 
 ```sh
-python hpatch_eval.py --h
+python hpatches_eval.py --h
 ```
 
-##### Results caching 
+##### Results caching
 Results are cached in the `results` folder, for each task and for each
 descriptor. If you want to re-compute the results for your descriptor,
 simply manually delete the respective files in the `results`
@@ -78,12 +78,12 @@ We provide [several pre-computed splits](./utils/splits.json) to
 encourage reproducibility.  Current available splits are
 [`a (ECCV)`,`b`,`c`,`illum`,`view`,`full`]. More
 information can be found [here](./utils/docs/splits.md).
-  
+
 ##### Some usage examples of the evaluation script
 ```sh
-python hpatch_eval.py --descr-dir=descrs/sift/ --task=matching --delimiter=";"
-python hpatch_eval.py --descr-dir=descrs/misigma/ --task=retrieval  --split=b
-python hpatch_eval.py --descr-dir=descrs/deepdesc/ --task=verification --task=matching --task=retrieval
+python hpatches_eval.py --descr-dir=descrs/sift/ --task=matching --delimiter=";"
+python hpatches_eval.py --descr-dir=descrs/misigma/ --task=retrieval  --split=b
+python hpatches_eval.py --descr-dir=descrs/deepdesc/ --task=verification --task=matching --task=retrieval
 ```
 
 ##### Evaluating your descriptor
@@ -93,10 +93,10 @@ the `.csv` files for your descriptor is
 `descrs/DESC/` simply input to the `--descr` argument your path:
 
 ```sh
-python hpatch_eval.py --descr-dir=descrs/DESC/ --task=retrieval 
+python hpatches_eval.py --descr-dir=descrs/DESC/ --task=retrieval
 ```
 
-### Printing evaluation results 
+### Printing evaluation results
 
 An example script that shows how to read and print the evaluation
 results from already cached result files can be found in `hpatch_results.py`.
@@ -105,13 +105,13 @@ Required parameters are `--descr` descriptor name (e.g. `sift`),
 name (e.g. {verification,matching,retrieval}). For example:
 
 ```sh
-python hpatch_results.py --descr=sift --results-dir=results/ --task=verification
+python hpatches_results.py --descr=sift --results-dir=results/ --task=verification
 ```
 
 Note that as the previous scripts, it can accept multiple descriptors and multiple tasks e.g.
 
 ```sh
-python hpatch_results.py --results-dir=results/ --descr=sift --descr=deepdesc  --task=verification --task=retrieval
+python hpatches_results.py --results-dir=results/ --descr=sift --descr=deepdesc  --task=verification --task=retrieval
 ```
 
 ### References
