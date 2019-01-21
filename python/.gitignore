@@ -1,6 +1,7 @@
 descrs/**
 tmp/**
 hpatch-release/**
+hpatches-release/**
 results/**
 .#*
 *.pyc

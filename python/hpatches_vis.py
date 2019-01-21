@@ -1,7 +1,7 @@
 import numpy as np
 import cv2
 import os.path
-from utils.hpatch import hpatch_sequence, get_patch
+from utils.hpatch import hpatches_sequence, get_patch
 
 # all types of patches
 tps = ['ref', 'e1', 'e3', 'e5', 'h1', 'h3', 'h5', 't1', 't3', 't5']
@@ -39,7 +39,7 @@ ids = range(1, 55)
 
 # load a sample sequence
 seq_name = "v_calder"
-seq = hpatch_sequence(os.path.join(datadir, "hpatches-release", seq_name))
+seq = hpatches_sequence(os.path.join(datadir, "hpatches-release", seq_name))
 vis = vis_patches(seq, tp, ids)
 
 # show

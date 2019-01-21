@@ -12,7 +12,7 @@ dataset, one in `python` and one in `matlab`.
 
 | `python`        |   `matlab`  |
 | ------------- |:-------------:|
-|  [details](python/readme.md) | [details](matlab/README.md) |
+|  [details](python/) | [details](matlab/) |
 
 ### Benchmark tasks
 
@@ -65,7 +65,7 @@ increasing amounts of geometric noise (`e`<`h`<`t`).
 ![patches](./python/utils/imgs/patches.png "patches")
 
 Please see the [patch extraction method details](./python/utils/docs/extraction.md) for more
-information about the extraction process. 
+information about the extraction process.
 
 
 

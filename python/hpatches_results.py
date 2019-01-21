@@ -1,25 +1,24 @@
-"""Code for printing/plotting results for the HPatch evaluation protocols.
+"""Code for printing/plotting results for the HPatches evaluation protocols.
 
 Usage:
   hpatches_results.py (-h | --help)
   hpatches_results.py --version
-  hpatches_results.py --descr-name=<>... --task=<>... [--results-dir=<>] [--split=<>] [--pcapl=<>]
+  hpatches_results.py --descr-name=<>...
+                      [--results-dir=<>] [--split=<>] [--pcapl=<>]
 
 Options:
   -h --help         Show this screen.
   --version         Show version.
   --descr-name=<>   Descriptor name e.g. --descr=sift.
   --results-dir=<>  Results root folder. [default: results]
-  --task=<>         Task name. Valid tasks are {verification,matching,retrieval}.
   --split=<>        Split name. Valid are {a,b,c,full,illum,view}. [default: a]
-  --pcapl=<>        Show results for pca-power law descr. [default: no]
 
 For more visit: https://github.com/hpatches/
 """
 from utils.tasks import tskdir
-from utils.results import *
+from utils.results import plot_hpatches_results
+from utils.results import DescriptorHPatchesResult
 import os.path
-import time
 import json
 from utils.docopt import docopt
 
@@ -31,11 +30,8 @@ if __name__ == '__main__':
         splits = json.load(f)
     splt = splits[opts['--split']]
 
-    for t in opts['--task']:
-        print("%s task results:" % (green(t.capitalize())))
-        for desc in descrs:
-            results_methods[t](desc,splt)
-            if opts['--pcapl']!='no':
-                results_methods[t](desc+'_pcapl',splt)
-            print
-        print
+    hpatches_results = []
+    for desc in descrs:
+        hpatches_results.append(DescriptorHPatchesResult(desc, splt))
+
+    plot_hpatches_results(hpatches_results)

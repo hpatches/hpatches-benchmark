@@ -4,3 +4,4 @@ dill
 tqdm
 scipy
 tabulate
+future

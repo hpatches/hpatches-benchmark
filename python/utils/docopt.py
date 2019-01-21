@@ -9,18 +9,15 @@
 import sys
 import re
 
-
 __all__ = ['docopt']
 __version__ = '0.6.2'
 
 
 class DocoptLanguageError(Exception):
-
     """Error in construction of usage-message by developer."""
 
 
 class DocoptExit(SystemExit):
-
     """Exit in case user invoked program with incorrect arguments."""
 
     usage = ''
@@ -30,7 +27,6 @@ class DocoptExit(SystemExit):
 
 
 class Pattern(object):
-
     def __eq__(self, other):
         return repr(self) == repr(other)
 
@@ -97,7 +93,6 @@ def transform(pattern):
 
 
 class LeafPattern(Pattern):
-
     """Leaf/terminal node of a pattern tree."""
 
     def __init__(self, name, value=None):
@@ -120,8 +115,8 @@ class LeafPattern(Pattern):
             if type(self.value) is int:
                 increment = 1
             else:
-                increment = ([match.value] if type(match.value) is str
-                             else match.value)
+                increment = ([match.value]
+                             if type(match.value) is str else match.value)
             if not same_name:
                 match.value = increment
                 return True, left_, collected + [match]
@@ -131,15 +126,14 @@ class LeafPattern(Pattern):
 
 
 class BranchPattern(Pattern):
-
     """Branch/inner node of a pattern tree."""
 
     def __init__(self, *children):
         self.children = list(children)
 
     def __repr__(self):
-        return '%s(%s)' % (self.__class__.__name__,
-                           ', '.join(repr(a) for a in self.children))
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(
+            repr(a) for a in self.children))
 
     def flat(self, *types):
         if type(self) in types:
@@ -148,7 +142,6 @@ class BranchPattern(Pattern):
 
 
 class Argument(LeafPattern):
-
     def single_match(self, left):
         for n, pattern in enumerate(left):
             if type(pattern) is Argument:
@@ -163,7 +156,6 @@ class Argument(LeafPattern):
 
 
 class Command(Argument):
-
     def __init__(self, name, value=False):
         self.name, self.value = name, value
 
@@ -178,7 +170,6 @@ class Command(Argument):
 
 
 class Option(LeafPattern):
-
     def __init__(self, short=None, long=None, argcount=0, value=False):
         assert argcount in (0, 1)
         self.short, self.long, self.argcount = short, long, argcount
@@ -217,7 +208,6 @@ class Option(LeafPattern):
 
 
 class Required(BranchPattern):
-
     def match(self, left, collected=None):
         collected = [] if collected is None else collected
         l = left
@@ -230,7 +220,6 @@ class Required(BranchPattern):
 
 
 class Optional(BranchPattern):
-
     def match(self, left, collected=None):
         collected = [] if collected is None else collected
         for pattern in self.children:
@@ -239,12 +228,10 @@ class Optional(BranchPattern):
 
 
 class OptionsShortcut(Optional):
-
     """Marker/placeholder for [options] shortcut."""
 
 
 class OneOrMore(BranchPattern):
-
     def match(self, left, collected=None):
         assert len(self.children) == 1
         collected = [] if collected is None else collected
@@ -266,7 +253,6 @@ class OneOrMore(BranchPattern):
 
 
 class Either(BranchPattern):
-
     def match(self, left, collected=None):
         collected = [] if collected is None else collected
         outcomes = []
@@ -280,7 +266,6 @@ class Either(BranchPattern):
 
 
 class Tokens(list):
-
     def __init__(self, source, error=DocoptExit):
         self += source.split() if hasattr(source, 'split') else source
         self.error = error
@@ -307,8 +292,8 @@ def parse_long(tokens, options):
     if tokens.error is DocoptExit and similar == []:  # if no exact match
         similar = [o for o in options if o.long and o.long.startswith(long)]
     if len(similar) > 1:  # might be simply specified ambiguously 2+ times?
-        raise tokens.error('%s is not a unique prefix: %s?' %
-                           (long, ', '.join(o.long for o in similar)))
+        raise tokens.error('%s is not a unique prefix: %s?' % (long, ', '.join(
+            o.long for o in similar)))
     elif len(similar) < 1:
         argcount = 1 if eq == '=' else 0
         o = Option(None, long, argcount)
@@ -316,8 +301,8 @@ def parse_long(tokens, options):
         if tokens.error is DocoptExit:
             o = Option(None, long, argcount, value if argcount else True)
     else:
-        o = Option(similar[0].short, similar[0].long,
-                   similar[0].argcount, similar[0].value)
+        o = Option(similar[0].short, similar[0].long, similar[0].argcount,
+                   similar[0].value)
         if o.argcount == 0:
             if value is not None:
                 raise tokens.error('%s must not have an argument' % o.long)
@@ -341,16 +326,16 @@ def parse_shorts(tokens, options):
         short, left = '-' + left[0], left[1:]
         similar = [o for o in options if o.short == short]
         if len(similar) > 1:
-            raise tokens.error('%s is specified ambiguously %d times' %
-                               (short, len(similar)))
+            raise tokens.error(
+                '%s is specified ambiguously %d times' % (short, len(similar)))
         elif len(similar) < 1:
             o = Option(short, None, 0)
             options.append(o)
             if tokens.error is DocoptExit:
                 o = Option(short, None, 0, True)
         else:  # why copying is necessary here?
-            o = Option(short, similar[0].long,
-                       similar[0].argcount, similar[0].value)
+            o = Option(short, similar[0].long, similar[0].argcount,
+                       similar[0].value)
             value = None
             if o.argcount != 0:
                 if left == '':
@@ -562,7 +547,7 @@ def docopt(doc, argv=None, help=True, version=None, options_first=False):
     options = parse_defaults(doc)
     pattern = parse_pattern(formal_usage(DocoptExit.usage), options)
     # [default] syntax for argument is disabled
-    #for a in pattern.flat(Argument):
+    # for a in pattern.flat(Argument):
     #    same_name = [d for d in arguments if d.name == a.name]
     #    if same_name:
     #        a.value = same_name[0].value
@@ -571,7 +556,7 @@ def docopt(doc, argv=None, help=True, version=None, options_first=False):
     for options_shortcut in pattern.flat(OptionsShortcut):
         doc_options = parse_defaults(doc)
         options_shortcut.children = list(set(doc_options) - pattern_options)
-        #if any_options:
+        # if any_options:
         #    options_shortcut.children += [Option(o.short, o.long, o.argcount)
         #                    for o in argv if type(o) is Option]
     extras(help, version, argv, doc)
