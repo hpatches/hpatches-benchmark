@@ -419,11 +419,11 @@ def plot_hpatches_results(hpatches_results):
     n_descrs = len(hpatches_results)
     # The height of the plot for descriptors depend on number of descriptors
     # The 0.8 is absolute value for blank space at the bottom
-    bar_height = 0.3
-    descr_size = n_descrs * bar_height + 0.8
+    bar_width = 0.3
+    descr_height = n_descrs * bar_width + 0.8
     
     # Figure height is descriptor plot height plus fixed 1.2 for header
-    figh = 1.2 + descr_size
+    figh = 1.2 + descr_height
     f, (ax_verification, ax_matching, ax_retrieval) = plt.subplots(1, 3)
     f.set_size_inches(15, figh)
     f.suptitle(
@@ -463,7 +463,7 @@ def plot_hpatches_results(hpatches_results):
     # figh - top_margin - bottom_margin = n_descrs * bar_height
     # So descriptor plot height will be directly proportional to n_descr
     plt.subplots_adjust(
-        left=0.07, bottom=(0.8 / figh), right=None, top=(descr_size / figh), 
+        left=0.07, bottom=(0.8 / figh), right=None, top=(descr_height / figh), 
         wspace=0.7, hspace=None)
 
     plot_verification(hpatches_results, ax_verification)
