@@ -223,9 +223,9 @@ def plot_verification(hpatches_results, ax, **kwargs):
                                  label=r'\textsc{Intra}')
     ax.legend(
         handles=[inter_symbol, intra_symbol],
-        loc='upper center',
+        loc='lower center',
         ncol=2,
-        bbox_to_anchor=(0.34, 1 - 0.32, .3, .4),
+        bbox_to_anchor=(0.34, 1, .3, .4),
         handletextpad=-0.5,
         columnspacing=0,
         fontsize=12,
@@ -333,14 +333,13 @@ def plot_matching(hpatches_results, ax, **kwargs):
                                  label=r'\textsc{Illum}')
     ax.legend(
         handles=[view_symbol, illum_symbol],
-        loc='upper center',
+        loc='lower center',
         ncol=2,
-        bbox_to_anchor=(0.34, 1 - 0.32, .3, .4),
+        bbox_to_anchor=(0.34, 1, .3, .0),
         handletextpad=-0.5,
         columnspacing=0,
         fontsize=12,
         frameon=False)
-
     return ax
 
 
@@ -418,8 +417,15 @@ def plot_hpatches_results(hpatches_results):
     plt.rc('font', family='serif')
     plt.rc('text.latex', preamble=r'\usepackage{amssymb} \usepackage{color}')
     n_descrs = len(hpatches_results)
+    # The height of the plot for descriptors depend on number of descriptors
+    # The 0.8 is absolute value for blank space at the bottom
+    bar_height = 0.3
+    descr_size = n_descrs * bar_height + 0.8
+    
+    # Figure height is descriptor plot height plus fixed 1.2 for header
+    figh = 1.2 + descr_size
     f, (ax_verification, ax_matching, ax_retrieval) = plt.subplots(1, 3)
-    f.set_size_inches(15, n_descrs)
+    f.set_size_inches(15, figh)
     f.suptitle(
         r'{\bf $\mathbb{H}$Patches Results}', fontsize=22, x=0.5, y=0.98)
 
@@ -441,18 +447,25 @@ def plot_hpatches_results(hpatches_results):
                                  linestyle='None',
                                  markersize=4,
                                  label=r'\textsc{Tough}')
-
     plt.figlegend(
         handles=[easy_marker, hard_marker, tough_marker],
-        loc='upper center',
+        loc='lower center',
         ncol=3,
-        bbox_to_anchor=(0.45, 0.85, 0.1, 0.1),
+        bbox_to_anchor=(0.45, 1-0.8/figh, 0.1, 0.0),
         handletextpad=-0.5,
         fontsize=12,
         columnspacing=0)
 
+    # As this is relative, to have fixed bottom/top space we divide by figh
+    # We will have then bottom_margin = bottom * figh = 0.8
+    # Same for top, top_margin = figh*(1-top) = figh - descr_size = 1.2
+    # And the descriptor plot height will then be 
+    # figh - top_margin - bottom_margin = n_descrs * bar_height
+    # So descriptor plot height will be directly proportional to n_descr
     plt.subplots_adjust(
-        left=0.07, bottom=0.3, right=None, top=0.87, wspace=0.7, hspace=None)
+        left=0.07, bottom=(0.8 / figh), right=None, top=(descr_size / figh), 
+        wspace=0.7, hspace=None)
+
     plot_verification(hpatches_results, ax_verification)
     plot_matching(hpatches_results, ax_matching)
     plot_retrieval(hpatches_results, ax_retrieval)
