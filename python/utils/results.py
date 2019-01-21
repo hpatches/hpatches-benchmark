@@ -225,7 +225,7 @@ def plot_verification(hpatches_results, ax, **kwargs):
         handles=[inter_symbol, intra_symbol],
         loc='lower center',
         ncol=2,
-        bbox_to_anchor=(0.34, 1, .3, .4),
+        bbox_to_anchor=(0.34, 1, .3, .0),
         handletextpad=-0.5,
         columnspacing=0,
         fontsize=12,
