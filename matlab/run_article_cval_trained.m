@@ -2,20 +2,20 @@
 % Requires approximately at least 64GB RAM, unless `num_neg` is decreased.
 
 descs = {};
-descs{end+1} = struct('name', 'meanstd', 'split', {{'a', 'b', 'c', 'view', 'illum'}}); 
-descs{end+1} = struct('name', 'sift', 'split', {{'a', 'b', 'c', 'view', 'illum'}}); 
-descs{end+1} = struct('name', 'HardNetLib+', 'split', {{'a', 'b', 'c', 'view', 'illum'}}); 
-descs{end+1} = struct('name', 'tfeat-n-lib', 'split', {{'a', 'b', 'c', 'view', 'illum'}}); 
+descs{end+1} = struct('name', 'meanstd', 'split', {{'a', 'b', 'c', 'view', 'illum', 'full'}}); 
+descs{end+1} = struct('name', 'sift', 'split', {{'a', 'b', 'c', 'view', 'illum', 'full'}}); 
+descs{end+1} = struct('name', 'HardNetLib+', 'split', {{'a', 'b', 'c', 'view', 'illum', 'full'}}); 
+descs{end+1} = struct('name', 'tfeat-n-lib', 'split', {{'a', 'b', 'c', 'view', 'illum', 'full'}}); 
 
-descs{end+1} = struct('name', 'hp-train-a', 'split', 'a'); 
-descs{end+1} = struct('name', 'hp-train-b', 'split', 'b'); 
-descs{end+1} = struct('name', 'hp-train-c', 'split', 'c');
+descs{end+1} = struct('name', 'hp-train-a', 'split', {{'b', 'c'}}); 
+descs{end+1} = struct('name', 'hp-train-b', 'split', {{'a', 'c'}}); 
+descs{end+1} = struct('name', 'hp-train-c', 'split', {{'a', 'b'}});
 descs{end+1} = struct('name', 'hp-train-illum', 'split', 'view'); 
 descs{end+1} = struct('name', 'hp-train-view', 'split', 'illum'); 
 
-descs{end+1} = struct('name', 'tfeat-n-train-a', 'split', 'a'); 
-descs{end+1} = struct('name', 'tfeat-n-train-b', 'split', 'b'); 
-descs{end+1} = struct('name', 'tfeat-n-train-c', 'split', 'c'); 
+descs{end+1} = struct('name', 'tfeat-n-train-a', 'split', {{'b', 'c'}}); 
+descs{end+1} = struct('name', 'tfeat-n-train-b', 'split', {{'a', 'c'}}); 
+descs{end+1} = struct('name', 'tfeat-n-train-c', 'split', {{'a', 'b'}}); 
 descs{end+1} = struct('name', 'tfeat-n-train-illum', 'split', 'view'); 
 descs{end+1} = struct('name', 'tfeat-n-train-view', 'split', 'illum'); 
 descs = cell2mat(descs);

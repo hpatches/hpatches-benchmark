@@ -6,12 +6,13 @@ descs = {'resize', 'sift', 'binboost'  'brief'  'deepdesc', ...
   'tfeat-margin-star'  'tfeat-ratio'  'tfeat-ratio-star', ...
   'kde', 'mkd', 'wlrn', ...
   'HardNetLib', 'HardNetLib+', 'tfeat-n-lib', 'l2net', 'tnet'};
+descs = {'resize', 'sift', 'deepdesc', 'meanstd', 'rootsift', 'tfeat', 'kde', 'mkd', 'l2net', 'tnet', 'HardNetLib+'}
 exp_args = { 'scoresroot', fullfile(hb_path, 'matlab', 'scores', 'scores_norm_pt_small'), ...
   'verbose', true};
 norm_sequences = {'liberty', 'yosemite', 'notredame'};
 
 %descs = {'meanstd'}; exp_args = [exp_args, {'scoresroot', fullfile(hb_path, 'matlab', 'scores', 'scores_norm_cval_subset')}];
-descs = {'meanstd'};
+%descs = {'meanstd'};
 
 methods = {};
 % Power law / l2norm

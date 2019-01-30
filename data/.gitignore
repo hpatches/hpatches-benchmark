@@ -1,7 +1,9 @@
-descrs/**
+descriptors/**
+descriptors-pt/**
 tmp/**
-hpatch-release/**
+hpatches-release/**
 results/**
+phototourism/**
 descriptors
 descriptors-pt
 phototourism
