@@ -46,16 +46,18 @@ p.parse(desc_fun, varargin{:});
 opts = p.Results();
 
 switch opts.dataset % Default values
-  case 'hpatches'
+  case {'hpatches', 'hp'}
     opts.datasetPath = hb_path('hp');
     opts.imageExt = '*.png';
     opts.loadPatches = @desc.load_hpatches;
     opts.destDir = hb_path('hp-desc');
-  case 'phototourism'
+  case {'phototourism', 'pt'}
     opts.datasetPath = hb_path('pt');
     opts.imageExt = '*.bmp';
     opts.loadPatches = @desc.load_phototourism;
     opts.destDir = hb_path('pt-desc');
+  otherwise
+    error('Ivalid dataset %s', opts.dataset);
 end
 
 datasetPath = opts.datasetPath;
