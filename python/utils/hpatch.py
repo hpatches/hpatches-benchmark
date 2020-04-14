@@ -109,7 +109,7 @@ class hpatch_descr:
 
         for t in self.itr:
             descr_path = os.path.join(base, t+'.csv')
-            df = pd.read_csv(descr_path,header=None,sep=sep).as_matrix()
+            df = pd.read_csv(descr_path,header=None,sep=sep).to_numpy()
             df = df.astype(np.float32)
             if descr_type=="bin_packed":
                 df = df.astype(np.uint8)

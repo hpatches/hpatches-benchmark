@@ -12,6 +12,13 @@ import os.path
 from utils.hpatch import *
 from utils.misc import *
 
+TORCH_GPU_IS_AVAILABLE = False
+try:
+    import torch
+    TORCH_GPU_IS_AVAILABLE = torch.cuda.is_available()
+except:
+    pass
+
 id2t = {0:{'e':'ref','h':'ref','t':'ref'}, \
         1:{'e':'e1','h':'h1','t':'t1'}, \
         2:{'e':'e2','h':'h2','t':'t2'}, \
@@ -34,9 +41,21 @@ def seqs_lengths(seqs):
 def dist_matrix(D1,D2,distance):
     ''' Distance matrix between two sets of descriptors'''
     if distance=='L2':
-        D = spatial.distance.cdist(D1, D2,'euclidean')
+        if TORCH_GPU_IS_AVAILABLE:
+            with torch.no_grad():
+                D = torch.cdist(torch.from_numpy(D1).cuda(),
+                                torch.from_numpy(D2).cuda(),
+                                p = 2).detach().cpu().numpy()
+        else:
+            D = spatial.distance.cdist(D1, D2,'euclidean')
     elif distance=='L1':
-        D = spatial.distance.cdist(D1, D2,'cityblock')
+        if TORCH_GPU_IS_AVAILABLE:
+            with torch.no_grad():
+                D = torch.cdist(torch.from_numpy(D1).cuda(),
+                                torch.from_numpy(D2).cuda(),
+                                p = 1).detach().cpu().numpy()
+        else:
+            D = spatial.distance.cdist(D1, D2,'cityblock')
     elif distance=='masked_L1':
         [desc1,masks1] = np.split(D1, 2,axis=1)
         [desc2,masks2] = np.split(D2, 2,axis=1)
