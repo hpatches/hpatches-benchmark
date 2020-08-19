@@ -116,6 +116,8 @@ Note that as the previous scripts, it can accept multiple descriptors and multip
 python hpatches_results.py --results-dir=results/ --descr=sift --descr=deepdesc  --task=verification --task=retrieval
 ```
 
+Note that descriptors not included in the utils/config.py can not be evaluated.
+
 ### References
 <a name="refs"></a>
 
