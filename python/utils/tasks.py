@@ -96,9 +96,9 @@ def eval_verification(descr,split):
     print('>> Evaluating %s task' % green('verification'))
 
     start = time.time()
-    pos = pd.read_csv(os.path.join(tskdir, 'verif_pos_split-'+split['name']+'.csv')).as_matrix()
-    neg_intra = pd.read_csv(os.path.join(tskdir, 'verif_neg_intra_split-'+split['name']+'.csv')).as_matrix()
-    neg_inter = pd.read_csv(os.path.join(tskdir, 'verif_neg_inter_split-'+split['name']+'.csv')).as_matrix()
+    pos = pd.read_csv(os.path.join(tskdir, 'verif_pos_split-'+split['name']+'.csv')).to_numpy()
+    neg_intra = pd.read_csv(os.path.join(tskdir, 'verif_neg_intra_split-'+split['name']+'.csv')).to_numpy()
+    neg_inter = pd.read_csv(os.path.join(tskdir, 'verif_neg_inter_split-'+split['name']+'.csv')).to_numpy()
 
     d_pos = get_verif_dists(descr,pos,1)
     d_neg_intra = get_verif_dists(descr,neg_intra,2)
@@ -236,8 +236,8 @@ def eval_retrieval(descr,split): #WIP
     print('>> Evaluating %s task' % green('retrieval'))
     start = time.time()
 
-    q = pd.read_csv(os.path.join(tskdir, 'retr_queries_split-'+split['name']+'.csv')).as_matrix()
-    d = pd.read_csv(os.path.join(tskdir, 'retr_distractors_split-'+split['name']+'.csv')).as_matrix()
+    q = pd.read_csv(os.path.join(tskdir, 'retr_queries_split-'+split['name']+'.csv')).to_numpy()
+    d = pd.read_csv(os.path.join(tskdir, 'retr_distractors_split-'+split['name']+'.csv')).to_numpy()
 
     # q_std = np.std(q, axis=0)
     # d_std = np.std(d, axis=0)
