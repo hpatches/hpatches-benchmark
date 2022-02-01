@@ -43,8 +43,8 @@ def dist_matrix(D1,D2,distance):
     if distance=='L2':
         if TORCH_GPU_IS_AVAILABLE:
             with torch.no_grad():
-                D = torch.cdist(torch.from_numpy(D1).cuda(),
-                                torch.from_numpy(D2).cuda(),
+                D = torch.cdist(torch.from_numpy(D1.astype(float)).cuda(),
+                                torch.from_numpy(D2.astype(float)).cuda(),
                                 p = 2).detach().cpu().numpy()
         else:
             D = spatial.distance.cdist(D1, D2,'euclidean')
