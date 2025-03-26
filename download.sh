@@ -1,7 +1,9 @@
 #!/bin/bash
 
-base_url="http://icvl.ee.ic.ac.uk/vbalnt/hpatches"
-hpatches_url="$base_url/hpatches-release.tar.gz"
+https://huggingface.co/datasets/vbalnt/hpatches/resolve/main/hpatches-release.zip
+
+base_url="https://huggingface.co/datasets/vbalnt/hpatches/resolve/main"
+hpatches_url="$base_url/hpatches-release.zip"
 descrs_url="$base_url/descriptors"
 descrs_list="$base_url/descriptors/descrs.txt"
 RED='\033[0;31m'
@@ -25,7 +27,7 @@ if [ $1 = "hpatches" ]; then
     echo "\n>> Please wait, downloading the HPatches patches dataset ~4.2G\n"
     wget -O ./data/hpatches-release.tar.gz $hpatches_url
     echo ">> Please wait, extracting the HPatches patches dataset ~4.2G"
-    tar -xzf ./data/hpatches-release.tar.gz -C ./data
+    unzip ./data/hpatches-release.tar.gz -C ./data
     rm ./data/hpatches-release.tar.gz
     echo ">> Done!"
 elif [ $1 = "descr" ]; then
